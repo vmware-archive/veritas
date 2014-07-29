@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"os"
-	"strings"
 
 	"github.com/cloudfoundry-incubator/veritas/config_finder"
 	"github.com/cloudfoundry-incubator/veritas/fetch_store"
@@ -24,7 +23,7 @@ func FetchStoreCommand() Command {
 		Description: "[file] - Fetch contents of the BBS",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			etcdCluster, err := config_finder.FindETCDCluster(strings.Split(etcdClusterFlag, ","))
+			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
 			ExitIfError("Could not find etcd cluster", err)
 
 			if len(args) == 0 {

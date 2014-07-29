@@ -1,11 +1,20 @@
 package config_finder
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"strings"
+)
 
-func FindETCDCluster(cluster []string) ([]string, error) {
-	if len(cluster) == 0 {
-		return nil, fmt.Errorf("For now, you must specify an etcd cluster")
+func FindETCDCluster(cluster string) ([]string, error) {
+	if cluster != "" {
+		return strings.Split(cluster, ","), nil
 	}
 
-	return cluster, nil
+	cluster = os.Getenv("ETCD_CLUSTER")
+	if cluster != "" {
+		return strings.Split(cluster, ","), nil
+	}
+
+	return nil, fmt.Errorf("For now, you must either specify an etcd cluster or set ETCD_CLUSTER")
 }
