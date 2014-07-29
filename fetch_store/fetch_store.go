@@ -92,7 +92,7 @@ func Fetch(cluster []string, raw bool, w io.Writer) error {
 	}
 
 	for _, startAuction := range lrpStartAuctions {
-		dump.LRPS.Get(startAuction.ProcessGuid).StartAuctions[startAuction.Index] = startAuction
+		dump.LRPS.Get(startAuction.DesiredLRP.ProcessGuid).StartAuctions[startAuction.Index] = startAuction
 	}
 
 	for _, stopAuction := range lrpStopAuctions {
