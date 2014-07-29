@@ -27,7 +27,7 @@ func main() {
 
 	for _, command := range commands {
 		if command.Name == os.Args[1] {
-			command.FlagSet.Parse(os.Args[1:])
+			command.FlagSet.Parse(os.Args[2:])
 			command.Run(command.FlagSet.Args())
 		}
 	}
