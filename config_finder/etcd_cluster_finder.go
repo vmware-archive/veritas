@@ -2,10 +2,10 @@ package config_finder
 
 import "fmt"
 
-func FindETCDCluster(cluster []string) ([]string, err) {
+func FindETCDCluster(cluster []string) ([]string, error) {
 	if len(cluster) == 0 {
-		return fmt.Errorf("For now, you must specify an etcd cluster")
+		return nil, fmt.Errorf("For now, you must specify an etcd cluster")
 	}
 
-	return cluster
+	return cluster, nil
 }

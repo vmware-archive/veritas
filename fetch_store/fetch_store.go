@@ -6,14 +6,16 @@ import (
 	"io"
 	"strings"
 
+	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs/shared"
-	"github.com/cloudfoundry-incubator/veritas/models"
 	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/cloudfoundry-incubator/veritas/veritas_models"
 	"github.com/cloudfoundry/gunk/timeprovider"
 	"github.com/cloudfoundry/storeadapter"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/onsi/gomega/format"
+	"github.com/pivotal-golang/lager"
 )
 
 func Fetch(cluster []string, raw bool, w io.Writer) error {
@@ -28,18 +30,18 @@ func Fetch(cluster []string, raw bool, w io.Writer) error {
 		if err != nil {
 			return err
 		}
-		printNodes(0, node, w)
-		return
+		printNode(0, node, w)
+		return nil
 	}
 
-	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), steno.NewLogger("veritas"))
+	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), lager.NewLogger("veritas"))
 
 	desiredLRPs, err := store.GetAllDesiredLRPs()
 	if err != nil {
 		return err
 	}
 
-	actualLRPS, err := store.GetAllActualLRPs()
+	actualLRPs, err := store.GetAllActualLRPs()
 	if err != nil {
 		return err
 	}
@@ -59,38 +61,38 @@ func Fetch(cluster []string, raw bool, w io.Writer) error {
 		return err
 	}
 
-	tasks, err := bbs.GetAllTasks()
+	tasks, err := store.GetAllTasks()
 	if err != nil {
 		return err
 	}
 
-	executors, err := bbs.GetAllExecutors()
+	executors, err := store.GetAllExecutors()
 	if err != nil {
 		return err
 	}
 
-	fileservers, err := bbs.GetAllFileServers()
+	fileservers, err := store.GetAllFileServers()
 	if err != nil {
 		return err
 	}
 
-	dump := models.StoreDump{
-		LRPS:     models.VeritasLRPS{},
-		Tasks:    models.VeritasTasks{},
-		Services: models.VeritasServices{},
+	dump := veritas_models.StoreDump{
+		LRPS:     veritas_models.VeritasLRPS{},
+		Tasks:    veritas_models.VeritasTasks{},
+		Services: veritas_models.VeritasServices{},
 	}
 
-	for _, desired := range desiredLRPS {
+	for _, desired := range desiredLRPs {
 		dump.LRPS.Get(desired.ProcessGuid).DesiredLRP = desired
 	}
 
-	for _, actual := range actualLRPS {
+	for _, actual := range actualLRPs {
 		lrp := dump.LRPS.Get(actual.ProcessGuid)
 		lrp.ActualLRPsByIndex[actual.Index] = append(lrp.ActualLRPsByIndex[actual.Index], actual)
 	}
 
 	for _, startAuction := range lrpStartAuctions {
-		dump.LRPS.Get(startAuction.ProcessGuid).StopAuctions[startAuction.Index] = startAuction
+		dump.LRPS.Get(startAuction.ProcessGuid).StartAuctions[startAuction.Index] = startAuction
 	}
 
 	for _, stopAuction := range lrpStopAuctions {
@@ -103,7 +105,7 @@ func Fetch(cluster []string, raw bool, w io.Writer) error {
 	}
 
 	for _, task := range tasks {
-		dump.Tasks[task.TaskType] = append(dump.Tasks[task.TaskType], task)
+		dump.Tasks[string(task.Type)] = append(dump.Tasks[string(task.Type)], task)
 	}
 
 	dump.Services.Executors = executors
@@ -119,12 +121,12 @@ func printNode(indentation int, node storeadapter.StoreNode, w io.Writer) {
 	} else {
 		say.Fprintln(w, indentation, node.Key)
 	}
-	if node.ChildNodes {
+	if len(node.ChildNodes) > 0 {
 		for _, node := range node.ChildNodes {
-			say.Fprintln(w, indentation+1, node)
+			printNode(indentation+1, node, w)
 		}
 	} else {
-		b := bytes.Buffer{}
+		b := &bytes.Buffer{}
 		err := json.Indent(b, node.Value, "", strings.Repeat(format.Indent, indentation))
 		if err == nil {
 			b.WriteTo(w)

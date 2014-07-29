@@ -1,4 +1,4 @@
-package models
+package veritas_models
 
 import (
 	"sort"

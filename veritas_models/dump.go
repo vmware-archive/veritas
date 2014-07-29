@@ -1,4 +1,4 @@
-package models
+package veritas_models
 
 type StoreDump struct {
 	LRPS     VeritasLRPS

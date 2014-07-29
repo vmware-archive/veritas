@@ -1,4 +1,4 @@
-package veritas
+package main
 
 import (
 	"os"
@@ -8,8 +8,8 @@ import (
 
 func ExitIfError(context string, err error) {
 	if err != nil {
-		say.Fprintln(say.Red(context))
-		say.Fprintln(say.Red(err.Error()))
+		say.Fprintln(os.Stderr, 0, say.Red(context))
+		say.Fprintln(os.Stderr, 0, say.Red(err.Error()))
 		os.Exit(1)
 	}
 }

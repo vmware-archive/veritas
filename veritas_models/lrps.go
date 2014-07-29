@@ -1,4 +1,4 @@
-package models
+package veritas_models
 
 import (
 	"sort"
@@ -6,16 +6,16 @@ import (
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 )
 
-type VeritasLRPS map[string]*LRP
+type VeritasLRPS map[string]*VeritasLRP
 
-func (l *VeritasLRPS) Get(guid string) *VeritasLRP {
+func (l VeritasLRPS) Get(guid string) *VeritasLRP {
 	lrp, ok := l[guid]
 	if !ok {
 		lrp = &VeritasLRP{
 			ProcessGuid:       guid,
 			ActualLRPsByIndex: map[int][]models.ActualLRP{},
-			ActualLRPsByIndex: map[int]models.LRPStartAuction{},
-			ActualLRPsByIndex: map[int]models.LRPStopAuction{},
+			StartAuctions:     map[int]models.LRPStartAuction{},
+			StopAuctions:      map[int]models.LRPStopAuction{},
 			StopInstances:     map[int][]models.StopLRPInstance{},
 		}
 		l[guid] = lrp
@@ -23,7 +23,7 @@ func (l *VeritasLRPS) Get(guid string) *VeritasLRP {
 	return lrp
 }
 
-func (l *VeritasLRPS) SortedByProcessGuid() []*VeritasLRP {
+func (l VeritasLRPS) SortedByProcessGuid() []*VeritasLRP {
 	lrps := []*VeritasLRP{}
 
 	for _, lrp := range l {
@@ -39,4 +39,4 @@ type VeritasLRPSByProcessGuid []*VeritasLRP
 
 func (a VeritasLRPSByProcessGuid) Len() int           { return len(a) }
 func (a VeritasLRPSByProcessGuid) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a VeritasLRPSByProcessGuid) Less(i, j int) bool { return a[i] < a[j] }
+func (a VeritasLRPSByProcessGuid) Less(i, j int) bool { return a[i].ProcessGuid < a[j].ProcessGuid }

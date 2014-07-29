@@ -1,4 +1,4 @@
-package veritas
+package main
 
 import (
 	"flag"

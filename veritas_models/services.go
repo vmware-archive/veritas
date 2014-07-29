@@ -1,4 +1,4 @@
-package models
+package veritas_models
 
 import "github.com/cloudfoundry-incubator/runtime-schema/models"
 

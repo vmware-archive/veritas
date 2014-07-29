@@ -52,7 +52,7 @@ func Colorize(colorCode string, format string, args ...interface{}) string {
 	}
 
 	if EnableColor {
-		return fmt.Sprintf("%s%s%s", colorCode, out, defaultStyle)
+		return fmt.Sprintf("%s%s%s", colorCode, out, DefaultStyle)
 	} else {
 		return out
 	}
@@ -80,7 +80,7 @@ func FprintBanner(w io.Writer, text string, bannerCharacter string) {
 }
 
 func FprintDelimiter(w io.Writer) {
-	fmt.Fprintln(w, s.colorize(grayColor, "%s", strings.Repeat("-", 30)))
+	fmt.Fprintln(w, Colorize(GrayColor, "%s", strings.Repeat("-", 30)))
 }
 
 func Fprint(w io.Writer, indentation int, format string, args ...interface{}) {
