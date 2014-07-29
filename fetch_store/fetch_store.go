@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
@@ -88,20 +89,24 @@ func Fetch(cluster []string, raw bool, w io.Writer) error {
 
 	for _, actual := range actualLRPs {
 		lrp := dump.LRPS.Get(actual.ProcessGuid)
-		lrp.ActualLRPsByIndex[actual.Index] = append(lrp.ActualLRPsByIndex[actual.Index], actual)
+		index := strconv.Itoa(actual.Index)
+		lrp.ActualLRPsByIndex[index] = append(lrp.ActualLRPsByIndex[index], actual)
 	}
 
 	for _, startAuction := range lrpStartAuctions {
-		dump.LRPS.Get(startAuction.DesiredLRP.ProcessGuid).StartAuctions[startAuction.Index] = startAuction
+		index := strconv.Itoa(startAuction.Index)
+		dump.LRPS.Get(startAuction.DesiredLRP.ProcessGuid).StartAuctions[index] = startAuction
 	}
 
 	for _, stopAuction := range lrpStopAuctions {
-		dump.LRPS.Get(stopAuction.ProcessGuid).StopAuctions[stopAuction.Index] = stopAuction
+		index := strconv.Itoa(stopAuction.Index)
+		dump.LRPS.Get(stopAuction.ProcessGuid).StopAuctions[index] = stopAuction
 	}
 
 	for _, stopInstance := range stopLRPInstance {
 		lrp := dump.LRPS.Get(stopInstance.ProcessGuid)
-		lrp.StopInstances[stopInstance.Index] = append(lrp.StopInstances[stopInstance.Index], stopInstance)
+		index := strconv.Itoa(stopInstance.Index)
+		lrp.StopInstances[index] = append(lrp.StopInstances[index], stopInstance)
 	}
 
 	for _, task := range tasks {

@@ -47,7 +47,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 		for i, actual := range lrp.ActualLRPsByIndex[index] {
 			prefix := "    "
 			if i == 0 {
-				prefix = fmt.Sprintf("%3d:", index)
+				prefix = fmt.Sprintf("%3s:", index)
 			}
 			say.Println(
 				2,
@@ -68,7 +68,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 			auction := lrp.StartAuctions[index]
 			say.Println(
 				3,
-				"%3d: %s [%s for %s]",
+				"%3s: %s [%s for %s]",
 				index,
 				auction.InstanceGuid,
 				startAuctionState(auction),
@@ -84,7 +84,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 			auction := lrp.StopAuctions[index]
 			say.Println(
 				3,
-				"%3d: [%s for %s]",
+				"%3s: [%s for %s]",
 				index,
 				stopAuctionState(auction),
 				time.Since(time.Unix(0, auction.UpdatedAt)),
@@ -99,7 +99,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 			for i, stop := range lrp.StopInstances[index] {
 				prefix := "    "
 				if i == 0 {
-					prefix = fmt.Sprintf("%3d:", index)
+					prefix = fmt.Sprintf("%3s:", index)
 				}
 				say.Println(
 					3,

@@ -13,10 +13,10 @@ func (l VeritasLRPS) Get(guid string) *VeritasLRP {
 	if !ok {
 		lrp = &VeritasLRP{
 			ProcessGuid:       guid,
-			ActualLRPsByIndex: map[int][]models.ActualLRP{},
-			StartAuctions:     map[int]models.LRPStartAuction{},
-			StopAuctions:      map[int]models.LRPStopAuction{},
-			StopInstances:     map[int][]models.StopLRPInstance{},
+			ActualLRPsByIndex: map[string][]models.ActualLRP{},
+			StartAuctions:     map[string]models.LRPStartAuction{},
+			StopAuctions:      map[string]models.LRPStopAuction{},
+			StopInstances:     map[string][]models.StopLRPInstance{},
 		}
 		l[guid] = lrp
 	}

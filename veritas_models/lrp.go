@@ -2,6 +2,7 @@ package veritas_models
 
 import (
 	"sort"
+	"strconv"
 
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 )
@@ -9,44 +10,59 @@ import (
 type VeritasLRP struct {
 	ProcessGuid       string
 	DesiredLRP        models.DesiredLRP
-	ActualLRPsByIndex map[int][]models.ActualLRP
-	StartAuctions     map[int]models.LRPStartAuction
-	StopAuctions      map[int]models.LRPStopAuction
-	StopInstances     map[int][]models.StopLRPInstance
+	ActualLRPsByIndex map[string][]models.ActualLRP
+	StartAuctions     map[string]models.LRPStartAuction
+	StopAuctions      map[string]models.LRPStopAuction
+	StopInstances     map[string][]models.StopLRPInstance
 }
 
-func (l *VeritasLRP) OrderedActualLRPIndices() []int {
-	indices := []int{}
+func (l *VeritasLRP) OrderedActualLRPIndices() []string {
+	indicesAsStrings := []string{}
 	for index := range l.ActualLRPsByIndex {
-		indices = append(indices, index)
+		indicesAsStrings = append(indicesAsStrings, index)
 	}
-	sort.Ints(indices)
-	return indices
+
+	sort.Sort(ByNumericalValue(indicesAsStrings))
+	return indicesAsStrings
 }
 
-func (l *VeritasLRP) OrderedStartAuctionIndices() []int {
-	indices := []int{}
+func (l *VeritasLRP) OrderedStartAuctionIndices() []string {
+	indicesAsStrings := []string{}
 	for index := range l.StartAuctions {
-		indices = append(indices, index)
+		indicesAsStrings = append(indicesAsStrings, index)
 	}
-	sort.Ints(indices)
-	return indices
+
+	sort.Sort(ByNumericalValue(indicesAsStrings))
+	return indicesAsStrings
 }
 
-func (l *VeritasLRP) OrderedStopAuctionIndices() []int {
-	indices := []int{}
+func (l *VeritasLRP) OrderedStopAuctionIndices() []string {
+	indicesAsStrings := []string{}
 	for index := range l.StopAuctions {
-		indices = append(indices, index)
+		indicesAsStrings = append(indicesAsStrings, index)
 	}
-	sort.Ints(indices)
-	return indices
+
+	sort.Sort(ByNumericalValue(indicesAsStrings))
+	return indicesAsStrings
 }
 
-func (l *VeritasLRP) OrderedStopIndices() []int {
-	indices := []int{}
+func (l *VeritasLRP) OrderedStopIndices() []string {
+	indicesAsStrings := []string{}
 	for index := range l.StopInstances {
-		indices = append(indices, index)
+		indicesAsStrings = append(indicesAsStrings, index)
 	}
-	sort.Ints(indices)
-	return indices
+
+	sort.Sort(ByNumericalValue(indicesAsStrings))
+	return indicesAsStrings
+}
+
+type ByNumericalValue []string
+
+func (a ByNumericalValue) Len() int      { return len(a) }
+func (a ByNumericalValue) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByNumericalValue) Less(i, j int) bool {
+	ai, _ := strconv.Atoi(a[i])
+	aj, _ := strconv.Atoi(a[j])
+
+	return ai < aj
 }
