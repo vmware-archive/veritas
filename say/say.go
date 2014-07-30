@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -56,6 +57,72 @@ func Colorize(colorCode string, format string, args ...interface{}) string {
 	} else {
 		return out
 	}
+}
+
+func Ask(text string) string {
+	Print(0, text+":\n> ")
+	var response string
+	fmt.Scanln(&response)
+	return response
+}
+
+func AskWithDefault(text string, defaultResponse string) string {
+	Print(0, "%s [%s]:\n> ", text, Green(defaultResponse))
+	var response string
+	fmt.Scanln(&response)
+	if response == "" {
+		return defaultResponse
+	}
+	return response
+}
+
+func AskForIntegerWithDefault(text string, defaultResponse int) int {
+	Print(0, "%s [%s]:\n> ", text, Green("%d", defaultResponse))
+	var response string
+	fmt.Scanln(&response)
+	if response == "" {
+		return defaultResponse
+	}
+	asInteger, err := strconv.Atoi(response)
+	if err != nil {
+		Println(0, Red("That was an invalid response..."))
+		return AskForIntegerWithDefault(text, defaultResponse)
+	}
+
+	return asInteger
+}
+
+func AskForBoolWithDefault(text string, defaultResponse bool) bool {
+	Print(0, "%s [%s]:\n> ", text, Green("%t", defaultResponse))
+	var response string
+	fmt.Scanln(&response)
+	if response == "true" {
+		return true
+	}
+	if response == "false" {
+		return false
+	}
+	if response == "" {
+		return defaultResponse
+	}
+	Println(0, Red("That was an invalid response... try 'true' or 'false'"))
+	return AskForBoolWithDefault(text, defaultResponse)
+}
+
+func Pick(text string, options []string) string {
+	Println(0, "%s:", text)
+	for i, option := range options {
+		Println(1, "[%s] %s", Green("%d", i), option)
+	}
+	Print(0, "> ")
+	var response string
+	fmt.Scanln(&response)
+	index, err := strconv.Atoi(response)
+	if err != nil {
+		Println(0, Red("That was an invalid selection..."))
+		return Pick(text, options)
+	}
+	return options[index]
 }
 
 func PrintBanner(text string, bannerCharacter string) {

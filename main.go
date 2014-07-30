@@ -18,6 +18,7 @@ func main() {
 	commands := []Command{
 		FetchStoreCommand(),
 		PrintStoreCommand(),
+		SubmitLRPCommand(),
 	}
 
 	if len(os.Args) == 1 || os.Args[1] == "help" {

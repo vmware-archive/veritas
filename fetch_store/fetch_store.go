@@ -110,7 +110,7 @@ func Fetch(cluster []string, raw bool, w io.Writer) error {
 	}
 
 	for _, task := range tasks {
-		dump.Tasks[string(task.Type)] = append(dump.Tasks[string(task.Type)], task)
+		dump.Tasks[task.Domain] = append(dump.Tasks[task.Domain], task)
 	}
 
 	dump.Services.Executors = executors
