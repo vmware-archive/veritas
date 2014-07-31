@@ -158,6 +158,10 @@ func Fprintln(w io.Writer, indentation int, format string, args ...interface{}) 
 	fmt.Fprintln(w, Indent(indentation, format, args...))
 }
 
+func Clear() {
+	fmt.Print("\x1b[2J\x1b[;H")
+}
+
 func Indent(indentation int, format string, args ...interface{}) string {
 	var text string
 

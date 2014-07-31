@@ -46,6 +46,7 @@ func DumpStoreCommand() Command {
 			ticker := time.NewTicker(rate)
 			for {
 				<-ticker.C
+				say.Clear()
 				err = dump(etcdCluster, verbose, tasks, lrps, services)
 				if err != nil {
 					say.Println(0, say.Red("Failed to dump: %s", err.Error()))
