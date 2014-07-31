@@ -66,7 +66,7 @@ func interactivelyBuildDesiredLRP() models.DesiredLRP {
 	desiredLRP.Stack = say.AskWithDefault("Stack", "lucid64")
 	desiredLRP.MemoryMB = say.AskForIntegerWithDefault("MemoryMB", 256)
 	desiredLRP.DiskMB = say.AskForIntegerWithDefault("DiskMB", 256)
-	desiredLRP.Routes = []string{say.AskWithDefault("Route", desiredLRP.ProcessGuid)}
+	desiredLRP.Routes = []string{say.AskWithDefault("Route", desiredLRP.ProcessGuid+".10.244.0.34.xip.io")}
 	desiredLRP.Ports = []models.PortMapping{
 		{ContainerPort: 8080},
 	}
@@ -95,7 +95,7 @@ func interactivelyBuildActions(processGuid string) []models.ExecutorAction {
 			actions = append(actions, interactivelyBuildDownloadAction())
 		case "Health-Monitored RunAction":
 			staticRoute, _ := SchemaRouter.NewFileServerRoutes().RouteForHandler(SchemaRouter.FS_STATIC)
-			circusURL := urljoiner.Join("PLACEHOLDER_FILESERVER_URL", staticRoute.Path, "linux-circus")
+			circusURL := urljoiner.Join("PLACEHOLDER_FILESERVER_URL", staticRoute.Path, "linux-circus/linux-circus.tgz")
 			actions = append(actions, models.ExecutorAction{
 				models.DownloadAction{
 					From:    circusURL,

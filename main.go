@@ -19,6 +19,7 @@ func main() {
 		FetchStoreCommand(),
 		PrintStoreCommand(),
 		SubmitLRPCommand(),
+		RemoveLRPCommand(),
 	}
 
 	if len(os.Args) == 1 || os.Args[1] == "help" {

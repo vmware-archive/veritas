@@ -26,13 +26,13 @@ func SubmitLRPCommand() Command {
 
 			if len(args) == 0 {
 				err := submit_lrp.SubmitLRP(etcdCluster, nil)
-				ExitIfError("Failed to fetch store", err)
+				ExitIfError("Failed to submit lrp", err)
 			} else {
 				f, err := os.Open(args[0])
 				ExitIfError("Could not open file", err)
 
 				err = submit_lrp.SubmitLRP(etcdCluster, f)
-				ExitIfError("Failed to fetch store", err)
+				ExitIfError("Failed to submit lrp", err)
 			}
 		},
 	}
