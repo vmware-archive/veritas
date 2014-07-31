@@ -18,6 +18,7 @@ func main() {
 	commands := []Command{
 		FetchStoreCommand(),
 		PrintStoreCommand(),
+		DumpStoreCommand(),
 		SubmitLRPCommand(),
 		RemoveLRPCommand(),
 	}
