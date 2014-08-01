@@ -38,6 +38,7 @@ func main() {
 			Description: "Commands to fetch information from an executor",
 			Commands: []Command{
 				ExecutorResourcesCommand(),
+				ExecutorContainersCommand(),
 			},
 		},
 		CommandGroup{
