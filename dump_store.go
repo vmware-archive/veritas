@@ -70,10 +70,10 @@ func dump(etcdCluster []string, verbose bool, tasks bool, lrps bool, services bo
 	}()
 
 	err1 := <-errs
-	err2 := <-errs
 	if err1 != nil {
 		return err1
 	}
+	err2 := <-errs
 	if err2 != nil {
 		return err2
 	}
