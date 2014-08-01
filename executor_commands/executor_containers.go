@@ -31,9 +31,8 @@ func ExecutorContainers(executorAddr string, raw bool, out io.Writer) error {
 		return nil
 	}
 
-	say.Fprintln(out, 0, say.Green("Containers"))
 	if len(containers) == 0 {
-		say.Println(0, say.Red("None"))
+		say.Println(0, say.Red("No Containers"))
 	}
 	for _, container := range containers {
 		printContainer(out, container)
