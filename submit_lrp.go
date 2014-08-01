@@ -18,7 +18,7 @@ func SubmitLRPCommand() Command {
 
 	return Command{
 		Name:        "submit-lrp",
-		Description: "[file] - a json representation of an lrp",
+		Description: "[file] - submits a desired lrp to the bbs",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
 			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)

@@ -16,5 +16,5 @@ func FindETCDCluster(cluster string) ([]string, error) {
 		return strings.Split(cluster, ","), nil
 	}
 
-	return nil, fmt.Errorf("For now, you must either specify an etcd cluster or set ETCD_CLUSTER")
+	return nil, fmt.Errorf("For now, you must either specify --etcdCluster or set ETCD_CLUSTER")
 }

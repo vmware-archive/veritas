@@ -31,7 +31,7 @@ func DumpStoreCommand() Command {
 
 	return Command{
 		Name:        "dump-store",
-		Description: " - Fetch and print contents of the BBS",
+		Description: "- Fetch and print contents of the BBS",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
 			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
