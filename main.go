@@ -60,9 +60,13 @@ func main() {
 			if command.Name == os.Args[1] {
 				command.FlagSet.Parse(os.Args[2:])
 				command.Run(command.FlagSet.Args())
+				os.Exit(0)
 			}
 		}
 	}
+
+	say.Println(0, say.Red("Unkown command: %s", os.Args[1]))
+	usage(commandGroups)
 }
 
 func usage(commandGroups []CommandGroup) {
