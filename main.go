@@ -41,6 +41,13 @@ func main() {
 			},
 		},
 		CommandGroup{
+			Name:        "Vitals",
+			Description: "Commands to fetch vitals for components",
+			Commands: []Command{
+				VitalsCommand(),
+			},
+		},
+		CommandGroup{
 			Name:        "DesiredLRPS " + say.Red("[DANGER]"),
 			Description: "Commands to add and remove DesiredLRPs",
 			Commands: []Command{
