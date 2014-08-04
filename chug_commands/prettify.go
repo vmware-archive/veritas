@@ -73,26 +73,24 @@ func (s *stenographer) PrettyPrintLog(log chug.LogEntry) {
 	components := []string{}
 
 	color := say.DefaultStyle
-	ornamentColor := say.GrayColor
-	level := "I"
+	level := ""
 
 	switch log.LogLevel {
 	case lager.INFO:
+		level = say.Green("[INFO] ")
 	case lager.DEBUG:
-		color = say.GrayColor
-		level = "D"
+		level = say.Gray("[DEBUG]")
 	case lager.ERROR:
 		color = say.RedColor
-		ornamentColor = say.RedColor
-		level = "E"
+		level = say.Red("[ERROR]")
 	case lager.FATAL:
 		color = say.RedColor
-		ornamentColor = say.RedColor
-		level = "F"
+		level = say.Red("[FATAL]")
 	}
 
 	var timestamp string
-	components = append(components, say.Colorize(color, level))
+	components = append(components, fmt.Sprintf("%-16s", "["+log.Source+"]"))
+	components = append(components, level)
 	if s.Absolute {
 		timestamp = log.Timestamp.Format(time.StampMilli)
 		components = append(components, say.Colorize(color, timestamp))
@@ -100,26 +98,24 @@ func (s *stenographer) PrettyPrintLog(log chug.LogEntry) {
 		timestamp = log.Timestamp.Sub(s.RelativeTime).String()
 		components = append(components, say.Colorize(color, "%12s", timestamp))
 	}
-	components = append(components, fmt.Sprintf("%-16s", "["+log.Source+"]"))
 
-	session := log.Session()
-	components = append(components, say.Colorize(ornamentColor, "%-10s", session))
+	components = append(components, say.Gray("%-10s", log.Session))
 
-	components = append(components, say.Colorize(color, log.Message()))
+	components = append(components, say.Colorize(color, log.Message))
 
 	if log.Error != nil {
 		components = append(components, say.Red(" - Error: "+log.Error.Error()))
 	}
 
+	say.Println(0, strings.Join(components, " "))
+
 	if len(log.Data) > 0 && s.Data == "short" {
 		dataJSON, _ := json.Marshal(log.Data)
-		components = append(components, say.Colorize(color, string(dataJSON)))
+		say.Println(28, say.Colorize(color, string(dataJSON)))
 	}
-
-	say.Println(0, strings.Join(components, " "))
 
 	if len(log.Data) > 0 && s.Data == "long" {
 		dataJSON, _ := json.MarshalIndent(log.Data, "", "  ")
-		say.Println(2, say.Colorize(color, string(dataJSON)))
+		say.Println(28, say.Colorize(color, string(dataJSON)))
 	}
 }
