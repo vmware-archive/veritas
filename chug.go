@@ -15,7 +15,7 @@ func ChugCommand() Command {
 
 	flagSet := flag.NewFlagSet("chug", flag.ExitOnError)
 	flagSet.StringVar(&rel, "rel", "", "render timestamps as durations relative to: 'first', 'now', or a number interpreted as a unix timestamp")
-	flagSet.StringVar(&data, "data", "short", "render data: 'none', 'short', 'pretty'")
+	flagSet.StringVar(&data, "data", "short", "render data: 'none', 'short', 'long'")
 
 	return Command{
 		Name:        "chug",
