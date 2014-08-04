@@ -34,6 +34,13 @@ func main() {
 			},
 		},
 		CommandGroup{
+			Name:        "Chug",
+			Description: "Commands to prettify lager logs",
+			Commands: []Command{
+				ChugCommand(),
+			},
+		},
+		CommandGroup{
 			Name:        "Executor",
 			Description: "Commands to fetch information from an executor",
 			Commands: []Command{
