@@ -18,7 +18,7 @@ func VitalsCommand() Command {
 
 	return Command{
 		Name:        "vitals",
-		Description: "[file] - Fetch vitals for passed in objects",
+		Description: "[file] - Fetch vitals for passed in golang processes",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
 			vitalsAddrs, err := config_finder.FindVitalsAddrs(addrs)

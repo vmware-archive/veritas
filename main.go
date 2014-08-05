@@ -41,11 +41,12 @@ func main() {
 			},
 		},
 		CommandGroup{
-			Name:        "Executor",
-			Description: "Commands to fetch information from an executor",
+			Name:        "Executor & Warden",
+			Description: "Commands to fetch information from executor and warden",
 			Commands: []Command{
 				ExecutorResourcesCommand(),
 				ExecutorContainersCommand(),
+				WardenContainersCommand(),
 			},
 		},
 		CommandGroup{
