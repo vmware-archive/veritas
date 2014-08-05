@@ -13,6 +13,21 @@ import (
 	"github.com/pivotal-golang/lager/chug"
 )
 
+var colorLookup = map[string]string{
+	"executor":       "\x1b91m",
+	"rep":            "\x1b92m",
+	"converger":      "\x1b93m",
+	"auctioneer":     "\x1b94m",
+	"route-emitter":  "\x1b95m",
+	"tps":            "\x1b96m",
+	"nsync-listener": "\x1b97m",
+	"file-server":    "\x1b90m",
+	"router":         "\x1b32m",
+	"loggregator":    "\x1b33m",
+	"stager":         "\x1b94m",
+	"warden-linux":   "\x1b31m",
+}
+
 func Prettify(relativeTime string, data string, src io.Reader) error {
 	out := make(chan chug.Entry)
 	go chug.Chug(src, out)
@@ -72,50 +87,54 @@ func (s *stenographer) PrettyPrintRaw(raw []byte) {
 func (s *stenographer) PrettyPrintLog(log chug.LogEntry) {
 	components := []string{}
 
-	color := say.DefaultStyle
-	level := ""
+	color, ok := colorLookup[log.Source]
+	if !ok {
+		color = say.DefaultStyle
+	}
 
+	level := ""
 	switch log.LogLevel {
 	case lager.INFO:
-		level = say.Green("[INFO] ")
+		level = say.Green("%-7s", "[INFO]")
 	case lager.DEBUG:
-		level = say.Gray("[DEBUG]")
+		level = say.Gray("%-7s", "[DEBUG]")
 	case lager.ERROR:
-		color = say.RedColor
-		level = say.Red("[ERROR]")
+		level = say.Red("%-7s", "[ERROR]")
 	case lager.FATAL:
-		color = say.RedColor
-		level = say.Red("[FATAL]")
+		level = say.Red("%-7s", "[FATAL]")
 	}
 
 	var timestamp string
-	components = append(components, fmt.Sprintf("%-16s", "["+log.Source+"]"))
-	components = append(components, level)
 	if s.Absolute {
-		timestamp = log.Timestamp.Format(time.StampMilli)
-		components = append(components, say.Colorize(color, timestamp))
+		timestamp = log.Timestamp.Format("01/_2 15:04:05.00")
 	} else {
 		timestamp = log.Timestamp.Sub(s.RelativeTime).String()
-		components = append(components, say.Colorize(color, "%12s", timestamp))
+		timestamp = fmt.Sprintf("%17s", timestamp)
 	}
 
+	components = append(components, say.Colorize(color, "%-16s", log.Source))
+	components = append(components, level)
+	components = append(components, timestamp)
 	components = append(components, say.Gray("%-10s", log.Session))
-
 	components = append(components, say.Colorize(color, log.Message))
-
-	if log.Error != nil {
-		components = append(components, say.Red(" - Error: "+log.Error.Error()))
-	}
 
 	say.Println(0, strings.Join(components, " "))
 
+	if log.Error != nil {
+		say.Println(31, say.Red("Error: %s", log.Error.Error()))
+	}
+
+	if log.Trace != "" {
+		say.Println(31, say.Red(log.Trace))
+	}
+
 	if len(log.Data) > 0 && s.Data == "short" {
 		dataJSON, _ := json.Marshal(log.Data)
-		say.Println(28, say.Colorize(color, string(dataJSON)))
+		say.Println(31, say.Colorize(color, string(dataJSON)))
 	}
 
 	if len(log.Data) > 0 && s.Data == "long" {
 		dataJSON, _ := json.MarshalIndent(log.Data, "", "  ")
-		say.Println(28, say.Colorize(color, string(dataJSON)))
+		say.Println(31, say.Colorize(color, string(dataJSON)))
 	}
 }
