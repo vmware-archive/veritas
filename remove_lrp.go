@@ -26,7 +26,7 @@ func RemoveLRPCommand() Command {
 			ExitIfError("Could not find etcd cluster", err)
 
 			if len(args) == 0 {
-				say.Red("You must specify a process-guid")
+				say.Fprintln(os.Stderr, 0, say.Red("You must specify a process-guid"))
 				os.Exit(1)
 			} else {
 				err = remove_lrp.RemoveLRP(etcdCluster, args[0])
