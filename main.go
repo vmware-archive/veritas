@@ -57,6 +57,13 @@ func main() {
 			},
 		},
 		CommandGroup{
+			Name:        "Loggregator",
+			Description: "Commands to stream loggregator logs",
+			Commands: []Command{
+				StreamLogsCommand(),
+			},
+		},
+		CommandGroup{
 			Name:        "DesiredLRPS " + say.Red("[DANGER]"),
 			Description: "Commands to add and remove DesiredLRPs",
 			Commands: []Command{
