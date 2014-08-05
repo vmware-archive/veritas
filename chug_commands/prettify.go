@@ -14,21 +14,21 @@ import (
 )
 
 var colorLookup = map[string]string{
-	"executor":       "\x1b91m",
-	"rep":            "\x1b92m",
-	"converger":      "\x1b93m",
-	"auctioneer":     "\x1b94m",
-	"route-emitter":  "\x1b95m",
-	"tps":            "\x1b96m",
-	"nsync-listener": "\x1b97m",
-	"file-server":    "\x1b90m",
-	"router":         "\x1b32m",
-	"loggregator":    "\x1b33m",
-	"stager":         "\x1b94m",
-	"warden-linux":   "\x1b31m",
+	"executor":       "\x1b[92m",
+	"rep":            "\x1b[93m",
+	"converger":      "\x1b[94m",
+	"auctioneer":     "\x1b[95m",
+	"route-emitter":  "\x1b[96m",
+	"tps":            "\x1b[97m",
+	"nsync-listener": "\x1b[98m",
+	"file-server":    "\x1b[34m",
+	"router":         "\x1b[32m",
+	"loggregator":    "\x1b[33m",
+	"stager":         "\x1b[99m",
+	"warden-linux":   "\x1b[35m",
 }
 
-func Prettify(relativeTime string, data string, src io.Reader) error {
+func Prettify(relativeTime string, data string,  hideNonLager bool, src io.Reader) error {
 	out := make(chan chug.Entry)
 	go chug.Chug(src, out)
 
@@ -38,6 +38,7 @@ func Prettify(relativeTime string, data string, src io.Reader) error {
 
 	s := &stenographer{
 		Data: data,
+		HideNonLager: hideNonLager,
 	}
 
 	switch relativeTime {
@@ -66,6 +67,7 @@ type stenographer struct {
 	Absolute     bool
 	RelativeTime time.Time
 	Data         string
+	HideNonLager bool
 }
 
 func (s *stenographer) PrettyPrint(entry chug.Entry) {
@@ -76,7 +78,9 @@ func (s *stenographer) PrettyPrint(entry chug.Entry) {
 	if entry.IsLager {
 		s.PrettyPrintLog(entry.Log)
 	} else {
-		s.PrettyPrintRaw(entry.Raw)
+		if !s.HideNonLager {
+			s.PrettyPrintRaw(entry.Raw)
+		}
 	}
 }
 
@@ -95,7 +99,7 @@ func (s *stenographer) PrettyPrintLog(log chug.LogEntry) {
 	level := ""
 	switch log.LogLevel {
 	case lager.INFO:
-		level = say.Green("%-7s", "[INFO]")
+		level = say.Colorize(color, "%-7s", "[INFO]")
 	case lager.DEBUG:
 		level = say.Gray("%-7s", "[DEBUG]")
 	case lager.ERROR:
@@ -106,7 +110,7 @@ func (s *stenographer) PrettyPrintLog(log chug.LogEntry) {
 
 	var timestamp string
 	if s.Absolute {
-		timestamp = log.Timestamp.Format("01/_2 15:04:05.00")
+		timestamp = log.Timestamp.Format("01/02 15:04:05.00")
 	} else {
 		timestamp = log.Timestamp.Sub(s.RelativeTime).String()
 		timestamp = fmt.Sprintf("%17s", timestamp)
@@ -114,27 +118,27 @@ func (s *stenographer) PrettyPrintLog(log chug.LogEntry) {
 
 	components = append(components, say.Colorize(color, "%-16s", log.Source))
 	components = append(components, level)
-	components = append(components, timestamp)
+	components = append(components, say.Colorize(color, timestamp))
 	components = append(components, say.Gray("%-10s", log.Session))
 	components = append(components, say.Colorize(color, log.Message))
 
 	say.Println(0, strings.Join(components, " "))
 
 	if log.Error != nil {
-		say.Println(31, say.Red("Error: %s", log.Error.Error()))
+		say.Println(27, say.Red("Error: %s", log.Error.Error()))
 	}
 
 	if log.Trace != "" {
-		say.Println(31, say.Red(log.Trace))
+		say.Println(27, say.Red(log.Trace))
 	}
 
 	if len(log.Data) > 0 && s.Data == "short" {
 		dataJSON, _ := json.Marshal(log.Data)
-		say.Println(31, say.Colorize(color, string(dataJSON)))
+		say.Println(27, string(dataJSON))
 	}
 
 	if len(log.Data) > 0 && s.Data == "long" {
 		dataJSON, _ := json.MarshalIndent(log.Data, "", "  ")
-		say.Println(31, say.Colorize(color, string(dataJSON)))
+		say.Println(27, string(dataJSON))
 	}
 }
