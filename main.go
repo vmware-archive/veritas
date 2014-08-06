@@ -25,6 +25,14 @@ type CommandGroup struct {
 func main() {
 	commandGroups := []CommandGroup{
 		CommandGroup{
+			Name:        "Setup",
+			Description: "Commands to set veritas up on a BOSH Job",
+			Commands: []Command{
+				AutodetectCommand(),
+			},
+		},
+
+		CommandGroup{
 			Name:        "BBS",
 			Description: "Commands to fetch from the BBS",
 			Commands: []Command{
