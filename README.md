@@ -5,7 +5,7 @@ Veritas is a cli for getting at Diego's truth.
 For a linux build on a bosh vm:
 
 ```bash
-cd $HOME
+pushd $HOME
 rm veritas
 
 wget http://onsi-public.s3.amazonaws.com/veritas
@@ -16,4 +16,5 @@ veritas autodetect && `veritas autodetect`
 
 veritas completions > ./.veritas_completions.bash
 source ./.veritas_completions.bash
+popd
 ```
