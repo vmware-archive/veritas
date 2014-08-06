@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"strings"
 
@@ -86,6 +87,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if os.Args[1] == "completions" {
+		completions(commandGroups)
+		os.Exit(0)
+	}
+
 	for _, commandGroup := range commandGroups {
 		for _, command := range commandGroup.Commands {
 			if command.Name == os.Args[1] {
@@ -98,6 +104,39 @@ func main() {
 
 	say.Println(0, say.Red("Unkown command: %s", os.Args[1]))
 	usage(commandGroups)
+}
+
+func completions(commandGroups []CommandGroup) {
+	availableCommands := []string{}
+	for _, commands := range commandGroups {
+		for _, command := range commands.Commands {
+			availableCommands = append(availableCommands, command.Name)
+		}
+	}
+
+	out := fmt.Sprintf(`
+function _veritas() {
+	local cur prev commands
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+	commands="%s"
+
+	if [[ "${COMP_CWORD}" == "1" ]] ; then
+		COMPREPLY=( $(compgen -W "${commands} help completions" -- ${cur}) );
+	elif [[ "${prev}" == "help" ]] ; then
+		COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) );
+	else
+		COMPREPLY=( $(compgen -f ${cur}) );
+	fi
+
+	return 0
+}
+
+complete -F _veritas veritas
+`, strings.Join(availableCommands, " "))
+
+	say.Println(0, out)
 }
 
 func usage(commandGroups []CommandGroup) {
@@ -118,6 +157,12 @@ func usage(commandGroups []CommandGroup) {
 		}
 		say.Fprintln(os.Stderr, 0, say.Red("Unkown command: %s", os.Args[2]))
 	}
+
+	say.Fprintln(os.Stderr, 0, "%s", say.Cyan("Help and Autocompletion"))
+	say.Fprintln(os.Stderr, 0, strings.Repeat("-", len("Help and Autocompletion")))
+	say.Fprintln(os.Stderr, 1, "%s %s", say.Green("help"), say.LightGray("[command] - Show this help, or detailed help for the passed in command"))
+	say.Fprintln(os.Stderr, 1, "%s %s", say.Green("completions"), say.LightGray("Generate BASH Completions for veritas"))
+	say.Fprintln(os.Stderr, 0, "")
 
 	for _, commandGroup := range commandGroups {
 		usageForCommandGroup(commandGroup, false)

@@ -12,7 +12,7 @@ func AutodetectCommand() Command {
 
 	return Command{
 		Name:        "autodetect",
-		Description: " - autodetect configuration **must be run on a bosh vm**",
+		Description: "- autodetect configuration **must be run on a bosh vm**",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
 			err := config_finder.Autodetect(os.Stdout)
