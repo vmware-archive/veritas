@@ -38,7 +38,7 @@ func ExecutorResources(executorAddr string, raw bool, out io.Writer) error {
 
 	say.Fprintln(out, 0, say.Green("Resource Usage"))
 	printResource(out, "Memory (MB)", total.MemoryMB, remaining.MemoryMB)
-	printResource(out, "Disk (MB)", total.MemoryMB, remaining.MemoryMB)
+	printResource(out, "Disk (MB)", total.DiskMB, remaining.DiskMB)
 	printResource(out, "Containers", total.Containers, remaining.Containers)
 	return nil
 }
@@ -56,5 +56,5 @@ func printResource(out io.Writer, label string, total int, remaining int) {
 		usedPercentage = say.Green(usedPercentage)
 	}
 
-	say.Fprintln(out, 1, "%s: %s/%s (%s)", label, usedString, say.Green("%d", remaining), usedPercentage)
+	say.Fprintln(out, 1, "%s: %s/%s (%s)", label, usedString, say.Green("%d", total), usedPercentage)
 }

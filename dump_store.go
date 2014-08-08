@@ -38,7 +38,7 @@ func DumpStoreCommand() Command {
 			ExitIfError("Could not find etcd cluster", err)
 
 			if rate == 0 {
-				err = dump(etcdCluster, verbose, tasks, lrps, services)
+				err = dump(etcdCluster, verbose, tasks, lrps, services, false)
 				ExitIfError("Failed to dump", err)
 				return
 			}
@@ -46,8 +46,7 @@ func DumpStoreCommand() Command {
 			ticker := time.NewTicker(rate)
 			for {
 				<-ticker.C
-				say.Clear()
-				err = dump(etcdCluster, verbose, tasks, lrps, services)
+				err = dump(etcdCluster, verbose, tasks, lrps, services, true)
 				if err != nil {
 					say.Println(0, say.Red("Failed to dump: %s", err.Error()))
 				}
@@ -56,7 +55,7 @@ func DumpStoreCommand() Command {
 	}
 }
 
-func dump(etcdCluster []string, verbose bool, tasks bool, lrps bool, services bool) error {
+func dump(etcdCluster []string, verbose bool, tasks bool, lrps bool, services bool, clear bool) error {
 	reader, writer := io.Pipe()
 
 	errs := make(chan error)
@@ -65,7 +64,7 @@ func dump(etcdCluster []string, verbose bool, tasks bool, lrps bool, services bo
 		errs <- err
 	}()
 	go func() {
-		err := print_store.PrintStore(verbose, tasks, lrps, services, reader)
+		err := print_store.PrintStore(verbose, tasks, lrps, services, clear, reader)
 		errs <- err
 	}()
 

@@ -62,14 +62,14 @@ func Autodetect(out io.Writer) error {
 					executorAddr = "http://" + string(executorRe.FindSubmatch(data)[1])
 				}
 
-				if name == "executor" && wardenTCPAddrRe.Match(data) {
-					wardenAddr = string(wardenTCPAddrRe.FindSubmatch(data)[1])
-					wardenNetwork = "tcp"
-				}
-
-				if name == "executor" && wardenUnixAddrRe.Match(data) {
-					wardenAddr = string(wardenUnixAddrRe.FindSubmatch(data)[1])
-					wardenNetwork = "unix"
+				if name == "executor" {
+					if wardenTCPAddrRe.Match(data) {
+						wardenAddr = string(wardenTCPAddrRe.FindSubmatch(data)[1])
+						wardenNetwork = "tcp"
+					} else if wardenUnixAddrRe.Match(data) {
+						wardenAddr = string(wardenUnixAddrRe.FindSubmatch(data)[1])
+						wardenNetwork = "unix"
+					}
 				}
 			}
 		}
