@@ -18,8 +18,8 @@ type ContainerInfo struct {
 	Info   warden.ContainerInfo
 }
 
-func WardenContainers(wardenAddr string, raw bool, out io.Writer) error {
-	client := client.New(connection.New("tcp", wardenAddr))
+func WardenContainers(wardenAddr string, wardenNetwork string, raw bool, out io.Writer) error {
+	client := client.New(connection.New(wardenNetwork, wardenAddr))
 	containers, err := client.Containers(nil)
 	if err != nil {
 		return err

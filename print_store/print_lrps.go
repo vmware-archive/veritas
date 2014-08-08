@@ -2,6 +2,7 @@ package print_store
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
@@ -32,11 +33,12 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 	if lrp.DesiredLRP.ProcessGuid != "" {
 		say.Println(
 			2,
-			"Desired: %d on %s (%d MB, %d MB)",
-			lrp.DesiredLRP.Instances,
-			lrp.DesiredLRP.Stack,
+			"Desired: %s on %s (%d MB, %d MB) %s",
+			say.Green("%d", lrp.DesiredLRP.Instances),
+			say.Green(lrp.DesiredLRP.Stack),
 			lrp.DesiredLRP.MemoryMB,
 			lrp.DesiredLRP.DiskMB,
+			say.Yellow(strings.Join(lrp.DesiredLRP.Routes, ",")),
 		)
 	} else {
 		say.Println(2, say.Red("UNDESIRED"))
@@ -45,9 +47,9 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 	orderedActualIndices := lrp.OrderedActualLRPIndices()
 	for _, index := range orderedActualIndices {
 		for i, actual := range lrp.ActualLRPsByIndex[index] {
-			prefix := "    "
+			prefix := "        "
 			if i == 0 {
-				prefix = fmt.Sprintf("%3s:", index)
+				prefix = fmt.Sprintf("%7s:", index)
 			}
 			say.Println(
 				2,

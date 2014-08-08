@@ -20,12 +20,14 @@ func Autodetect(out io.Writer) error {
 	vitalsAddrs := []string{}
 	executorAddr := ""
 	wardenAddr := ""
+	wardenNetwork := ""
 	etcdCluster := ""
 
 	debugRe := regexp.MustCompile(`debugAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	etcdRe := regexp.MustCompile(`etcdCluster=\"(.+)\"`)
 	executorRe := regexp.MustCompile(`listenAddr=(\d+.\d+.\d+.\d+:\d+)`)
-	wardenRe := regexp.MustCompile(`wardenAddr=(\d+.\d+.\d+.\d+:\d+)`)
+	wardenTCPAddrRe := regexp.MustCompile(`wardenAddr=(\d+.\d+.\d+.\d+:\d+)`)
+	wardenUnixAddrRe := regexp.MustCompile(`wardenAddr=([/\w+\.\d]+)`)
 
 	for _, job := range jobs {
 		jobDir := filepath.Join("/var/vcap/jobs", job.Name(), "bin")
@@ -53,14 +55,21 @@ func Autodetect(out io.Writer) error {
 
 				if etcdRe.Match(data) {
 					etcdCluster = string(etcdRe.FindSubmatch(data)[1])
+					etcdCluster = strings.Replace(etcdCluster, `"`, ``, -1)
 				}
 
 				if name == "executor" && executorRe.Match(data) {
 					executorAddr = "http://" + string(executorRe.FindSubmatch(data)[1])
 				}
 
-				if name == "executor" && wardenRe.Match(data) {
-					wardenAddr = string(wardenRe.FindSubmatch(data)[1])
+				if name == "executor" && wardenTCPAddrRe.Match(data) {
+					wardenAddr = string(wardenTCPAddrRe.FindSubmatch(data)[1])
+					wardenNetwork = "tcp"
+				}
+
+				if name == "executor" && wardenUnixAddrRe.Match(data) {
+					wardenAddr = string(wardenUnixAddrRe.FindSubmatch(data)[1])
+					wardenNetwork = "unix"
 				}
 			}
 		}
@@ -74,6 +83,7 @@ func Autodetect(out io.Writer) error {
 	}
 	if wardenAddr != "" {
 		say.Fprintln(out, 0, "export WARDEN_ADDR=%s", wardenAddr)
+		say.Fprintln(out, 0, "export WARDEN_NETWORK=%s", wardenNetwork)
 	}
 	if etcdCluster != "" {
 		say.Fprintln(out, 0, "export ETCD_CLUSTER=%s", etcdCluster)
