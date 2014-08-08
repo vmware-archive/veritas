@@ -24,11 +24,11 @@ var colorLookup = map[string]string{
 	"file-server":    "\x1b[34m",
 	"router":         "\x1b[32m",
 	"loggregator":    "\x1b[33m",
-	"stager":         "\x1b[99m",
+	"stager":         "\x1b[36m",
 	"warden-linux":   "\x1b[35m",
 }
 
-func Prettify(relativeTime string, data string,  hideNonLager bool, src io.Reader) error {
+func Prettify(relativeTime string, data string, hideNonLager bool, src io.Reader) error {
 	out := make(chan chug.Entry)
 	go chug.Chug(src, out)
 
@@ -37,7 +37,7 @@ func Prettify(relativeTime string, data string,  hideNonLager bool, src io.Reade
 	}
 
 	s := &stenographer{
-		Data: data,
+		Data:         data,
 		HideNonLager: hideNonLager,
 	}
 
@@ -71,6 +71,10 @@ type stenographer struct {
 }
 
 func (s *stenographer) PrettyPrint(entry chug.Entry) {
+	if isEmptyInigoLog(entry) {
+		return
+	}
+
 	if !s.Absolute && s.RelativeTime.IsZero() && entry.IsLager {
 		s.RelativeTime = entry.Log.Timestamp
 	}
