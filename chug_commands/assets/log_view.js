@@ -99,4 +99,24 @@ var LogView = Backbone.View.extend({
       }
     }
   },
+
+  scrollToTimestamp: function(timestamp) {
+    if (!this.visibleSubset) {
+      this.computeVisibleSubset()
+    }
+    if (this.visibleSubset.length == 0) {
+      return
+    }
+
+    for (i = 0 ; i < this.visibleSubset.length ; i++) {
+      idx = this.visibleSubset[i]
+      if (this.logs[idx].timestamp >= timestamp) {
+        var top = $("#log-"+idx).position().top
+        var height = $("#log-"+idx).height()
+        var midpoint = top + height/2 + this.$el.scrollTop()
+        this.$el.scrollTop(midpoint - this.$el.height()/2)
+        return
+      }
+    }
+  },
 })

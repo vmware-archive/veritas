@@ -10,7 +10,7 @@ var App = Backbone.View.extend({
     }, this)
     this.histogramView = new HistogramView({
       el: this.$("#histogram"),
-    })
+    }, this)
     this.setViewOptions()
     this.fetchLogs()
   },
@@ -47,6 +47,10 @@ var App = Backbone.View.extend({
 
   updateVisibleTimestampRange: function(top, bottom) {
     this.histogramView.updateVisibleTimestampRange(top, bottom)
+  },
+
+  scrollToTimestamp: function(timestamp) {
+    this.logView.scrollToTimestamp(timestamp)
   },
 
   filter: _.throttle(function() {
