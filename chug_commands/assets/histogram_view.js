@@ -14,9 +14,21 @@ var HistogramView = Backbone.View.extend({
 
   renderHistogram: function(logs) {
     var visibleIndices = []
+    this.minTime = 1e22
+    this.maxTime = 0
+    var errorTimestamps = []
     for (i = 0 ; i < logs.length ; i++) {
         if (logs[i].is_lager) {
             visibleIndices.push(i)
+            if (logs[i].timestamp > this.maxTime) {
+              this.maxTime = logs[i].timestamp
+            }
+            if (logs[i].timestamp < this.minTime) {
+              this.minTime = logs[i].timestamp
+            }
+            if (logs[i].log.level == "ERROR" || logs[i].log.level == "FATAL") {
+              errorTimestamps.push(logs[i].timestamp)
+            }
         }
     }
 
@@ -24,16 +36,14 @@ var HistogramView = Backbone.View.extend({
         return
     }
 
-    var firstIndex = visibleIndices[0]
-    var lastIndex = visibleIndices[visibleIndices.length - 1]
-    this.minTime = logs[firstIndex].log.timestamp
-    this.maxTime = logs[lastIndex].log.timestamp
     this.dt = (this.maxTime - this.minTime) / this.bins
 
     var counts = this.binUp(logs, visibleIndices)
 
+
     this.largest = _.max(counts)
     this.renderBins(counts, "base")
+    this.renderErrors(errorTimestamps)
     this.$el.append('<div id="visible-range-top">')
     this.$el.append('<div id="visible-range-bottom">')
     this.$el.append('<div id="histogram-hover">')
@@ -41,7 +51,7 @@ var HistogramView = Backbone.View.extend({
 
   binUp: function(logs, visibleIndices) {
     var counts = []
-    for (i = 0 ; i < this.bins ; i++) {
+    for (i = 0 ; i <= this.bins ; i++) {
         counts[i] = 0
     }
 
@@ -68,6 +78,16 @@ var HistogramView = Backbone.View.extend({
             "height": (height*100) + "%",
         })
         this.$el.append(bin)
+    }
+  },
+
+  renderErrors: function(errorTimestamps) {
+    for (i = 0 ; i < errorTimestamps.length ; i++) {
+      var errorLine = $('<div class="error-line">')
+      errorLine.css({
+        "top": this.yPercentageForTimestamp(errorTimestamps[i]) + "%",
+      })
+      this.$el.append(errorLine)
     }
   },
 

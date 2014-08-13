@@ -67,40 +67,31 @@ body {
     background-color: #557;
 }
 
+#histogram .error-line {
+    position:absolute;
+    z-index:1;
+    background-color: rgba(255,100,100,1.0);
+    left:0;
+    right:0;
+    height:1px;
+    box-shadow: 0 0 1px rgb(255,100,100);
+}
+
 #histogram .filter {
     position:absolute;
     background-color: #cce;
-    z-index:1;
+    z-index:2;
 }
 
 #histogram .highlight {
     position:absolute;
     background-color: #ff3;
-    z-index:2;
-}
-
-#histogram-hover {
-    position:absolute;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    z-index: 4;
-}
-
-#histogram-hover-time {
-    position:absolute;
-    left:100%;
-    background-color: rgba(0,0,0,0.7);
-    color: #fff;
-    z-index:5;
-    width:250px;
-    -webkit-box-sizing: border-box;
+    z-index:3;
 }
 
 #visible-range-top {
     position:absolute;
-    z-index:3;
+    z-index:4;
     border-bottom:2px solid #77a;
     background-color: rgba(0,0,0,0.3);
     top:0;
@@ -110,13 +101,33 @@ body {
 
 #visible-range-bottom {
     position:absolute;
-    z-index:3;
+    z-index:4;
     border-top:2px solid #99b;
     background-color: rgba(0,0,0,0.3);
     left:0;
     right:0;
     bottom:0;
 }
+
+#histogram-hover {
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index: 5;
+}
+
+#histogram-hover-time {
+    position:absolute;
+    left:100%;
+    background-color: rgba(0,0,0,0.7);
+    color: #fff;
+    z-index:6;
+    width:250px;
+    -webkit-box-sizing: border-box;
+}
+
 
 /* log-view */
 #log-view {
