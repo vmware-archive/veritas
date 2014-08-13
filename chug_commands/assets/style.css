@@ -1,0 +1,274 @@
+body {
+    margin:0;
+    font-size: 14px;
+    font-family: "helveticaneue-light";
+    background-color: #f9f9f9;
+    color:#333;
+}
+
+#app {
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+
+/* options */
+#options {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:36px;
+    line-height: 36px;
+    background-color: rgba(250,250,250,0.95);
+    box-shadow: 0 0 8px rgba(250,250,250,0.95);
+    -webkit-box-sizing: border-box;
+    z-index:1;
+}
+
+#options label {
+    margin:0 5px;
+}
+
+#options input[type="text"] {
+    margin: 0 5px;
+    width:400px;
+}
+
+/* histogram */
+#filler {
+    position: absolute;
+    top:0px;
+    left:0;
+    width:100px;
+    bottom:0;
+    background-color:#222;
+    -webkit-box-sizing: border-box;
+}
+
+#histogram {
+    position: absolute;
+    top:40px;
+    left:6px;
+    width:94px;
+    bottom:0;
+    background-color:#333;
+    -webkit-box-sizing: border-box;
+}
+
+#histogram .base {
+    position: absolute;
+    background-color: #779;
+}
+
+#histogram.filtered .base {
+    background-color: #557;
+}
+
+#histogram .filter {
+    position:absolute;
+    background-color: #bbd;
+}
+
+/* log-view */
+#log-view {
+    position: absolute;
+    top:0;
+    left:100px;
+    right:0;
+    bottom:0;
+    padding-top: 40px;
+    padding-left: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-box-sizing: border-box;
+
+    background-color: #222;
+    font-family: menlo;
+    color:#eee;
+}
+
+#log-view.show-raw.filtered .raw-log, #log-view.filtered .lager-log {
+    display: none;
+}
+
+#log-view.show-raw.filtered .raw-log.show, #log-view.filtered .lager-log.show {
+    display: block;
+}
+
+/* raw logs */
+#log-view .raw-log {
+    display: none;
+}
+
+#log-view.show-raw .raw-log {
+    display: block;
+    margin-top:4px;
+    margin-bottom:4px;
+    color:#999;
+}
+
+#log-view .raw-log .message {
+    display: inline-block;
+    max-width: 1000px;
+    padding-left: 264px;
+}
+
+/* lager logs */
+#log-view .lager-log {
+    margin-top:4px;
+    margin-bottom:4px;
+}
+
+/* absolute timestamps */
+#log-view .absolute-timestamp {
+    display: none;
+}
+
+#log-view.show-absolute-time .absolute-timestamp {
+    display: inline-block;
+    width: 160px;
+    vertical-align: top
+}
+
+#log-view .raw-log .absolute-timestamp {
+    font-style: italic;
+}
+
+/* relative timestamps */
+#log-view .relative-timestamp {
+    display: none;
+}
+
+#log-view.show-relative-time .relative-timestamp {
+    display: inline-block;
+    width: 90px;
+    vertical-align: top
+}
+
+#log-view .raw-log .relative-timestamp {
+    font-style: italic;
+}
+
+/* sources */
+#log-view .source {
+    display: inline-block;
+    width: 120px;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+/* log-levels */
+#log-view .level {
+    display: inline-block;
+    width: 65px;
+    vertical-align: top
+}
+
+/* sessions */
+#log-view .session {
+    display: inline-block;
+    width: 80px;
+    vertical-align: top
+}
+
+/* content */
+#log-view .content {
+    display: inline-block;
+    vertical-align: top;
+    max-width: 1000px;
+}
+
+/* message */
+#log-view .lager-log .message {
+    font-weight: bold
+}
+
+/* data */
+#log-view .data {
+    display: none;
+}
+
+#log-view.show-data .data {
+    display: block;
+}
+
+/* colors */
+#log-view .level-debug  {
+    opacity:0.8;
+}
+
+#log-view .level-debug .level {
+    color: #999;
+}
+
+#log-view .level-error .level, #log-view .level-fatal .level, #log-view .error, #log-view .trace {
+    color: #f00;
+    font-weight: bold;
+}
+
+#log-view .session {
+    color: #999;
+}
+
+#log-view .data {
+    color: #bbb;
+    font-size: 0.9em;
+    margin-top: 2px;
+    margin-left: 4px;
+}
+
+#log-view .source-warden-linux {
+    color: #ffcfa7;
+}
+
+#log-view .source-executor {
+    color: #a0a5ff;
+}      
+
+#log-view .source-rep {
+    color: #7cd293;
+}           
+
+#log-view .source-converger {
+    color: #fff69b;
+}     
+
+#log-view .source-auctioneer {
+    color: #f98ef9;
+}    
+
+#log-view .source-route-emitter {
+    color: #7ef99d;
+}
+
+#log-view .source-tps {
+    color: #7685ce;
+}           
+
+#log-view .source-stager {
+    color: #ce8b91;
+}        
+
+#log-view .source-nsync-listener {
+    color: #c3be74;
+}
+
+#log-view .source-nsync-bulker {
+    color: #b5b16d;
+}
+
+#log-view .source-file-server {
+    color: #d6bec5;
+}   
+
+#log-view .source-router {
+    color: #bdd6b5;
+}        
+
+#log-view .source-loggregator {
+    color: #d6c4b3;
+}   
+

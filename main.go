@@ -47,6 +47,7 @@ func main() {
 			Description: "Commands to prettify lager logs",
 			Commands: []Command{
 				ChugCommand(),
+				ServeChugCommand(),
 			},
 		},
 		CommandGroup{

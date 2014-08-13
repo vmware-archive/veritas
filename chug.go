@@ -39,3 +39,34 @@ func ChugCommand() Command {
 		},
 	}
 }
+
+func ServeChugCommand() Command {
+	var (
+		addr string
+		dev  bool
+	)
+
+	flagSet := flag.NewFlagSet("chug-serve", flag.ExitOnError)
+	flagSet.StringVar(&addr, "addr", ":8080", "address to serve chug")
+	flagSet.BoolVar(&dev, "dev", false, "dev mode")
+
+	return Command{
+		Name:        "chug-serve",
+		Description: "[file] - Serve up pretty lager logs",
+		FlagSet:     flagSet,
+		Run: func(args []string) {
+			if len(args) == 0 {
+				err := chug_commands.ServeLogs(addr, dev, os.Stdin)
+				ExitIfError("Failed to serve chug", err)
+			} else {
+				f, err := os.Open(args[0])
+				ExitIfError("Could not open file", err)
+
+				err = chug_commands.ServeLogs(addr, dev, f)
+				ExitIfError("Failed to serve chug", err)
+
+				f.Close()
+			}
+		},
+	}
+}
