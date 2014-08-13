@@ -34,7 +34,7 @@ body {
 
 #options input[type="text"] {
     margin: 0 5px;
-    width:400px;
+    width:300px;
 }
 
 /* histogram */
@@ -69,7 +69,14 @@ body {
 
 #histogram .filter {
     position:absolute;
-    background-color: #ddf;
+    background-color: #cce;
+    z-index:1;
+}
+
+#histogram .highlight {
+    position:absolute;
+    background-color: #ff3;
+    z-index:2;
 }
 
 #histogram-hover {
@@ -78,7 +85,7 @@ body {
     bottom:0;
     left:0;
     right:0;
-    z-index: 3;
+    z-index: 4;
 }
 
 #histogram-hover-time {
@@ -86,14 +93,14 @@ body {
     left:100%;
     background-color: rgba(0,0,0,0.7);
     color: #fff;
-    z-index:4;
+    z-index:5;
     width:250px;
     -webkit-box-sizing: border-box;
 }
 
 #visible-range-top {
     position:absolute;
-    z-index:2;
+    z-index:3;
     border-bottom:2px solid #77a;
     background-color: rgba(0,0,0,0.3);
     top:0;
@@ -103,7 +110,7 @@ body {
 
 #visible-range-bottom {
     position:absolute;
-    z-index:2;
+    z-index:3;
     border-top:2px solid #99b;
     background-color: rgba(0,0,0,0.3);
     left:0;
@@ -137,6 +144,12 @@ body {
     display: block;
 }
 
+#log-view .highlight {
+    background: -webkit-gradient(linear, left top, right top, color-stop(10%,rgba(255,255,200,0.3)), color-stop(100%,rgba(255,255,200,0)));
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
 /* raw logs */
 #log-view .raw-log {
     display: none;
@@ -146,6 +159,7 @@ body {
     display: block;
     margin-top:4px;
     margin-bottom:4px;
+    padding-left:5px;
     color:#999;
 }
 
@@ -159,6 +173,7 @@ body {
 #log-view .lager-log {
     margin-top:4px;
     margin-bottom:4px;
+    padding-left:5px;
 }
 
 /* absolute timestamps */

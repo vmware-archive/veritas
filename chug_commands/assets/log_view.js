@@ -49,6 +49,17 @@ var LogView = Backbone.View.extend({
     this.computeTimestampsAtEdgesAndNotifyDelegate()
   },
 
+  clearHighlight: function() {
+    this.$(".highlight").removeClass("highlight")
+  },
+
+  highlightLogs: function(highlightedIndices) {
+    for (i = 0 ; i < highlightedIndices.length ; i++) {
+        this.$("#log-"+highlightedIndices[i]).addClass("highlight")
+    }
+    this.computeTimestampsAtEdgesAndNotifyDelegate()
+  },
+
   scroll: function() {
     this.computeTimestampsAtEdgesAndNotifyDelegate()
   },

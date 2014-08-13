@@ -4,7 +4,8 @@ var HistogramView = Backbone.View.extend({
     "mouseenter #histogram-hover": "addTooltip",
     "mousemove #histogram-hover": "updateTooltip",
     "mouseleave #histogram-hover": "removeTooltip",
-    "click #histogram-hover": "click",
+    "mousedown #histogram-hover": "enableScrolling",
+    "mouseup #histogram-hover": "disableScrolling",
    },
 
    initialize: function(options, delegate) {
@@ -70,15 +71,11 @@ var HistogramView = Backbone.View.extend({
     }
   },
 
-  clearFilter: function() {
-    this.$(".filter").remove()
-  },
-
-  filterLogs: function(logs, inputVisibleIndices) {
+  addFilteredBins: function(logs, indices, klass) {
     var visibleIndices = []
-    for (i = 0 ; i < inputVisibleIndices.length ; i++) {
-        if (logs[inputVisibleIndices[i]].is_lager) {
-            visibleIndices.push(inputVisibleIndices[i])
+    for (i = 0 ; i < indices.length ; i++) {
+        if (logs[indices[i]].is_lager) {
+            visibleIndices.push(indices[i])
         }
     }
 
@@ -87,8 +84,29 @@ var HistogramView = Backbone.View.extend({
     }
 
     var counts = this.binUp(logs, visibleIndices)
-    this.renderBins(counts, "filter")
+    this.renderBins(counts, klass)
   },
+
+  clearFilter: function() {
+    this.$(".filter").remove()
+    this.$el.removeClass("filtered")
+  },
+
+  filterLogs: function(logs, visibleIndices) {
+    this.addFilteredBins(logs, visibleIndices, "filter")
+    this.$el.addClass("filtered")
+  },
+
+  clearHighlight: function() {
+    this.$(".highlight").remove()
+    this.$el.removeClass("highlighted")
+  },
+
+  highlightLogs: function(logs, highlightedIndices) {
+    this.addFilteredBins(logs, highlightedIndices, "highlight")
+    this.$el.addClass("highlighted")
+  },
+
 
   yPercentageForTimestamp: function(timestamp) {
     if (timestamp == undefined) {
@@ -130,13 +148,26 @@ var HistogramView = Backbone.View.extend({
     })
     var timestamp = this.timestampFromYCoordinate(e.offsetY)
     this.$("#histogram-hover-time").text(formatRelativeTimestamp(timestamp - this.minTime) + " | " + formatUnixTimestamp(timestamp))
+    if (this.scrollingEnabled == true) {
+      this.tellDelegateToScrollTo(e.offsetY)
+    }
   },
 
   removeTooltip: function(e) {
     this.$("#histogram-hover-time").remove()
+    this.scrollingEnabled = false
   },
 
-  click: function(e) {
-    this.delegate.scrollToTimestamp(this.timestampFromYCoordinate(e.offsetY))
+  enableScrolling: function(e) {
+    this.scrollingEnabled = true
+    this.tellDelegateToScrollTo(e.offsetY)
   },
+
+  disableScrolling: function(e) {
+    this.scrollingEnabled = false
+  },
+
+  tellDelegateToScrollTo: function(offsetY) {
+    this.delegate.scrollToTimestamp(this.timestampFromYCoordinate(offsetY))
+  }
 })
