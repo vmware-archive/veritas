@@ -234,6 +234,39 @@ body {
     display: block;
 }
 
+#log-view .data .big-data  {
+    display: none;
+}
+
+#log-view.show-big-data .data .big-data  {
+    display: block;
+}
+
+#log-view.show-big-data .data .small-data  {
+    display: none;
+}
+
+
+#log-view .data {
+    color: #bbb;
+    font-size: 0.9em;
+    margin-top: 2px;
+    margin-left: 4px;
+}
+
+#log-view .data dl {
+    margin:0;
+}
+
+#log-view .data dd {
+    margin:0;
+    color: #999;
+}
+
+#log-view .data dd pre {
+    margin:0;
+}
+
 /* colors */
 #log-view .level-debug  {
     opacity:0.8;
@@ -252,12 +285,6 @@ body {
     color: #999;
 }
 
-#log-view .data {
-    color: #bbb;
-    font-size: 0.9em;
-    margin-top: 2px;
-    margin-left: 4px;
-}
 
 #log-view .source-warden-linux {
     color: #ffcfa7;
@@ -265,19 +292,19 @@ body {
 
 #log-view .source-executor {
     color: #a0a5ff;
-}      
+}
 
 #log-view .source-rep {
     color: #7cd293;
-}           
+}
 
 #log-view .source-converger {
     color: #fff69b;
-}     
+}
 
 #log-view .source-auctioneer {
     color: #f98ef9;
-}    
+}
 
 #log-view .source-route-emitter {
     color: #7ef99d;
@@ -285,11 +312,11 @@ body {
 
 #log-view .source-tps {
     color: #7685ce;
-}           
+}
 
 #log-view .source-stager {
     color: #ce8b91;
-}        
+}
 
 #log-view .source-nsync-listener {
     color: #c3be74;
@@ -301,13 +328,13 @@ body {
 
 #log-view .source-file-server {
     color: #d6bec5;
-}   
+}
 
 #log-view .source-router {
     color: #bdd6b5;
-}        
+}
 
 #log-view .source-loggregator {
     color: #d6c4b3;
-}   
+}
 

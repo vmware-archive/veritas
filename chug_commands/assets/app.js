@@ -19,6 +19,13 @@ var App = Backbone.View.extend({
     this.logView.setShow("show-absolute-time", this.$('#show-absolute-time').prop('checked'))
     this.logView.setShow("show-relative-time", this.$('#show-relative-time').prop('checked'))
     this.logView.setShow("show-data", this.$('#show-data').prop('checked'))
+    if (this.$('#show-data').prop('checked')) {
+      this.$('#show-big-data').removeAttr("disabled");
+      this.logView.setShow("show-big-data", this.$('#show-big-data').prop('checked'))
+    } else {
+      this.logView.setShow("show-big-data", false)
+      this.$('#show-big-data').attr("disabled", true);
+    }
     this.logView.setShow("show-raw", this.$('#show-raw').prop('checked'))
   },
 
@@ -73,7 +80,7 @@ var App = Backbone.View.extend({
         for (var i = 0 ; i < regularExpressions.length ; i++) {
             if (!regularExpressions[i].test(log.searchText)) {
                 return
-            }            
+            }
         }
         visibleIndices.push(index)
     })

@@ -6,6 +6,7 @@ var LogView = Backbone.View.extend({
   initialize: function(options, delegate) {
     this.showRaw = undefined
     this.delegate = delegate
+    this.scrolledTimestamp = 0
   },
 
   renderLogs: function(logs) {
@@ -26,13 +27,13 @@ var LogView = Backbone.View.extend({
     }
     this.showRaw = !!enabled
     if (this.logs) {
-      this.computeTimestampsAtEdgesAndNotifyDelegate()
+      this.scrollToTimestamp(this.scrolledTimestamp)
     }
   },
 
   clearFilter: function() {
     this.$el.removeClass("filtered")
-    this.$(".show").removeClass("show")        
+    this.$(".show").removeClass("show")
     this.visibleSubset = undefined
     this.filteredIndices = undefined
     this.computeTimestampsAtEdgesAndNotifyDelegate()
@@ -61,9 +62,10 @@ var LogView = Backbone.View.extend({
     if (this.visibleSubset.length == 0) {
       return
     }
-    var idTop = this.visibleSubset[this.findEntryNear(top, 0, this.visibleSubset.length)]
-    var idBottom = this.visibleSubset[this.findEntryNear(bottom, 0, this.visibleSubset.length)]
-    this.delegate.updateVisibleTimestampRange(this.logs[idTop].timestamp, this.logs[idBottom].timestamp)
+    var idxTop = this.findEntryNear(top, 0, this.visibleSubset.length)
+    var idxBottom = this.findEntryNear(bottom, 0, this.visibleSubset.length)
+    this.scrolledTimestamp = this.logs[this.visibleSubset[Math.floor((idxTop + idxBottom)/2)]].timestamp
+    this.delegate.updateVisibleTimestampRange(this.logs[this.visibleSubset[idxTop]].timestamp, this.logs[this.visibleSubset[idxBottom]].timestamp)
   },
 
   findEntryNear: function(offset, a, b) {
@@ -101,6 +103,7 @@ var LogView = Backbone.View.extend({
   },
 
   scrollToTimestamp: function(timestamp) {
+    this.scrolledTimestamp = timestamp
     if (!this.visibleSubset) {
       this.computeVisibleSubset()
     }

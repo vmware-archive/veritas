@@ -36,7 +36,7 @@ LogRenderer.prototype = {
       relativeTimestamp = '<div class="relative-timestamp">' + formatRelativeTimestamp(log.log.timestamp - this.firstTimestamp) + '</div>'
       log.timestamp = log.log.timestamp
     } else {
-      if (!this.mostRecentTimestamp) {      
+      if (!this.mostRecentTimestamp) {
         absoluteTimestamp = '<div class="absolute-timestamp unknown">???</div>'
         relativeTimestamp = '<div class="relative-timestamp unknown">???</div>'
         log.timestamp = undefined
@@ -51,9 +51,9 @@ LogRenderer.prototype = {
   },
 
   renderLager: function(log) {
-    var sourceDom = '<div class="source">' + log.log.source + '</div>' 
-    var logLevelDom = '<div class="level">[' + log.log.level + ']</div>'    
-    var sessionDom = '<div class="session">' + log.log.session + '</div>'    
+    var sourceDom = '<div class="source">' + log.log.source + '</div>'
+    var logLevelDom = '<div class="level">[' + log.log.level + ']</div>'
+    var sessionDom = '<div class="session">' + log.log.session + '</div>'
     var messageDom = '<div class="message">' + log.log.message + '</div>'
     var errorDom = ""
     var traceDom = ""
@@ -76,14 +76,23 @@ LogRenderer.prototype = {
   },
 
   trimData: function(data) {
+      var keys = _.keys(data).sort()
+      var dataDom = '<dl class="big-data">'
+      _.each(keys, function(key) {
+        dataDom += "<dt>"+key+":</dt>"
+        var prettyJSON = JSON.stringify(data[key], null, "  ").slice(1,-1).replace(/"/g, '')
+        dataDom += "<dd><pre>"+prettyJSON+"</pre></dd>"
+      })
+      dataDom += "</dl>"
+
       shortData = JSON.stringify(data)
       shortData = shortData.slice(1,-1).replace(/"/g, '').replace(/,/g, ", ")
-      return shortData
+      return '<div class="small-data">' + shortData + '</div>' + dataDom
   },
 
   lagerSearchText: function(log) {
     var searchText = "source:"+log.log.source
-    searchText += " session:"+log.log.session 
+    searchText += " session:"+log.log.session
     searchText += " message:"+log.log.message
     if (log.log.error) {
       searchText += " error:"+log.log.error
