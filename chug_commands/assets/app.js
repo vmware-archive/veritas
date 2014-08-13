@@ -7,7 +7,7 @@ var App = Backbone.View.extend({
   initialize: function() {
     this.logView = new LogView({
         el: this.$("#log-view"),
-    })
+    }, this)
     this.histogramView = new HistogramView({
       el: this.$("#histogram"),
     })
@@ -16,10 +16,10 @@ var App = Backbone.View.extend({
   },
 
   setViewOptions: function() {
-    this.$('#log-view').toggleClass('show-absolute-time', this.$('#show-absolute-time').prop('checked'))    
-    this.$('#log-view').toggleClass('show-relative-time', this.$('#show-relative-time').prop('checked'))    
-    this.$('#log-view').toggleClass('show-data', this.$('#show-data').prop('checked'))    
-    this.$('#log-view').toggleClass('show-raw', this.$('#show-raw').prop('checked'))    
+    this.logView.setShow("show-absolute-time", this.$('#show-absolute-time').prop('checked'))
+    this.logView.setShow("show-relative-time", this.$('#show-relative-time').prop('checked'))
+    this.logView.setShow("show-data", this.$('#show-data').prop('checked'))
+    this.logView.setShow("show-raw", this.$('#show-raw').prop('checked'))
   },
 
   fetchLogs: function() {
@@ -27,8 +27,8 @@ var App = Backbone.View.extend({
     $.get("/data", function(json) {
       that.logs = JSON.parse(json)
       that.prerenderLogs()
-      that.renderLogs()
       that.renderHistogram()
+      that.renderLogs()
     })
   },
 
@@ -45,9 +45,12 @@ var App = Backbone.View.extend({
     this.histogramView.renderHistogram(this.logs)
   },
 
+  updateVisibleTimestampRange: function(top, bottom) {
+    this.histogramView.updateVisibleTimestampRange(top, bottom)
+  },
+
   filter: _.throttle(function() {
     var filter = this.$("#filter").val()
-    this.$("#log-view").toggleClass('filtered', !!filter)
     this.$("#histogram").toggleClass('filtered', !!filter)
     this.logView.clearFilter()
     this.histogramView.clearFilter()

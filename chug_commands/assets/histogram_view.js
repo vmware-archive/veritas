@@ -23,6 +23,8 @@ var HistogramView = Backbone.View.extend({
 
     this.largest = _.max(counts)
     this.renderBins(counts, "base")
+    this.$el.append('<div id="visible-range-top">')
+    this.$el.append('<div id="visible-range-bottom">')
   },
 
   binUp: function(logs, visibleIndices) {
@@ -75,5 +77,23 @@ var HistogramView = Backbone.View.extend({
 
     var counts = this.binUp(logs, visibleIndices)
     this.renderBins(counts, "filter")
+  },
+
+  yPercentageForTimestamp: function(timestamp) {
+    if (timestamp == undefined) {
+        return 0
+    }
+    return ((timestamp - this.minTime) / (this.maxTime - this.minTime)) * 100.0
+  },
+
+  updateVisibleTimestampRange: function(top, bottom) {
+    var yTop = this.yPercentageForTimestamp(top)
+    var yBottom = this.yPercentageForTimestamp(bottom)
+    this.$("#visible-range-top").css({
+        "height": yTop + "%",
+    })
+    this.$("#visible-range-bottom").css({
+        "top": yBottom + "%",
+    })
   },
 })

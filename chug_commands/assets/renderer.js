@@ -34,14 +34,16 @@ LogRenderer.prototype = {
       this.mostRecentTimestamp = log.log.timestamp
       absoluteTimestamp = '<div class="absolute-timestamp">' + this.formatUnixTimestamp(log.log.timestamp) + '</div>'
       relativeTimestamp = '<div class="relative-timestamp">' + this.formatRelativeTimestamp(log.log.timestamp - this.firstTimestamp) + '</div>'
-
+      log.timestamp = log.log.timestamp
     } else {
       if (!this.mostRecentTimestamp) {      
         absoluteTimestamp = '<div class="absolute-timestamp unknown">???</div>'
         relativeTimestamp = '<div class="relative-timestamp unknown">???</div>'
+        log.timestamp = undefined
       } else {
         absoluteTimestamp = '<div class="absolute-timestamp">' + this.formatUnixTimestamp(this.mostRecentTimestamp) + '</div>'
         relativeTimestamp = '<div class="relative-timestamp">' + this.formatRelativeTimestamp(this.mostRecentTimestamp - this.firstTimestamp) + '</div>'
+        log.timestamp = this.mostRecentTimestamp
       }
     }
 

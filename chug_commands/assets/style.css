@@ -69,7 +69,27 @@ body {
 
 #histogram .filter {
     position:absolute;
-    background-color: #bbd;
+    background-color: #ddf;
+}
+
+#visible-range-top {
+    position:absolute;
+    z-index:2;
+    border-bottom:2px solid #77a;
+    background-color: rgba(0,0,0,0.3);
+    top:0;
+    left:0;
+    right:0;
+}
+
+#visible-range-bottom {
+    position:absolute;
+    z-index:2;
+    border-top:2px solid #99b;
+    background-color: rgba(0,0,0,0.3);
+    left:0;
+    right:0;
+    bottom:0;
 }
 
 /* log-view */
