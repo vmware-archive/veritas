@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io"
 	"os"
 
 	"github.com/cloudfoundry-incubator/veritas/chug_commands"
@@ -9,8 +10,8 @@ import (
 
 func ChugCommand() Command {
 	var (
-		rel  string
-		data string
+		rel          string
+		data         string
 		hideNonLager bool
 	)
 
@@ -21,20 +22,22 @@ func ChugCommand() Command {
 
 	return Command{
 		Name:        "chug",
-		Description: "[file] - Prettify lager logs",
+		Description: "[file1, file2,...] - Prettify lager logs",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
 			if len(args) == 0 {
 				err := chug_commands.Prettify(rel, data, hideNonLager, os.Stdin)
 				ExitIfError("Failed to chug", err)
 			} else {
-				f, err := os.Open(args[0])
-				ExitIfError("Could not open file", err)
+				readers := []io.Reader{}
+				for _, arg := range args {
+					f, err := os.Open(args[0])
+					ExitIfError("Could not open file", err)
+					readers = append(readers, f)
+				}
 
-				err = chug_commands.Prettify(rel, data, hideNonLager, f)
+				err = chug_commands.Prettify(rel, data, hideNonLager, readers...)
 				ExitIfError("Failed to chug", err)
-
-				f.Close()
 			}
 		},
 	}
