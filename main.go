@@ -74,6 +74,13 @@ func main() {
 			},
 		},
 		CommandGroup{
+			Name:        "CF",
+			Description: "Commands that augment cf",
+			Commands: []Command{
+				PushDockerAppCommand(),
+			},
+		},
+		CommandGroup{
 			Name:        "DesiredLRPS " + say.Red("[DANGER]"),
 			Description: "Commands to add and remove DesiredLRPs",
 			Commands: []Command{
