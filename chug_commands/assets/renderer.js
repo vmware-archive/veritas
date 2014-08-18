@@ -12,17 +12,24 @@ LogRenderer.prototype = {
 
   prerenderLog: function(index, log) {
     var cssClass = log.is_lager ? "lager-log source-" + log.log.source.replace(/\./g, "-") + " level-" + log.log.level : "raw-log"
-    var dom = '<div id="log-' + index + '" class="' + cssClass + '">'
-    dom += this.renderTimestamp(log)
+    var dom = this.renderTimestamp(log)
     if (log.is_lager) {
-      dom += this.renderLager(log)
-      log.searchText = this.lagerSearchText(log)
+      if (log.log.source == "ginkgo") {
+        if (log.log.message.match(/spec\.start/)) {
+          cssClass += " ginkgo-start"
+        } else {
+          cssClass += " ginkgo-end"
+        }
+        dom += this.renderGinkgo(log)
+      } else {
+        dom += this.renderLager(log)
+      }
+      log.searchText = this.lagerSearchText(log)        
     } else {
       dom += this.renderRaw(log)
       log.searchText = this.rawSearchText(log)
     }
-    dom += "</div>"
-    log.dom = dom
+    log.dom = '<div id="log-' + index + '" class="' + cssClass + '">' + dom + '</div>'
   },
 
   renderTimestamp: function(log) {
@@ -69,6 +76,31 @@ LogRenderer.prototype = {
     }
 
     return sourceDom + logLevelDom + sessionDom + '<div class="content">' + messageDom + errorDom + traceDom + dataDom + '</div>'
+  },
+
+  renderGinkgo: function(log) {
+    var sessionDom = '<div class="session">' + log.log.session + '</div>'
+    var name = ""
+    var nameComponents = log.log.data.summary.name
+    for (var i = 1 ; i < nameComponents.length ; i++) {
+      var klass = (i == nameComponents.length - 1 ? "it" : (i%2 ? "odd" : "even"))
+      name += '<span class="ginkgo-name-' + klass + '">' + nameComponents[i] + ' </span>'
+    }
+    var messageDom = '<div class="message">' + log.log.message + ": " + name + '</div>'
+    var errorDom = ""
+    var dataDom = ""
+    if (log.log.error) {
+      errorDom = '<div class="error"><pre class="ginkgo-error">' + log.log.error + '</pre></div>'
+    }
+
+    dataDom = '<div class="data">' 
+    dataDom += '<div>'+log.log.data.summary.location+'</div>'
+    if (log.log.data.summary.run_time) {
+      dataDom += '<div>'+formatRelativeTimestamp(log.log.data.summary.run_time)+'</div>'
+    }
+    dataDom += '</div>'
+
+    return sessionDom + '<div class="content">' + messageDom + errorDom + dataDom + '</div>'
   },
 
   renderRaw: function(log) {

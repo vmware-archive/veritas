@@ -364,3 +364,40 @@ body {
     color: #d6c4b3;
 }
 
+/* ginkgo */
+#log-view .ginkgo-start {
+    background: -webkit-gradient(linear, left top, right top, color-stop(10%,rgba(100,100,255,0.3)), color-stop(100%,rgba(100,100,255,0)));
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
+#log-view .level-INFO.ginkgo-end {
+    background: -webkit-gradient(linear, left top, right top, color-stop(10%,rgba(100,255,100,0.3)), color-stop(100%,rgba(100,255,100,0)));
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
+#log-view .level-ERROR.ginkgo-end {
+    background: -webkit-gradient(linear, left top, right top, color-stop(10%,rgba(255,100,100,0.3)), color-stop(100%,rgba(255,100,100,0)));
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
+#log-view .ginkgo-name-odd {
+    color:#999;
+}
+
+#log-view .ginkgo-name-even {
+    color:#ddd;
+}
+
+#log-view .ginkgo-name-it {
+    color:#fff;
+}
+
+#log-view .ginkgo-error {
+    margin: 0;
+    margin-left:20px;
+    margin-top:4px;
+    margin-bottom:4px;
+}
