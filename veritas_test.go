@@ -27,8 +27,9 @@ var _ = Describe("Veritas", func() {
 		store = bbs.NewBBS(etcdRunner.Adapter(), timeprovider.NewTimeProvider(), lagertest.NewTestLogger("veritas"))
 
 		err = store.DesireTask(models.Task{
-			Guid:  "Task-Guid",
-			Stack: "pancakes",
+			Guid:   "Task-Guid",
+			Stack:  "pancakes",
+			Domain: "veritas",
 			Actions: []models.ExecutorAction{
 				{models.RunAction{Path: "foo"}},
 			},
@@ -38,6 +39,7 @@ var _ = Describe("Veritas", func() {
 		err = store.DesireLRP(models.DesiredLRP{
 			ProcessGuid: "Desired-Process-Guid",
 			Stack:       "pancakes",
+			Domain:      "veritas",
 			Actions: []models.ExecutorAction{
 				{models.RunAction{Path: "foo"}},
 			},
