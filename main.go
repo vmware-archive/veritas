@@ -40,6 +40,7 @@ func main() {
 				DumpStoreCommand(),
 				FetchStoreCommand(),
 				PrintStoreCommand(),
+				DistributionCommand(),
 			},
 		},
 		CommandGroup{
