@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/cloudfoundry-incubator/runtime-schema/models"
+
 	"github.com/cloudfoundry-incubator/veritas/say"
 	"github.com/cloudfoundry-incubator/veritas/veritas_models"
 )
@@ -37,7 +39,8 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	sort.Strings(executorIDs)
 
 	nTasks := map[string]int{}
-	nLRPs := map[string]int{}
+	nLRPsStarting := map[string]int{}
+	nLRPsRunning := map[string]int{}
 
 	for _, tasks := range dump.Tasks {
 		for _, task := range tasks {
@@ -48,7 +51,11 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	for _, lrp := range dump.LRPS {
 		for _, actuals := range lrp.ActualLRPsByIndex {
 			for _, actual := range actuals {
-				nLRPs[actual.ExecutorID]++
+				if actual.State == models.ActualLRPStateStarting {
+					nLRPsStarting[actual.ExecutorID]++
+				} else {
+					nLRPsRunning[actual.ExecutorID]++
+				}
 			}
 		}
 	}
@@ -56,12 +63,12 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	say.Println(0, "Distribution")
 	for _, executorID := range executorIDs {
 		numTasks := nTasks[executorID]
-		numLRPs := nLRPs[executorID]
+		numLRPs := nLRPsStarting[executorID] + nLRPsRunning[executorID]
 		var content string
 		if numTasks == 0 && numLRPs == 0 {
 			content = say.Red("Empty")
 		} else {
-			content = fmt.Sprintf("%s%s", say.Yellow(strings.Repeat("•", nTasks[executorID])), say.Green(strings.Repeat("•", nLRPs[executorID])))
+			content = fmt.Sprintf("%s%s", say.Yellow(strings.Repeat("•", nTasks[executorID])), say.Green(strings.Repeat("•", nLRPsRunning[executorID])), say.Gray(strings.Repeat("•", nLRPsStarting[executorID])))
 		}
 		say.Println(0, "%12s: %s", executorID, content)
 	}
