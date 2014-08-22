@@ -21,16 +21,12 @@ func PrintDistribution(tasks bool, lrps bool, clear bool, f io.Reader) error {
 		return err
 	}
 
-	if clear {
-		say.Clear()
-	}
-
-	printDistribution(dump, tasks, lrps)
+	printDistribution(dump, tasks, lrps, clear)
 
 	return nil
 }
 
-func printDistribution(dump veritas_models.StoreDump, includeTasks bool, includeLRPS bool) {
+func printDistribution(dump veritas_models.StoreDump, includeTasks bool, includeLRPS bool, clear bool) {
 	executorIDs := []string{}
 	for _, executorPresence := range dump.Services.Executors {
 		executorIDs = append(executorIDs, executorPresence.ExecutorID)
@@ -58,6 +54,10 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 				}
 			}
 		}
+	}
+
+	if clear {
+		say.Clear()
 	}
 
 	say.Println(0, "Distribution")
