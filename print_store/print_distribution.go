@@ -1,9 +1,11 @@
 package print_store
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"sort"
 	"strings"
 
@@ -56,10 +58,7 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		}
 	}
 
-	if clear {
-		say.Clear()
-	}
-
+	buffer := &bytes.Buffer{}
 	say.Println(0, "Distribution")
 	for _, executorID := range executorIDs {
 		numTasks := nTasks[executorID]
@@ -70,6 +69,11 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		} else {
 			content = fmt.Sprintf("%s%s", say.Yellow(strings.Repeat("•", nTasks[executorID])), say.Green(strings.Repeat("•", nLRPsRunning[executorID])), say.Gray(strings.Repeat("•", nLRPsStarting[executorID])))
 		}
-		say.Println(0, "%12s: %s", executorID, content)
+		say.Fprintln(buffer, 0, "%12s: %s", executorID, content)
 	}
+
+	if clear {
+		say.Clear()
+	}
+	buffer.WriteTo(os.Stdout)
 }
