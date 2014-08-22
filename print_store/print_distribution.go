@@ -67,7 +67,7 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		if numTasks == 0 && numLRPs == 0 {
 			content = say.Red("Empty")
 		} else {
-			content = fmt.Sprintf("%s%s", say.Yellow(strings.Repeat("•", nTasks[executorID])), say.Green(strings.Repeat("•", nLRPsRunning[executorID])), say.Gray(strings.Repeat("•", nLRPsStarting[executorID])))
+			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[executorID])), say.Green(strings.Repeat("•", nLRPsRunning[executorID])), say.Gray(strings.Repeat("•", nLRPsStarting[executorID])))
 		}
 		say.Fprintln(buffer, 0, "%12s: %s", executorID, content)
 	}
