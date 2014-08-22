@@ -59,7 +59,10 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	}
 
 	buffer := &bytes.Buffer{}
-	say.Println(0, "Distribution")
+	if clear {
+		say.Fclear(buffer)
+	}
+	say.Fprintln(buffer, 0, "Distribution")
 	for _, executorID := range executorIDs {
 		numTasks := nTasks[executorID]
 		numLRPs := nLRPsStarting[executorID] + nLRPsRunning[executorID]
@@ -72,8 +75,5 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		say.Fprintln(buffer, 0, "%12s: %s", executorID, content)
 	}
 
-	if clear {
-		say.Clear()
-	}
 	buffer.WriteTo(os.Stdout)
 }

@@ -162,6 +162,10 @@ func Clear() {
 	fmt.Print("\x1b[2J\x1b[;H")
 }
 
+func Fclear(w io.Writer) {
+	fmt.Fprint(w, "\x1b[2J\x1b[;H")
+}
+
 func Indent(indentation int, format string, args ...interface{}) string {
 	var text string
 
