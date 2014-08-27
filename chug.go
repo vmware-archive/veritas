@@ -47,7 +47,7 @@ func ServeChugCommand() Command {
 	)
 
 	flagSet := flag.NewFlagSet("chug-serve", flag.ExitOnError)
-	flagSet.StringVar(&addr, "addr", ":", "address to serve chug")
+	flagSet.StringVar(&addr, "addr", "127.0.0.1:0", "address to serve chug")
 	flagSet.BoolVar(&dev, "dev", false, "dev mode")
 
 	return Command{
