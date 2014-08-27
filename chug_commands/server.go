@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -88,8 +89,13 @@ func ServeLogs(addr string, dev bool, src io.Reader) error {
 		http.Redirect(w, r, "/assets/index.html", http.StatusTemporaryRedirect)
 	})
 
-	say.Println(0, say.Green("Serving up on http://localhost%s", addr))
-	return http.ListenAndServe(addr, nil)
+	listener, err := net.Listen("tcp", addr)
+	say.Println(0, say.Green("Serving up on http://127.0.0.1:%d", listener.Addr().(*net.TCPAddr).Port))
+	if err != nil {
+		return err
+	}
+
+	return http.Serve(listener, nil)
 }
 
 func AssetServer(dev bool) http.HandlerFunc {
