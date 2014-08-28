@@ -1,6 +1,7 @@
 package say
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -59,17 +60,35 @@ func Colorize(colorCode string, format string, args ...interface{}) string {
 	}
 }
 
+func readLine() string {
+	in := bufio.NewReader(os.Stdin)
+	line, err := in.ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
+	return strings.Replace(line, "\n", "", 1)
+}
+
 func Ask(text string) string {
 	Print(0, text+":\n> ")
-	var response string
-	fmt.Scanln(&response)
+	response := readLine()
+	return response
+}
+
+func AskWithValidation(text string, validation func(string) error) string {
+	Print(0, text+":\n> ")
+	response := readLine()
+	err := validation(response)
+	if err != nil {
+		Println(0, Red(err.Error()))
+		return AskWithValidation(text, validation)
+	}
 	return response
 }
 
 func AskWithDefault(text string, defaultResponse string) string {
 	Print(0, "%s [%s]:\n> ", text, Green(defaultResponse))
-	var response string
-	fmt.Scanln(&response)
+	response := readLine()
 	if response == "" {
 		return defaultResponse
 	}
@@ -78,8 +97,7 @@ func AskWithDefault(text string, defaultResponse string) string {
 
 func AskForIntegerWithDefault(text string, defaultResponse int) int {
 	Print(0, "%s [%s]:\n> ", text, Green("%d", defaultResponse))
-	var response string
-	fmt.Scanln(&response)
+	response := readLine()
 	if response == "" {
 		return defaultResponse
 	}
@@ -94,8 +112,7 @@ func AskForIntegerWithDefault(text string, defaultResponse int) int {
 
 func AskForBoolWithDefault(text string, defaultResponse bool) bool {
 	Print(0, "%s [%s]:\n> ", text, Green("%t", defaultResponse))
-	var response string
-	fmt.Scanln(&response)
+	response := readLine()
 	if response == "true" {
 		return true
 	}
@@ -115,8 +132,7 @@ func Pick(text string, options []string) string {
 		Println(1, "[%s] %s", Green("%d", i), option)
 	}
 	Print(0, "> ")
-	var response string
-	fmt.Scanln(&response)
+	response := readLine()
 	index, err := strconv.Atoi(response)
 	if err != nil {
 		Println(0, Red("That was an invalid selection..."))

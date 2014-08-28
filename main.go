@@ -2,91 +2,79 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"os"
 	"strings"
 
+	"github.com/cloudfoundry-incubator/veritas/cf"
+	"github.com/cloudfoundry-incubator/veritas/chug"
+	"github.com/cloudfoundry-incubator/veritas/common"
+	"github.com/cloudfoundry-incubator/veritas/components"
+	"github.com/cloudfoundry-incubator/veritas/config_finder"
+	"github.com/cloudfoundry-incubator/veritas/loggregator_logs"
+	"github.com/cloudfoundry-incubator/veritas/lrps"
 	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/cloudfoundry-incubator/veritas/store"
 )
 
-type Command struct {
-	Name        string
-	Description string
-	FlagSet     *flag.FlagSet
-	Run         func(args []string)
-}
-
-type CommandGroup struct {
-	Name        string
-	Description string
-	Commands    []Command
-}
-
 func main() {
-	commandGroups := []CommandGroup{
-		CommandGroup{
+	commandGroups := []common.CommandGroup{
+		common.CommandGroup{
 			Name:        "Setup",
 			Description: "Commands to set veritas up on a BOSH Job",
-			Commands: []Command{
-				AutodetectCommand(),
+			Commands: []common.Command{
+				config_finder.AutodetectCommand(),
 			},
 		},
 
-		CommandGroup{
+		common.CommandGroup{
 			Name:        "BBS",
 			Description: "Commands to fetch from the BBS",
-			Commands: []Command{
-				DumpStoreCommand(),
-				FetchStoreCommand(),
-				PrintStoreCommand(),
-				DistributionCommand(),
+			Commands: []common.Command{
+				store.DumpStoreCommand(),
+				store.FetchStoreCommand(),
+				store.PrintStoreCommand(),
+				store.DistributionCommand(),
 			},
 		},
-		CommandGroup{
+		common.CommandGroup{
 			Name:        "Chug",
 			Description: "Commands to prettify lager logs",
-			Commands: []Command{
-				ChugCommand(),
-				ServeChugCommand(),
+			Commands: []common.Command{
+				chug.ChugCommand(),
+				chug.ServeChugCommand(),
 			},
 		},
-		CommandGroup{
-			Name:        "Executor & Warden",
-			Description: "Commands to fetch information from executor and warden",
-			Commands: []Command{
-				ExecutorResourcesCommand(),
-				ExecutorContainersCommand(),
-				WardenContainersCommand(),
+		common.CommandGroup{
+			Name:        "Components",
+			Description: "Commands to fetch information from various components",
+			Commands: []common.Command{
+				components.ExecutorResourcesCommand(),
+				components.ExecutorContainersCommand(),
+				components.WardenContainersCommand(),
+				components.VitalsCommand(),
 			},
 		},
-		CommandGroup{
-			Name:        "Vitals",
-			Description: "Commands to fetch vitals for components",
-			Commands: []Command{
-				VitalsCommand(),
-			},
-		},
-		CommandGroup{
+		common.CommandGroup{
 			Name:        "Loggregator",
 			Description: "Commands to stream loggregator logs",
-			Commands: []Command{
-				StreamLogsCommand(),
+			Commands: []common.Command{
+				loggregator_logs.StreamLogsCommand(),
 			},
 		},
-		CommandGroup{
+		common.CommandGroup{
 			Name:        "CF",
 			Description: "Commands that augment cf",
-			Commands: []Command{
-				PushDockerAppCommand(),
+			Commands: []common.Command{
+				cf.PushDockerAppCommand(),
 			},
 		},
-		CommandGroup{
+		common.CommandGroup{
 			Name:        "DesiredLRPS " + say.Red("[DANGER]"),
 			Description: "Commands to add and remove DesiredLRPs",
-			Commands: []Command{
-				SubmitLRPCommand(),
-				RemoveLRPCommand(),
+			Commands: []common.Command{
+				lrps.SubmitLRPCommand(),
+				lrps.RemoveLRPCommand(),
 			},
 		},
 	}
@@ -115,7 +103,7 @@ func main() {
 	usage(commandGroups)
 }
 
-func completions(commandGroups []CommandGroup) {
+func completions(commandGroups []common.CommandGroup) {
 	availableCommands := []string{}
 	for _, commands := range commandGroups {
 		for _, command := range commands.Commands {
@@ -148,7 +136,7 @@ complete -F _veritas veritas
 	say.Println(0, out)
 }
 
-func usage(commandGroups []CommandGroup) {
+func usage(commandGroups []common.CommandGroup) {
 	if len(os.Args) > 2 {
 		matcher := strings.ToLower(os.Args[2])
 		for _, commandGroup := range commandGroups {
@@ -179,7 +167,7 @@ func usage(commandGroups []CommandGroup) {
 	}
 }
 
-func usageForCommandGroup(commandGroup CommandGroup, includeFlags bool) {
+func usageForCommandGroup(commandGroup common.CommandGroup, includeFlags bool) {
 	say.Fprintln(os.Stderr, 0, "%s - %s", say.Cyan(commandGroup.Name), say.LightGray(commandGroup.Description))
 	say.Fprintln(os.Stderr, 0, strings.Repeat("-", len(commandGroup.Name)+3+len(commandGroup.Description)))
 	for _, command := range commandGroup.Commands {
@@ -187,7 +175,7 @@ func usageForCommandGroup(commandGroup CommandGroup, includeFlags bool) {
 	}
 }
 
-func usageForCommand(indentation int, command Command, includeFlags bool) {
+func usageForCommand(indentation int, command common.Command, includeFlags bool) {
 	say.Fprintln(os.Stderr, indentation, "%s %s", say.Green(command.Name), say.LightGray(command.Description))
 	if includeFlags {
 		buffer := &bytes.Buffer{}
