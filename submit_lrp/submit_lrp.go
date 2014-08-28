@@ -167,10 +167,12 @@ func interactivelyGetEnvs(prompt string) []models.EnvironmentVariable {
 	out := []models.EnvironmentVariable{}
 	for _, env := range splitEnvs {
 		sub := strings.Split(env, "=")
-		out = append(out, models.EnvironmentVariable{
-			Name:  sub[0],
-			Value: sub[1],
-		})
+		if len(sub) == 2 {
+			out = append(out, models.EnvironmentVariable{
+				Name:  sub[0],
+				Value: sub[1],
+			})
+		}
 	}
 	return out
 }
