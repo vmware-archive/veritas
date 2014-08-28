@@ -24,6 +24,17 @@ func printLRPS(verbose bool, lrps veritas_models.VeritasLRPS) {
 	}
 }
 
+func printFreshness(freshnesses []string) {
+	say.PrintBanner(say.Green("Freshness"), "~")
+	if len(freshnesses) == 0 {
+		say.Println(1, say.Red("None"))
+		return
+	}
+	for _, freshness := range freshnesses {
+		say.Println(1, say.Green(freshness))
+	}
+}
+
 func printVerboseLRP(lrp *veritas_models.VeritasLRP) {
 	say.Println(0, format.Object(lrp, 1))
 }

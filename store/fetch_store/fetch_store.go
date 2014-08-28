@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -77,10 +78,17 @@ func Fetch(cluster []string, raw bool, w io.Writer) error {
 		return err
 	}
 
+	freshness, err := store.GetAllFreshness()
+	if err != nil {
+		return err
+	}
+
+	sort.Strings(freshness)
 	dump := veritas_models.StoreDump{
-		LRPS:     veritas_models.VeritasLRPS{},
-		Tasks:    veritas_models.VeritasTasks{},
-		Services: veritas_models.VeritasServices{},
+		Freshness: freshness,
+		LRPS:      veritas_models.VeritasLRPS{},
+		Tasks:     veritas_models.VeritasTasks{},
+		Services:  veritas_models.VeritasServices{},
 	}
 
 	for _, desired := range desiredLRPs {
