@@ -17,11 +17,13 @@ func TestVeritas(t *testing.T) {
 	RunSpecs(t, "Veritas Suite")
 }
 
-var _ = BeforeSuite(func() {
-	var err error
-	etcdRunner = etcdstorerunner.NewETCDClusterRunner(GinkgoParallelNode()+4001, 1)
-	veritas, err = gexec.Build("github.com/cloudfoundry-incubator/veritas")
+var _ = SynchronizedBeforeSuite(func() []byte {
+	veritasPath, err := gexec.Build("github.com/cloudfoundry-incubator/veritas")
 	Ω(err).ShouldNot(HaveOccurred())
+	return []byte(veritasPath)
+}, func(veritasPath []byte) {
+	veritas = string(veritasPath)
+	etcdRunner = etcdstorerunner.NewETCDClusterRunner(GinkgoParallelNode()+4001, 1)
 })
 
 var _ = BeforeEach(func() {
@@ -32,6 +34,10 @@ var _ = AfterEach(func() {
 	etcdRunner.Stop()
 })
 
-var _ = AfterSuite(func() {
+var _ = SynchronizedAfterSuite(func() {
+	if etcdRunner != nil {
+		etcdRunner.Stop()
+	}
+}, func() {
 	gexec.CleanupBuildArtifacts()
 })
