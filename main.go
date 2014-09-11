@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/cloudfoundry-incubator/veritas/cf"
@@ -18,6 +19,8 @@ import (
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	commandGroups := []common.CommandGroup{
 		common.CommandGroup{
 			Name:        "Setup",
