@@ -2,9 +2,11 @@ package chug
 
 import (
 	"flag"
+	"io"
 	"os"
 
 	"github.com/cloudfoundry-incubator/veritas/common"
+	"github.com/cloudfoundry-incubator/veritas/say"
 )
 
 func ChugCommand() common.Command {
@@ -35,6 +37,44 @@ func ChugCommand() common.Command {
 				common.ExitIfError("Failed to chug", err)
 
 				f.Close()
+			}
+		},
+	}
+}
+
+func UnifyChugCommand() common.Command {
+	var (
+		minTimeFlag string
+		maxTimeFlag string
+	)
+
+	flagSet := flag.NewFlagSet("chug-unify", flag.ExitOnError)
+	flagSet.StringVar(&minTimeFlag, "min", "", "only include entries logged after this time (either a unix timestamp or a chug-formatted time)")
+	flagSet.StringVar(&maxTimeFlag, "max", "", "only include entries logged before this time (either a unix timestamp or a chug-formatted time)")
+
+	return common.Command{
+		Name:        "chug-unify",
+		Description: "file1, file2,... - Combine lager files in temporal order",
+		FlagSet:     flagSet,
+		Run: func(args []string) {
+			minTime, err := ParseTimeFlag(minTimeFlag)
+			common.ExitIfError("Failed to parse min", err)
+			maxTime, err := ParseTimeFlag(maxTimeFlag)
+			common.ExitIfError("Failed to parse max", err)
+
+			if len(args) == 0 {
+				say.Println(0, say.Red("You must pass chug-unify files to combine"))
+				os.Exit(1)
+			} else {
+				files := []io.Reader{}
+				for _, arg := range args {
+					f, err := os.Open(arg)
+					common.ExitIfError("Could not open file", err)
+					files = append(files, f)
+				}
+
+				err := Unify(files, os.Stdout, minTime, maxTime)
+				common.ExitIfError("Failed to chug-unify", err)
 			}
 		},
 	}

@@ -43,6 +43,7 @@ func main() {
 			Commands: []common.Command{
 				chug.ChugCommand(),
 				chug.ServeChugCommand(),
+				chug.UnifyChugCommand(),
 			},
 		},
 		common.CommandGroup{

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ~/.bash_it/bash_it.sh
+source ~/.bashisms/s3_upload.bash
 
 set -e
 
