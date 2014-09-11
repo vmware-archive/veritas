@@ -2,6 +2,7 @@ package chug_test
 
 import (
 	"bytes"
+	"regexp"
 	"time"
 
 	. "github.com/cloudfoundry-incubator/veritas/chug"
@@ -17,10 +18,13 @@ var _ = Describe("ChugFilter", func() {
 	var t0, t1, t2, t3 time.Time
 	var out chan chug.Entry
 	var minTime, maxTime time.Time
+	var match, exclude *regexp.Regexp
 
 	BeforeEach(func() {
 		minTime = time.Time{}
 		maxTime = time.Time{}
+		match = nil
+		exclude = nil
 
 		logger := lager.NewLogger("logger")
 		buffer = &bytes.Buffer{}
@@ -54,7 +58,7 @@ var _ = Describe("ChugFilter", func() {
 	})
 
 	JustBeforeEach(func() {
-		out = ChugWithFilter(buffer, minTime, maxTime)
+		out = ChugWithFilter(buffer, minTime, maxTime, match, exclude)
 	})
 
 	nextEntry := func() chug.Entry {
@@ -63,12 +67,7 @@ var _ = Describe("ChugFilter", func() {
 		return entry
 	}
 
-	Context("with no time constraints", func() {
-		BeforeEach(func() {
-			minTime = time.Time{}
-			maxTime = time.Time{}
-		})
-
+	Context("with no time constraints or filters", func() {
 		It("should return all the entries", func() {
 			Ω(nextEntry().Raw).Should(ContainSubstring("none-lager-1"))
 			Ω(nextEntry().Log.Message).Should(Equal("lager-1"))
@@ -76,6 +75,47 @@ var _ = Describe("ChugFilter", func() {
 			Ω(nextEntry().Raw).Should(ContainSubstring("none-lager-2"))
 			Ω(nextEntry().Log.Message).Should(Equal("lager-3"))
 			Ω(nextEntry().Log.Message).Should(Equal("lager-4"))
+			Ω(nextEntry().Raw).Should(ContainSubstring("none-lager-3"))
+			Eventually(out).Should(BeClosed())
+		})
+	})
+
+	Context("with a match filter", func() {
+		BeforeEach(func() {
+			match = regexp.MustCompile(`lager-[14]`)
+		})
+
+		It("should return entries with `raw`s that match the filter", func() {
+			Ω(nextEntry().Raw).Should(ContainSubstring("none-lager-1"))
+			Ω(nextEntry().Log.Message).Should(Equal("lager-1"))
+			Ω(nextEntry().Log.Message).Should(Equal("lager-4"))
+			Consistently(out).ShouldNot(Receive())
+			Eventually(out).Should(BeClosed())
+		})
+	})
+
+	Context("with an exclude filter", func() {
+		BeforeEach(func() {
+			exclude = regexp.MustCompile(`lager-[14]`)
+		})
+
+		It("should only return entries with `raw`s that do not match the exclude filter", func() {
+			Ω(nextEntry().Log.Message).Should(Equal("lager-2"))
+			Ω(nextEntry().Raw).Should(ContainSubstring("none-lager-2"))
+			Ω(nextEntry().Log.Message).Should(Equal("lager-3"))
+			Ω(nextEntry().Raw).Should(ContainSubstring("none-lager-3"))
+			Eventually(out).Should(BeClosed())
+		})
+	})
+
+	Context("with both a match and exclude filter", func() {
+		BeforeEach(func() {
+			match = regexp.MustCompile(`lager-[13]`)
+			exclude = regexp.MustCompile(`lager-1`)
+		})
+
+		It("should only return entries with `raw`s that match the match filter but not the exclude filter", func() {
+			Ω(nextEntry().Log.Message).Should(Equal("lager-3"))
 			Ω(nextEntry().Raw).Should(ContainSubstring("none-lager-3"))
 			Eventually(out).Should(BeClosed())
 		})

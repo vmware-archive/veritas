@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -68,8 +69,8 @@ func lagerLogLevel(level lager.LogLevel) string {
 	return ""
 }
 
-func ServeLogs(addr string, dev bool, minTime time.Time, maxTime time.Time, src io.Reader) error {
-	out := ChugWithFilter(src, minTime, maxTime)
+func ServeLogs(addr string, dev bool, minTime time.Time, maxTime time.Time, match *regexp.Regexp, exclude *regexp.Regexp, src io.Reader) error {
+	out := ChugWithFilter(src, minTime, maxTime, match, exclude)
 
 	entries := []JSFriendlyChugEntry{}
 	for entry := range out {

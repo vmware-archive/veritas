@@ -2,15 +2,16 @@ package chug
 
 import (
 	"io"
+	"regexp"
 	"time"
 
 	"github.com/pivotal-golang/lager/chug"
 )
 
-func Unify(files []io.Reader, out io.Writer, minTime time.Time, maxTime time.Time) error {
+func Unify(files []io.Reader, out io.Writer, minTime time.Time, maxTime time.Time, match *regexp.Regexp, exclude *regexp.Regexp) error {
 	chans := make([]chan chug.Entry, len(files))
 	for i, file := range files {
-		out := ChugWithFilter(file, minTime, maxTime)
+		out := ChugWithFilter(file, minTime, maxTime, match, exclude)
 		chans[i] = out
 	}
 

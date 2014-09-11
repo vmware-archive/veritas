@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -28,8 +29,8 @@ var colorLookup = map[string]string{
 	"warden-linux":   "\x1b[35m",
 }
 
-func Prettify(relativeTime string, data string, hideNonLager bool, minTime time.Time, maxTime time.Time, src io.Reader) error {
-	out := ChugWithFilter(src, minTime, maxTime)
+func Prettify(relativeTime string, data string, hideNonLager bool, minTime time.Time, maxTime time.Time, match *regexp.Regexp, exclude *regexp.Regexp, src io.Reader) error {
+	out := ChugWithFilter(src, minTime, maxTime, match, exclude)
 
 	if data != "none" && data != "short" && data != "long" {
 		return fmt.Errorf("invalid data specification: %s", data)

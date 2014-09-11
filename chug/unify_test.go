@@ -3,6 +3,7 @@ package chug_test
 import (
 	"bytes"
 	"io"
+	"regexp"
 	"time"
 
 	. "github.com/cloudfoundry-incubator/veritas/chug"
@@ -52,7 +53,7 @@ var _ = Describe("Unify", func() {
 
 	It("should unify the independent streams", func(done Done) {
 		out := gbytes.NewBuffer()
-		err := Unify([]io.Reader{bufferA, bufferB}, out, time.Time{}, time.Time{})
+		err := Unify([]io.Reader{bufferA, bufferB}, out, time.Time{}, time.Time{}, nil, nil)
 		Ω(err).ShouldNot(HaveOccurred())
 
 		Ω(out).Should(gbytes.Say("non-lager-A"))
@@ -72,7 +73,7 @@ var _ = Describe("Unify", func() {
 	Context("with a minimum time", func() {
 		It("should only show log lines after that time", func(done Done) {
 			out := gbytes.NewBuffer()
-			err := Unify([]io.Reader{bufferA, bufferB}, out, t0, time.Time{})
+			err := Unify([]io.Reader{bufferA, bufferB}, out, t0, time.Time{}, nil, nil)
 			Ω(err).ShouldNot(HaveOccurred())
 
 			Ω(out).ShouldNot(gbytes.Say("non-lager-A"))
@@ -93,7 +94,7 @@ var _ = Describe("Unify", func() {
 	Context("with a maximum time", func() {
 		It("should only show log lines before that time", func(done Done) {
 			out := gbytes.NewBuffer()
-			err := Unify([]io.Reader{bufferA, bufferB}, out, time.Time{}, t1)
+			err := Unify([]io.Reader{bufferA, bufferB}, out, time.Time{}, t1, nil, nil)
 			Ω(err).ShouldNot(HaveOccurred())
 
 			Ω(out).Should(gbytes.Say("non-lager-A"))
@@ -114,7 +115,7 @@ var _ = Describe("Unify", func() {
 	Context("with both a minimum and maximum time", func() {
 		It("should apply both limits", func(done Done) {
 			out := gbytes.NewBuffer()
-			err := Unify([]io.Reader{bufferA, bufferB}, out, t0, t1)
+			err := Unify([]io.Reader{bufferA, bufferB}, out, t0, t1, nil, nil)
 			Ω(err).ShouldNot(HaveOccurred())
 
 			Ω(out).ShouldNot(gbytes.Say("non-lager-A"))
@@ -124,6 +125,27 @@ var _ = Describe("Unify", func() {
 			Ω(out).Should(gbytes.Say("A-2"))
 			Ω(out).Should(gbytes.Say("B-2"))
 			Ω(out).Should(gbytes.Say("B-3"))
+			Ω(out).Should(gbytes.Say("non-lager-B-2"), "non-lager lines always beat lager lines")
+			Ω(out).ShouldNot(gbytes.Say("A-3"))
+			Ω(out).ShouldNot(gbytes.Say("B-4"))
+
+			close(done)
+		})
+	})
+
+	Context("with a time limits and filters", func() {
+		It("should apply the time limits and the filters", func(done Done) {
+			out := gbytes.NewBuffer()
+			err := Unify([]io.Reader{bufferA, bufferB}, out, t0, t1, regexp.MustCompile("B"), regexp.MustCompile("3"))
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(out).ShouldNot(gbytes.Say("non-lager-A"))
+			Ω(out).ShouldNot(gbytes.Say("non-lager-B-1"))
+			Ω(out).ShouldNot(gbytes.Say("A-1"))
+			Ω(out).Should(gbytes.Say("B-1"))
+			Ω(out).ShouldNot(gbytes.Say("A-2"))
+			Ω(out).Should(gbytes.Say("B-2"))
+			Ω(out).ShouldNot(gbytes.Say("B-3"))
 			Ω(out).Should(gbytes.Say("non-lager-B-2"), "non-lager lines always beat lager lines")
 			Ω(out).ShouldNot(gbytes.Say("A-3"))
 			Ω(out).ShouldNot(gbytes.Say("B-4"))
