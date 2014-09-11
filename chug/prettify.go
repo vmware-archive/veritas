@@ -28,9 +28,8 @@ var colorLookup = map[string]string{
 	"warden-linux":   "\x1b[35m",
 }
 
-func Prettify(relativeTime string, data string, hideNonLager bool, src io.Reader) error {
-	out := make(chan chug.Entry)
-	go chug.Chug(src, out)
+func Prettify(relativeTime string, data string, hideNonLager bool, minTime time.Time, maxTime time.Time, src io.Reader) error {
+	out := ChugWithFilter(src, minTime, maxTime)
 
 	if data != "none" && data != "short" && data != "long" {
 		return fmt.Errorf("invalid data specification: %s", data)

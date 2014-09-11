@@ -13,6 +13,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/cloudfoundry-incubator/veritas/say"
 	"github.com/pivotal-golang/lager"
@@ -67,9 +68,9 @@ func lagerLogLevel(level lager.LogLevel) string {
 	return ""
 }
 
-func ServeLogs(addr string, dev bool, src io.Reader) error {
-	out := make(chan chug.Entry)
-	go chug.Chug(src, out)
+func ServeLogs(addr string, dev bool, minTime time.Time, maxTime time.Time, src io.Reader) error {
+	out := ChugWithFilter(src, minTime, maxTime)
+
 	entries := []JSFriendlyChugEntry{}
 	for entry := range out {
 		if isEmptyInigoLog(entry) {

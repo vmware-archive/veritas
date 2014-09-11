@@ -1,7 +1,6 @@
 package chug
 
 import (
-	"fmt"
 	"io"
 	"time"
 
@@ -47,7 +46,8 @@ func Unify(files []io.Reader, out io.Writer, minTime time.Time, maxTime time.Tim
 			return nil
 		}
 
-		fmt.Fprintln(out, string(entries[winningIndex].Raw))
+		out.Write(entries[winningIndex].Raw)
+		out.Write([]byte("\n"))
 		entries[winningIndex] = nil
 	}
 
