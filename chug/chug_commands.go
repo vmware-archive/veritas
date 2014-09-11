@@ -28,8 +28,14 @@ func parseBaseFlags(minTimeFlag, maxTimeFlag, matchFlag, excludeFlag string) (ti
 	common.ExitIfError("Failed to parse -max", err)
 	match, err := regexp.Compile(matchFlag)
 	common.ExitIfError("Failed to parse -match", err)
+	if matchFlag == "" {
+		match = nil
+	}
 	exclude, err := regexp.Compile(excludeFlag)
 	common.ExitIfError("Failed to parse -match", err)
+	if excludeFlag == "" {
+		exclude = nil
+	}
 	return minTime, maxTime, match, exclude
 }
 
