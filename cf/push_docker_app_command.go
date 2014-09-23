@@ -1,8 +1,8 @@
 package cf
 
 import (
+	"encoding/json"
 	"flag"
-	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
@@ -11,6 +11,16 @@ import (
 	"github.com/cloudfoundry-incubator/veritas/common"
 	"github.com/cloudfoundry-incubator/veritas/say"
 )
+
+type AppRequest struct {
+	Name        string `json:"name,omitempty"`
+	SpaceGuid   string `json:"space_guid,omitempty"`
+	DockerImage string `json:"docker_image,omitempty"`
+	Command     string `json:"command,omitempty"`
+	Memory      int    `json:"memory"`
+	DiskQuota   int    `json:"disk_quota"`
+	Instances   int    `json:"instances"`
+}
 
 func PushDockerAppCommand() common.Command {
 	var (
@@ -29,7 +39,7 @@ func PushDockerAppCommand() common.Command {
 	flagSet.StringVar(&appName, "appName", "", "app name (required)")
 	flagSet.StringVar(&space, "space", "", "space (required)")
 	flagSet.StringVar(&dockerImage, "dockerImage", "", "docker image (required)")
-	flagSet.StringVar(&command, "command", "", "start command (required)")
+	flagSet.StringVar(&command, "command", "", "start command")
 	flagSet.StringVar(&domain, "domain", "", "route domain (required - e.g. ketchup.cf-app.com)")
 
 	flagSet.IntVar(&memory, "memory", 128, "memory limit (MB)")
@@ -44,21 +54,24 @@ func PushDockerAppCommand() common.Command {
 			validate(appName, "You must specify -appName")
 			validate(space, "You must provide a -space")
 			validate(dockerImage, "You must specify a -dockerImage")
-			validate(command, "You must specify a -command")
 			validate(domain, "You must specify a -domain")
 
 			spaceGuid := getSpaceGuid(space)
 			say.Println(0, "Your space guid is: %s", say.Green(spaceGuid))
 
-			CF("curl", "/v2/apps", "-X", "POST", "-d", fmt.Sprintf(`{
-			    "name":"%s",
-			    "space_guid":"%s",
-			    "docker_image":"%s",
-			    "command":"%s",
-			    "memory":%d,
-			    "disk_quota":%d,
-			    "instances":%d
-			   }`, appName, spaceGuid, dockerImage, command, memory, disk, instances))
+			app := AppRequest{
+				Name:        appName,
+				SpaceGuid:   spaceGuid,
+				DockerImage: dockerImage,
+				Command:     command,
+				Memory:      memory,
+				DiskQuota:   disk,
+				Instances:   instances,
+			}
+			encodedApp, err := json.Marshal(app)
+			common.ExitIfError("Failed to build App JSON", err)
+
+			CF("curl", "/v2/apps", "-X", "POST", "-d", string(encodedApp))
 			CF("set-env", appName, "CF_DIEGO_BETA", "true")
 			CF("set-env", appName, "CF_DIEGO_RUN_BETA", "true")
 			CF("create-route", space, domain, "-n", appName)
