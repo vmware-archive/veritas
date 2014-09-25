@@ -4,7 +4,7 @@ import (
 	"flag"
 	"os"
 
-	"github.com/cloudfoundry-incubator/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/common"
 )
 
 func AutodetectCommand() common.Command {

@@ -4,9 +4,9 @@ import (
 	"flag"
 	"os"
 
-	"github.com/cloudfoundry-incubator/veritas/common"
-	"github.com/cloudfoundry-incubator/veritas/config_finder"
-	"github.com/cloudfoundry-incubator/veritas/store/fetch_store"
+	"github.com/pivotal-cf-experimental/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-cf-experimental/veritas/store/fetch_store"
 )
 
 func FetchStoreCommand() common.Command {

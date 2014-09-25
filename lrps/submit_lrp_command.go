@@ -4,9 +4,9 @@ import (
 	"flag"
 	"os"
 
-	"github.com/cloudfoundry-incubator/veritas/common"
-	"github.com/cloudfoundry-incubator/veritas/config_finder"
-	"github.com/cloudfoundry-incubator/veritas/lrps/submit_lrp"
+	"github.com/pivotal-cf-experimental/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-cf-experimental/veritas/lrps/submit_lrp"
 )
 
 func SubmitLRPCommand() common.Command {

@@ -10,13 +10,13 @@ import (
 
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs/shared"
-	"github.com/cloudfoundry-incubator/veritas/say"
-	"github.com/cloudfoundry-incubator/veritas/veritas_models"
 	"github.com/cloudfoundry/gunk/timeprovider"
 	"github.com/cloudfoundry/storeadapter"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/onsi/gomega/format"
+	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 	"github.com/pivotal-golang/lager"
 )
 

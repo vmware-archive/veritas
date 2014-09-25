@@ -4,8 +4,8 @@ import (
 	"flag"
 	"os"
 
-	"github.com/cloudfoundry-incubator/veritas/common"
-	"github.com/cloudfoundry-incubator/veritas/store/print_store"
+	"github.com/pivotal-cf-experimental/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/store/print_store"
 )
 
 func PrintStoreCommand() common.Command {

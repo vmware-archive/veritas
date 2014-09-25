@@ -3,7 +3,7 @@ package common
 import (
 	"os"
 
-	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func ExitIfError(context string, err error) {

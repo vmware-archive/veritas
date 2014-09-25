@@ -12,11 +12,11 @@ import (
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 	SchemaRouter "github.com/cloudfoundry-incubator/runtime-schema/router"
-	"github.com/cloudfoundry-incubator/veritas/say"
 	"github.com/cloudfoundry/gunk/timeprovider"
 	"github.com/cloudfoundry/gunk/urljoiner"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/cloudfoundry/storeadapter/workerpool"
+	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-golang/lager"
 	"github.com/tedsuo/rata"
 )

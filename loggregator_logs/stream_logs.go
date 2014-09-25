@@ -8,9 +8,9 @@ import (
 
 	"code.google.com/p/goprotobuf/proto"
 
-	"github.com/cloudfoundry-incubator/veritas/say"
 	"github.com/cloudfoundry/loggregatorlib/logmessage"
 	"github.com/gorilla/websocket"
+	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func StreamLogs(loggregatorAddr string, appGuid string, out io.Writer) error {

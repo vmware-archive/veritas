@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/cloudfoundry-incubator/veritas/common"
-	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 type AppRequest struct {

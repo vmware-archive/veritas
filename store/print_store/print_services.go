@@ -1,8 +1,8 @@
 package print_store
 
 import (
-	"github.com/cloudfoundry-incubator/veritas/say"
-	"github.com/cloudfoundry-incubator/veritas/veritas_models"
+	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
 
 func printServices(verbose bool, services veritas_models.VeritasServices) {

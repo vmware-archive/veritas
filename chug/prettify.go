@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-golang/lager"
 	"github.com/pivotal-golang/lager/chug"
 )

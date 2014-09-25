@@ -4,9 +4,9 @@ import (
 	"flag"
 	"os"
 
-	"github.com/cloudfoundry-incubator/veritas/common"
-	"github.com/cloudfoundry-incubator/veritas/components/vitals"
-	"github.com/cloudfoundry-incubator/veritas/config_finder"
+	"github.com/pivotal-cf-experimental/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/components/vitals"
+	"github.com/pivotal-cf-experimental/veritas/config_finder"
 )
 
 func VitalsCommand() common.Command {

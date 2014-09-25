@@ -3,7 +3,7 @@ package chug_test
 import (
 	"time"
 
-	. "github.com/cloudfoundry-incubator/veritas/chug"
+	. "github.com/pivotal-cf-experimental/veritas/chug"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

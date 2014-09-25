@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func Vitals(vitalsAddrs map[string]string, out io.Writer) error {

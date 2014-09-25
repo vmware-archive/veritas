@@ -10,7 +10,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/executor/api"
 	"github.com/cloudfoundry-incubator/executor/client"
-	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func ExecutorContainers(executorAddr string, raw bool, out io.Writer) error {

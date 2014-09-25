@@ -18,7 +18,7 @@ func TestVeritas(t *testing.T) {
 }
 
 var _ = SynchronizedBeforeSuite(func() []byte {
-	veritasPath, err := gexec.Build("github.com/cloudfoundry-incubator/veritas")
+	veritasPath, err := gexec.Build("github.com/pivotal-cf-experimental/veritas")
 	Ω(err).ShouldNot(HaveOccurred())
 	return []byte(veritasPath)
 }, func(veritasPath []byte) {

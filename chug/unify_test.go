@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"time"
 
-	. "github.com/cloudfoundry-incubator/veritas/chug"
+	. "github.com/pivotal-cf-experimental/veritas/chug"
 	"github.com/pivotal-golang/lager"
 
 	. "github.com/onsi/ginkgo"

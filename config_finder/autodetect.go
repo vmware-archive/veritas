@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func Autodetect(out io.Writer) error {

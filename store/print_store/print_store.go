@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/cloudfoundry-incubator/veritas/say"
-	"github.com/cloudfoundry-incubator/veritas/veritas_models"
+	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
 
 func PrintStore(verbose bool, tasks bool, lrps bool, services bool, clear bool, f io.Reader) error {

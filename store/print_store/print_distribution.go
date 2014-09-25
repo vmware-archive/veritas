@@ -11,8 +11,8 @@ import (
 
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 
-	"github.com/cloudfoundry-incubator/veritas/say"
-	"github.com/cloudfoundry-incubator/veritas/veritas_models"
+	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
 
 func PrintDistribution(tasks bool, lrps bool, clear bool, f io.Reader) error {

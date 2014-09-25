@@ -4,10 +4,10 @@ import (
 	"flag"
 	"os"
 
-	"github.com/cloudfoundry-incubator/veritas/common"
-	"github.com/cloudfoundry-incubator/veritas/config_finder"
-	"github.com/cloudfoundry-incubator/veritas/lrps/remove_lrp"
-	"github.com/cloudfoundry-incubator/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-cf-experimental/veritas/lrps/remove_lrp"
+	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func RemoveLRPCommand() common.Command {

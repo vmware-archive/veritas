@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
-	"github.com/cloudfoundry-incubator/veritas/say"
-	"github.com/cloudfoundry-incubator/veritas/veritas_models"
 	"github.com/onsi/gomega/format"
+	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
 
 func printLRPS(verbose bool, lrps veritas_models.VeritasLRPS) {

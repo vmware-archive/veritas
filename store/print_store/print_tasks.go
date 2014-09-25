@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
-	"github.com/cloudfoundry-incubator/veritas/say"
-	"github.com/cloudfoundry-incubator/veritas/veritas_models"
 	"github.com/onsi/gomega/format"
+	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
 
 func printTasks(verbose bool, tasks veritas_models.VeritasTasks) {

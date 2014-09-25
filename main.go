@@ -7,15 +7,15 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cloudfoundry-incubator/veritas/cf"
-	"github.com/cloudfoundry-incubator/veritas/chug"
-	"github.com/cloudfoundry-incubator/veritas/common"
-	"github.com/cloudfoundry-incubator/veritas/components"
-	"github.com/cloudfoundry-incubator/veritas/config_finder"
-	"github.com/cloudfoundry-incubator/veritas/loggregator_logs"
-	"github.com/cloudfoundry-incubator/veritas/lrps"
-	"github.com/cloudfoundry-incubator/veritas/say"
-	"github.com/cloudfoundry-incubator/veritas/store"
+	"github.com/pivotal-cf-experimental/veritas/cf"
+	"github.com/pivotal-cf-experimental/veritas/chug"
+	"github.com/pivotal-cf-experimental/veritas/common"
+	"github.com/pivotal-cf-experimental/veritas/components"
+	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-cf-experimental/veritas/loggregator_logs"
+	"github.com/pivotal-cf-experimental/veritas/lrps"
+	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/pivotal-cf-experimental/veritas/store"
 )
 
 func main() {
