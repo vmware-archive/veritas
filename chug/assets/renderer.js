@@ -146,8 +146,8 @@ LogRenderer.prototype = {
 
 function formatUnixTimestamp(timestamp) {
   var date = new Date(timestamp/1e6)
-  var month = date.getMonth()
-  var day = date.getDay()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
   var hours = date.getHours()
   var minutes = date.getMinutes()
   var seconds = date.getSeconds()
