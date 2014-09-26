@@ -125,7 +125,7 @@ func ServeChugCommand() common.Command {
 	)
 
 	flagSet := baseFlagSet("chug-serve", &minTimeFlag, &maxTimeFlag, &matchFlag, &excludeFlag)
-	flagSet.StringVar(&addr, "addr", "127.0.0.1:0", "address to serve chug")
+	flagSet.StringVar(&addr, "addr", "0.0.0.0:0", "address to serve chug")
 	flagSet.BoolVar(&dev, "dev", false, "dev mode")
 
 	return common.Command{
