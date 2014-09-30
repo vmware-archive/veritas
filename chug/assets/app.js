@@ -2,6 +2,7 @@ var App = Backbone.View.extend({
   events: {
     'click [type="checkbox"]': 'setViewOptions',
     'keyup #filter': 'filter',
+    'keyup #exclude': 'filter',
     'keyup #highlight': 'highlight',
   },
 
@@ -66,13 +67,14 @@ var App = Backbone.View.extend({
     this.histogramView.clearFilter()
 
     var filter = this.$("#filter").val()
-    if (!filter) {
+    var exclude = this.$("#exclude").val()
+    if (!filter && !exclude) {
       this.visibleIndices = undefined
       this.unthrottledHighlight()
       return
     }
 
-    this.visibleIndices = this.selectIndices(filter)
+    this.visibleIndices = this.selectIndices(filter, exclude)
 
     this.logView.filterLogs(this.visibleIndices)
     this.histogramView.filterLogs(this.logs, this.visibleIndices)
@@ -92,19 +94,30 @@ var App = Backbone.View.extend({
       return
     }
 
-    var highlightedIndices = this.selectIndices(filter, this.visibleIndices)
+    var highlightedIndices = this.selectIndices(filter, "", this.visibleIndices)
 
     this.logView.highlightLogs(highlightedIndices)
     this.histogramView.highlightLogs(this.logs, highlightedIndices)
   },
 
-  selectIndices: function(filter, subset) {
+  selectIndices: function(filter, exclude, subset) {
     var filters = filter.split(" ")
-    var regularExpressions = []
+    var filterRegularExpressions = []
     for (var i = 0 ; i < filters.length ; i++) {
-        regularExpressions[i] = new RegExp(filters[i])
+      if (filters[i]) {
+        filterRegularExpressions[i] = new RegExp(filters[i])
+      }
     }
 
+    var exclusions = exclude.split(" ")
+    var exclusionRegularExpressions = []
+    for (var i = 0 ; i < exclusions.length ; i++) {
+      if (exclusions[i]) {
+        exclusionRegularExpressions[i] = new RegExp(exclusions[i])
+      }
+    }
+
+    console.log(filters, exclusions)
     var length = this.logs.length
     var index = function(i) { return i }
     if (subset) {
@@ -112,15 +125,20 @@ var App = Backbone.View.extend({
       index = function(i) { return subset[i] }
     }
 
-
     var selectedIndices = []
     for (i = 0 ; i < length ; i++) {
       var idx = index(i)
       var found = true
-      for (var j = 0 ; j < regularExpressions.length ; j++) {
-          if (!regularExpressions[j].test(this.logs[idx].searchText)) {
+      for (var j = 0 ; j < filterRegularExpressions.length ; j++) {
+          if (!filterRegularExpressions[j].test(this.logs[idx].searchText)) {
               found = false
-              continue
+              break
+          }
+      }
+      for (var j = 0 ; j < exclusionRegularExpressions.length ; j++) {
+          if (exclusionRegularExpressions[j].test(this.logs[idx].searchText)) {
+              found = false
+              break
           }
       }
       if (found) {
