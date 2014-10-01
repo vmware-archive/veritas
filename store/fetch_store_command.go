@@ -4,6 +4,8 @@ import (
 	"flag"
 	"os"
 
+	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
+	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/store/fetch_store"
@@ -27,14 +29,18 @@ func FetchStoreCommand() common.Command {
 			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
 			common.ExitIfError("Could not find etcd cluster", err)
 
+			adapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workerpool.NewWorkerPool(10))
+			err = adapter.Connect()
+			common.ExitIfError("Could not connect to etcd cluster", err)
+
 			if len(args) == 0 {
-				err := fetch_store.Fetch(etcdCluster, raw, os.Stdout)
+				err := fetch_store.Fetch(adapter, raw, os.Stdout)
 				common.ExitIfError("Failed to fetch store", err)
 			} else {
 				f, err := os.Create(args[0])
 				common.ExitIfError("Could not create file", err)
 
-				err = fetch_store.Fetch(etcdCluster, raw, f)
+				err = fetch_store.Fetch(adapter, raw, f)
 				common.ExitIfError("Failed to fetch store", err)
 
 				f.Close()

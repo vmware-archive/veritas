@@ -13,20 +13,13 @@ import (
 	"github.com/cloudfoundry/gunk/timeprovider"
 	"github.com/cloudfoundry/storeadapter"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
-	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/onsi/gomega/format"
 	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 	"github.com/pivotal-golang/lager"
 )
 
-func Fetch(cluster []string, raw bool, w io.Writer) error {
-	adapter := etcdstoreadapter.NewETCDStoreAdapter(cluster, workerpool.NewWorkerPool(10))
-	err := adapter.Connect()
-	if err != nil {
-		return err
-	}
-
+func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) error {
 	if raw {
 		node, err := adapter.ListRecursively(shared.SchemaRoot)
 		if err != nil {

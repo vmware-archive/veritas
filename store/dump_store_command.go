@@ -5,6 +5,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
+	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/say"
@@ -38,8 +40,12 @@ func DumpStoreCommand() common.Command {
 			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
 			common.ExitIfError("Could not find etcd cluster", err)
 
+			adapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workerpool.NewWorkerPool(10))
+			err = adapter.Connect()
+			common.ExitIfError("Could not connect to etcd cluster", err)
+
 			if rate == 0 {
-				err = dump(etcdCluster, verbose, tasks, lrps, services, false)
+				err = dump(adapter, verbose, tasks, lrps, services, false)
 				common.ExitIfError("Failed to dump", err)
 				return
 			}
@@ -47,7 +53,7 @@ func DumpStoreCommand() common.Command {
 			ticker := time.NewTicker(rate)
 			for {
 				<-ticker.C
-				err = dump(etcdCluster, verbose, tasks, lrps, services, true)
+				err = dump(adapter, verbose, tasks, lrps, services, true)
 				if err != nil {
 					say.Println(0, say.Red("Failed to dump: %s", err.Error()))
 				}
@@ -56,12 +62,12 @@ func DumpStoreCommand() common.Command {
 	}
 }
 
-func dump(etcdCluster []string, verbose bool, tasks bool, lrps bool, services bool, clear bool) error {
+func dump(adapter *etcdstoreadapter.ETCDStoreAdapter, verbose bool, tasks bool, lrps bool, services bool, clear bool) error {
 	reader, writer := io.Pipe()
 
 	errs := make(chan error)
 	go func() {
-		err := fetch_store.Fetch(etcdCluster, false, writer)
+		err := fetch_store.Fetch(adapter, false, writer)
 		errs <- err
 	}()
 	go func() {

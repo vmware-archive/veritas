@@ -5,6 +5,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
+	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/say"
@@ -34,8 +36,12 @@ func DistributionCommand() common.Command {
 			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
 			common.ExitIfError("Could not find etcd cluster", err)
 
+			adapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workerpool.NewWorkerPool(10))
+			err = adapter.Connect()
+			common.ExitIfError("Could not connect to etcd cluster", err)
+
 			if rate == 0 {
-				err = distribution(etcdCluster, tasks, lrps, false)
+				err = distribution(adapter, tasks, lrps, false)
 				common.ExitIfError("Failed to print distribution", err)
 				return
 			}
@@ -43,7 +49,7 @@ func DistributionCommand() common.Command {
 			ticker := time.NewTicker(rate)
 			for {
 				<-ticker.C
-				err = distribution(etcdCluster, tasks, lrps, true)
+				err = distribution(adapter, tasks, lrps, true)
 				if err != nil {
 					say.Println(0, say.Red("Failed to print distribution: %s", err.Error()))
 				}
@@ -52,12 +58,12 @@ func DistributionCommand() common.Command {
 	}
 }
 
-func distribution(etcdCluster []string, tasks bool, lrps bool, clear bool) error {
+func distribution(adapter *etcdstoreadapter.ETCDStoreAdapter, tasks bool, lrps bool, clear bool) error {
 	reader, writer := io.Pipe()
 
 	errs := make(chan error)
 	go func() {
-		err := fetch_store.Fetch(etcdCluster, false, writer)
+		err := fetch_store.Fetch(adapter, false, writer)
 		errs <- err
 	}()
 	go func() {
