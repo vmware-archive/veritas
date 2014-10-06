@@ -26,7 +26,7 @@ var colorLookup = map[string]string{
 	"router":         "\x1b[32m",
 	"loggregator":    "\x1b[33m",
 	"stager":         "\x1b[36m",
-	"warden-linux":   "\x1b[35m",
+	"garden-linux":   "\x1b[35m",
 }
 
 func Prettify(relativeTime string, data string, hideNonLager bool, minTime time.Time, maxTime time.Time, match *regexp.Regexp, exclude *regexp.Regexp, src io.Reader) error {

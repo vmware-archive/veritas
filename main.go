@@ -55,7 +55,7 @@ func main() {
 			Commands: []common.Command{
 				components.ExecutorResourcesCommand(),
 				components.ExecutorContainersCommand(),
-				components.WardenContainersCommand(),
+				components.GardenContainersCommand(),
 				components.VitalsCommand(),
 			},
 		},

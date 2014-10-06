@@ -5,39 +5,39 @@ import (
 	"os"
 
 	"github.com/pivotal-cf-experimental/veritas/common"
-	"github.com/pivotal-cf-experimental/veritas/components/warden"
+	"github.com/pivotal-cf-experimental/veritas/components/garden"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 )
 
-func WardenContainersCommand() common.Command {
+func GardenContainersCommand() common.Command {
 	var (
 		raw           bool
-		wardenAddr    string
-		wardenNetwork string
+		gardenAddr    string
+		gardenNetwork string
 	)
 
-	flagSet := flag.NewFlagSet("warden-containers", flag.ExitOnError)
+	flagSet := flag.NewFlagSet("garden-containers", flag.ExitOnError)
 	flagSet.BoolVar(&raw, "raw", false, "display raw response")
-	flagSet.StringVar(&wardenAddr, "wardenAddr", "", "warden API address")
-	flagSet.StringVar(&wardenNetwork, "wardenNetwork", "", "warden API network (unix/tcp)")
+	flagSet.StringVar(&gardenAddr, "gardenAddr", "", "garden API address")
+	flagSet.StringVar(&gardenNetwork, "gardenNetwork", "", "garden API network (unix/tcp)")
 
 	return common.Command{
-		Name:        "warden-containers",
-		Description: "[file] - Fetch warden containers",
+		Name:        "garden-containers",
+		Description: "[file] - Fetch garden containers",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			wardenAddr, wardenNetwork, err := config_finder.FindWardenAddr(wardenAddr, wardenNetwork)
-			common.ExitIfError("Could not find warden", err)
+			gardenAddr, gardenNetwork, err := config_finder.FindGardenAddr(gardenAddr, gardenNetwork)
+			common.ExitIfError("Could not find garden", err)
 
 			if len(args) == 0 {
-				err := warden.WardenContainers(wardenAddr, wardenNetwork, raw, os.Stdout)
-				common.ExitIfError("Failed to fetch warden containers", err)
+				err := garden.GardenContainers(gardenAddr, gardenNetwork, raw, os.Stdout)
+				common.ExitIfError("Failed to fetch garden containers", err)
 			} else {
 				f, err := os.Create(args[0])
 				common.ExitIfError("Could not create file", err)
 
-				err = warden.WardenContainers(wardenAddr, wardenNetwork, raw, f)
-				common.ExitIfError("Failed to fetch warden containers", err)
+				err = garden.GardenContainers(gardenAddr, gardenNetwork, raw, f)
+				common.ExitIfError("Failed to fetch garden containers", err)
 
 				f.Close()
 			}

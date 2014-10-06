@@ -1,4 +1,4 @@
-package warden
+package garden
 
 import (
 	"encoding/json"
@@ -6,20 +6,20 @@ import (
 	"io"
 	"strings"
 
+	"github.com/cloudfoundry-incubator/garden/api"
 	"github.com/cloudfoundry-incubator/garden/client"
 	"github.com/cloudfoundry-incubator/garden/client/connection"
-	"github.com/cloudfoundry-incubator/garden/warden"
 
 	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 type ContainerInfo struct {
 	Handle string
-	Info   warden.ContainerInfo
+	Info   api.ContainerInfo
 }
 
-func WardenContainers(wardenAddr string, wardenNetwork string, raw bool, out io.Writer) error {
-	client := client.New(connection.New(wardenNetwork, wardenAddr))
+func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.Writer) error {
+	client := client.New(connection.New(gardenNetwork, gardenAddr))
 	containers, err := client.Containers(nil)
 	if err != nil {
 		return err
