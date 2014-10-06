@@ -15,6 +15,8 @@ For a linux build on a bosh vm:
  chmod +x ./veritas
 
  echo "export PATH=$PATH:$PWD" > veritas.bash
+ echo "export DROPSONDE_ORIGIN=veritas" >> veritas.bash
+ echo "export DROPSONDE_DESTINATION=localhost:3457" >> veritas.bash
  ./veritas autodetect >> veritas.bash
  ./veritas completions >> veritas.bash
 
