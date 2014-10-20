@@ -27,9 +27,9 @@ var _ = Describe("Veritas", func() {
 		store = bbs.NewBBS(etcdRunner.Adapter(), timeprovider.NewTimeProvider(), lagertest.NewTestLogger("veritas"))
 
 		err = store.DesireTask(models.Task{
-			Guid:   "Task-Guid",
-			Stack:  "pancakes",
-			Domain: "veritas",
+			TaskGuid: "Task-Guid",
+			Stack:    "pancakes",
+			Domain:   "veritas",
 			Actions: []models.ExecutorAction{
 				{models.RunAction{Path: "foo"}},
 			},

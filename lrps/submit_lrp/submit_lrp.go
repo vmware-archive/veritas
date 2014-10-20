@@ -98,9 +98,8 @@ func interactivelyBuildActions(processGuid string) []models.ExecutorAction {
 			circusURL := urljoiner.Join("PLACEHOLDER_FILESERVER_URL", staticRoute.Path, "linux-circus/linux-circus.tgz")
 			actions = append(actions, models.ExecutorAction{
 				models.DownloadAction{
-					From:    circusURL,
-					To:      "/tmp/circus",
-					Extract: true,
+					From: circusURL,
+					To:   "/tmp/circus",
 				},
 			})
 			actions = append(actions, interactivelyBuildHealthMonitoredRunAction(processGuid))
@@ -111,9 +110,8 @@ func interactivelyBuildActions(processGuid string) []models.ExecutorAction {
 func interactivelyBuildDownloadAction() models.ExecutorAction {
 	return models.ExecutorAction{
 		models.DownloadAction{
-			From:    say.Ask("Download URL"),
-			To:      say.AskWithDefault("Container Destination", "."),
-			Extract: say.AskForBoolWithDefault("Extract", true),
+			From: say.Ask("Download URL"),
+			To:   say.AskWithDefault("Container Destination", "."),
 		},
 	}
 }

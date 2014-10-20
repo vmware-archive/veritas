@@ -34,7 +34,7 @@ func printTask(task models.Task) {
 	say.Println(1,
 		"%s [%s on %s@%s(%s)] U:%s C:%s (%d MB, %d MB)",
 		taskState(task),
-		task.Guid,
+		task.TaskGuid,
 		task.ContainerHandle,
 		task.ExecutorID,
 		task.Stack,

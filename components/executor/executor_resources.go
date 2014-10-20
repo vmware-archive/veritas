@@ -6,8 +6,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/cloudfoundry-incubator/executor/api"
-	"github.com/cloudfoundry-incubator/executor/client"
+	"github.com/cloudfoundry-incubator/executor"
+	"github.com/cloudfoundry-incubator/executor/http/client"
 	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
@@ -24,8 +24,8 @@ func ExecutorResources(executorAddr string, raw bool, out io.Writer) error {
 
 	if raw {
 		encoded, err := json.MarshalIndent(struct {
-			RemainingResources api.ExecutorResources `json:"remaining_resources"`
-			TotalResources     api.ExecutorResources `json:"total_resources"`
+			RemainingResources executor.ExecutorResources `json:"remaining_resources"`
+			TotalResources     executor.ExecutorResources `json:"total_resources"`
 		}{remaining, total}, "", "  ")
 
 		if err != nil {

@@ -8,8 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudfoundry-incubator/executor/api"
-	"github.com/cloudfoundry-incubator/executor/client"
+	"github.com/cloudfoundry-incubator/executor"
+	"github.com/cloudfoundry-incubator/executor/http/client"
+
 	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
@@ -40,7 +41,7 @@ func ExecutorContainers(executorAddr string, raw bool, out io.Writer) error {
 	return nil
 }
 
-func printContainer(out io.Writer, container api.Container) {
+func printContainer(out io.Writer, container executor.Container) {
 	ports := []string{}
 	for _, portMapping := range container.Ports {
 		ports = append(ports, fmt.Sprintf("%d:%d", portMapping.HostPort, portMapping.ContainerPort))
