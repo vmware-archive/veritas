@@ -22,12 +22,18 @@ func Autodetect(out io.Writer) error {
 	gardenAddr := ""
 	gardenNetwork := ""
 	etcdCluster := ""
+	receptorEndpoint := ""
+	receptorUsername := ""
+	receptorPassword := ""
 
 	debugRe := regexp.MustCompile(`debugAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	etcdRe := regexp.MustCompile(`etcdCluster=\"(.+)\"`)
 	executorRe := regexp.MustCompile(`listenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenTCPAddrRe := regexp.MustCompile(`gardenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenUnixAddrRe := regexp.MustCompile(`gardenAddr=([/\w+\.\d]+)`)
+	receptorEndpointRe := regexp.MustCompile(`address=(\d+.\d+.\d+.\d+:\d+)`)
+	receptorUsernameRe := regexp.MustCompile(`username=(\S*)\\`)
+	receptorPasswordRe := regexp.MustCompile(`password=(\S*)\\`)
 
 	for _, job := range jobs {
 		jobDir := filepath.Join("/var/vcap/jobs", job.Name(), "bin")
@@ -71,6 +77,18 @@ func Autodetect(out io.Writer) error {
 						gardenNetwork = "unix"
 					}
 				}
+
+				if name == "receptor" {
+					if receptorEndpointRe.Match(data) {
+						receptorEndpoint = string(receptorEndpointRe.FindSubmatch(data)[1])
+					}
+					if receptorUsernameRe.Match(data) {
+						receptorUsername = string(receptorUsernameRe.FindSubmatch(data)[1])
+					}
+					if receptorPasswordRe.Match(data) {
+						receptorPassword = string(receptorPasswordRe.FindSubmatch(data)[1])
+					}
+				}
 			}
 		}
 	}
@@ -87,6 +105,15 @@ func Autodetect(out io.Writer) error {
 	}
 	if etcdCluster != "" {
 		say.Fprintln(out, 0, "export ETCD_CLUSTER=%s", etcdCluster)
+	}
+	if receptorEndpoint != "" {
+		say.Fprintln(out, 0, "export RECEPTOR_ENDPOINT=%s", receptorEndpoint)
+	}
+	if receptorUsername != "" {
+		say.Fprintln(out, 0, "export RECEPTOR_USERNAME=%s", receptorUsername)
+	}
+	if receptorPassword != "" {
+		say.Fprintln(out, 0, "export RECEPTOR_PASSWORD=%s", receptorPassword)
 	}
 
 	return nil

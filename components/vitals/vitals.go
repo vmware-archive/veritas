@@ -14,7 +14,10 @@ import (
 )
 
 func Vitals(vitalsAddrs map[string]string, out io.Writer) error {
-	http.DefaultClient.Timeout = time.Second
+	client := &http.Client{
+		Transport: &http.Transport{},
+		Timeout:   time.Second,
+	}
 
 	components := []string{}
 
@@ -26,14 +29,14 @@ func Vitals(vitalsAddrs map[string]string, out io.Writer) error {
 
 	say.Println(0, "Vitals on %s", time.Now())
 	for _, component := range components {
-		dumpVitals(component, vitalsAddrs[component], out)
+		dumpVitals(client, component, vitalsAddrs[component], out)
 	}
 
 	return nil
 }
 
-func dumpVitals(component string, addr string, out io.Writer) {
-	response, err := http.Get("http://" + addr + "/debug/pprof/")
+func dumpVitals(client *http.Client, component string, addr string, out io.Writer) {
+	response, err := client.Get("http://" + addr + "/debug/pprof/")
 	if err != nil {
 		say.Println(0, say.Red("%s: %s"), component, err.Error())
 		return
