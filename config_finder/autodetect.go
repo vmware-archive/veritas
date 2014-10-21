@@ -32,8 +32,8 @@ func Autodetect(out io.Writer) error {
 	gardenTCPAddrRe := regexp.MustCompile(`gardenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenUnixAddrRe := regexp.MustCompile(`gardenAddr=([/\w+\.\d]+)`)
 	receptorEndpointRe := regexp.MustCompile(`address=(\d+.\d+.\d+.\d+:\d+)`)
-	receptorUsernameRe := regexp.MustCompile(`username=(\S*)\\`)
-	receptorPasswordRe := regexp.MustCompile(`password=(\S*)\\`)
+	receptorUsernameRe := regexp.MustCompile(`username=(\S*)\s*\\`)
+	receptorPasswordRe := regexp.MustCompile(`password=(\S*)\s*\\`)
 
 	for _, job := range jobs {
 		jobDir := filepath.Join("/var/vcap/jobs", job.Name(), "bin")

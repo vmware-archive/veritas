@@ -14,15 +14,15 @@ import (
 	SchemaRouter "github.com/cloudfoundry-incubator/runtime-schema/router"
 	"github.com/cloudfoundry/gunk/timeprovider"
 	"github.com/cloudfoundry/gunk/urljoiner"
+	"github.com/cloudfoundry/gunk/workpool"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
-	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-golang/lager"
 	"github.com/tedsuo/rata"
 )
 
 func SubmitLRP(cluster []string, f io.Reader) error {
-	adapter := etcdstoreadapter.NewETCDStoreAdapter(cluster, workerpool.NewWorkerPool(10))
+	adapter := etcdstoreadapter.NewETCDStoreAdapter(cluster, workpool.NewWorkPool(10))
 	err := adapter.Connect()
 	if err != nil {
 		return err

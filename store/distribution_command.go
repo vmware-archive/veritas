@@ -5,8 +5,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/cloudfoundry/gunk/workpool"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
-	"github.com/cloudfoundry/storeadapter/workerpool"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/say"
@@ -36,7 +36,7 @@ func DistributionCommand() common.Command {
 			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
 			common.ExitIfError("Could not find etcd cluster", err)
 
-			adapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workerpool.NewWorkerPool(10))
+			adapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workpool.NewWorkPool(10))
 			err = adapter.Connect()
 			common.ExitIfError("Could not connect to etcd cluster", err)
 
