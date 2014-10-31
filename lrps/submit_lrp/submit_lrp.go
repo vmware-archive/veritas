@@ -97,7 +97,7 @@ func interactivelyBuildActions(processGuid string) []models.ExecutorAction {
 			actions = append(actions, interactivelyBuildDownloadAction())
 		case "Health-Monitored RunAction":
 			staticRoute, _ := SchemaRouter.NewFileServerRoutes().RouteForHandler(SchemaRouter.FS_STATIC)
-			circusURL := urljoiner.Join("PLACEHOLDER_FILESERVER_URL", staticRoute.Path, "linux-circus/linux-circus.tgz")
+			circusURL := urljoiner.Join("http://file_server.service.dc1.consul:8080", staticRoute.Path, "linux-circus/linux-circus.tgz")
 			actions = append(actions, models.ExecutorAction{
 				models.DownloadAction{
 					From: circusURL,
