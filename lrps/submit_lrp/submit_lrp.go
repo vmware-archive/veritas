@@ -66,6 +66,8 @@ func interactivelyBuildDesiredLRP() models.DesiredLRP {
 	desiredLRP.Stack = say.AskWithDefault("Stack", "lucid64")
 	desiredLRP.MemoryMB = say.AskForIntegerWithDefault("MemoryMB", 256)
 	desiredLRP.DiskMB = say.AskForIntegerWithDefault("DiskMB", 256)
+	desiredLRP.CPUWeight = uint(say.AskForIntegerWithDefault("CPUWeight", 100))
+	desiredLRP.EnvironmentVariables = interactivelyGetEnvs("Container-Level Envs (FOO=BAR;BAZ=WIBBLE)")
 	desiredLRP.Routes = []string{say.AskWithDefault("Route", desiredLRP.ProcessGuid+".10.244.0.34.xip.io")}
 	desiredLRP.Ports = []models.PortMapping{
 		{ContainerPort: 8080},

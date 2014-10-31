@@ -32,7 +32,7 @@ func printVerboseTask(task models.Task) {
 
 func printTask(task models.Task) {
 	say.Println(1,
-		"%s [%s on %s@%s] U:%s C:%s (%d MB, %d MB)",
+		"%s [%s on %s@%s] U:%s C:%s (%d MB, %d MB, %d CPU)",
 		taskState(task),
 		task.TaskGuid,
 		task.ExecutorID,
@@ -41,6 +41,7 @@ func printTask(task models.Task) {
 		time.Since(time.Unix(0, task.CreatedAt)).String(),
 		task.MemoryMB,
 		task.DiskMB,
+		task.CPUWeight,
 	)
 }
 
