@@ -44,11 +44,12 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 	if lrp.DesiredLRP.ProcessGuid != "" {
 		say.Println(
 			2,
-			"Desired: %s on %s (%d MB, %d MB) %s",
+			"Desired: %s on %s (%d MB, %d MB, %d CPU) %s",
 			say.Green("%d", lrp.DesiredLRP.Instances),
 			say.Green(lrp.DesiredLRP.Stack),
 			lrp.DesiredLRP.MemoryMB,
 			lrp.DesiredLRP.DiskMB,
+			lrp.DesiredLRP.CPUWeight,
 			say.Yellow(strings.Join(lrp.DesiredLRP.Routes, ",")),
 		)
 	} else {

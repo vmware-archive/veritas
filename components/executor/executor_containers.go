@@ -47,9 +47,8 @@ func printContainer(out io.Writer, container executor.Container) {
 		ports = append(ports, fmt.Sprintf("%d:%d", portMapping.HostPort, portMapping.ContainerPort))
 	}
 	say.Fprintln(out, 0,
-		"%s@%s (%d MB, %d MB) [%s %s] %s",
+		"%s (%d MB, %d MB) [%s %s] %s",
 		say.Green(container.Guid),
-		say.Cyan(container.ContainerHandle),
 		container.MemoryMB,
 		container.DiskMB,
 		container.State,

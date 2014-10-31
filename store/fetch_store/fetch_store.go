@@ -66,11 +66,6 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return err
 	}
 
-	fileservers, err := store.GetAllFileServers()
-	if err != nil {
-		return err
-	}
-
 	freshness, err := store.GetAllFreshness()
 	if err != nil {
 		return err
@@ -115,7 +110,6 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 	}
 
 	dump.Services.Executors = executors
-	dump.Services.FileServers = fileservers
 
 	encoder := json.NewEncoder(w)
 	return encoder.Encode(dump)
