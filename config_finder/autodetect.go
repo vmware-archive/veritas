@@ -30,7 +30,7 @@ func Autodetect(out io.Writer) error {
 	etcdRe := regexp.MustCompile(`etcdCluster=\"(.+)\"`)
 	executorRe := regexp.MustCompile(`listenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenTCPAddrRe := regexp.MustCompile(`gardenAddr=(\d+.\d+.\d+.\d+:\d+)`)
-	gardenUnixAddrRe := regexp.MustCompile(`gardenAddr=([/\w+\.\d]+)`)
+	gardenUnixAddrRe := regexp.MustCompile(`gardenAddr=([/\-\w+\.\d]+)`)
 	receptorEndpointRe := regexp.MustCompile(`address=(\d+.\d+.\d+.\d+:\d+)`)
 	receptorUsernameRe := regexp.MustCompile(`username=(\S*)\s*\\`)
 	receptorPasswordRe := regexp.MustCompile(`password=(\S*)\s*\\`)
