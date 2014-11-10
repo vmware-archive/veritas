@@ -14,7 +14,7 @@ import (
 )
 
 func SubmitTask(client receptor.Client, f io.Reader) error {
-	var desiredTask receptor.CreateTaskRequest
+	var desiredTask receptor.TaskCreateRequest
 
 	if f != nil {
 		decoder := json.NewDecoder(f)
@@ -42,15 +42,15 @@ func SubmitTask(client receptor.Client, f io.Reader) error {
 	return client.CreateTask(desiredTask)
 }
 
-func interactivelyBuildDesiredTask() receptor.CreateTaskRequest {
-	desiredTask := receptor.CreateTaskRequest{}
+func interactivelyBuildDesiredTask() receptor.TaskCreateRequest {
+	desiredTask := receptor.TaskCreateRequest{}
 	desiredTask.TaskGuid = say.AskWithDefault("TaskGuid", fmt.Sprintf("%d", time.Now().Unix()))
 	desiredTask.Domain = say.AskWithDefault("Domain", "veritas")
 	desiredTask.Stack = say.AskWithDefault("Stack", "lucid64")
 	desiredTask.MemoryMB = say.AskForIntegerWithDefault("MemoryMB", 256)
 	desiredTask.DiskMB = say.AskForIntegerWithDefault("DiskMB", 256)
 	desiredTask.CPUWeight = uint(say.AskForIntegerWithDefault("CPUWeight", 100))
-	desiredTask.Log = models.LogConfig{
+	desiredTask.Log = receptor.LogConfig{
 		Guid:       desiredTask.TaskGuid,
 		SourceName: "VRT",
 	}

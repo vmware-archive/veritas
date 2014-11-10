@@ -16,7 +16,7 @@ import (
 
 func ExecutorContainers(executorAddr string, raw bool, out io.Writer) error {
 	client := client.New(http.DefaultClient, executorAddr)
-	containers, err := client.ListContainers()
+	containers, err := client.ListContainers(nil)
 	if err != nil {
 		return err
 	}
