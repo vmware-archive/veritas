@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -61,17 +60,16 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return err
 	}
 
-	executors, err := store.GetAllExecutors()
+	cells, err := store.GetAllCells()
 	if err != nil {
 		return err
 	}
 
-	freshness, err := store.GetAllFreshness()
+	freshness, err := store.Freshnesses()
 	if err != nil {
 		return err
 	}
 
-	sort.Strings(freshness)
 	dump := veritas_models.StoreDump{
 		Freshness: freshness,
 		LRPS:      veritas_models.VeritasLRPS{},
@@ -109,7 +107,7 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		dump.Tasks[task.Domain] = append(dump.Tasks[task.Domain], task)
 	}
 
-	dump.Services.Executors = executors
+	dump.Services.Cells = cells
 
 	encoder := json.NewEncoder(w)
 	return encoder.Encode(dump)

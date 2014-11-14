@@ -5,20 +5,21 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strconv"
 	"strings"
 	"time"
 
-	RepRoutes "github.com/cloudfoundry-incubator/rep/routes"
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
-	SchemaRouter "github.com/cloudfoundry-incubator/runtime-schema/router"
 	"github.com/cloudfoundry/gunk/timeprovider"
 	"github.com/cloudfoundry/gunk/urljoiner"
 	"github.com/cloudfoundry/gunk/workpool"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
+	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-golang/lager"
-	"github.com/tedsuo/rata"
+
+	SchemaRouter "github.com/cloudfoundry-incubator/runtime-schema/router"
 )
 
 func SubmitLRP(cluster []string, f io.Reader) error {
@@ -67,117 +68,62 @@ func interactivelyBuildDesiredLRP() models.DesiredLRP {
 	desiredLRP.MemoryMB = say.AskForIntegerWithDefault("MemoryMB", 256)
 	desiredLRP.DiskMB = say.AskForIntegerWithDefault("DiskMB", 256)
 	desiredLRP.CPUWeight = uint(say.AskForIntegerWithDefault("CPUWeight", 100))
-	desiredLRP.EnvironmentVariables = interactivelyGetEnvs("Container-Level Envs (FOO=BAR;BAZ=WIBBLE)")
+	desiredLRP.EnvironmentVariables = common.BuildEnvs()
 	desiredLRP.Routes = []string{say.AskWithDefault("Route", desiredLRP.ProcessGuid+".10.244.0.34.xip.io")}
-	desiredLRP.Ports = []models.PortMapping{
-		{ContainerPort: 8080},
-	}
-	desiredLRP.Log = models.LogConfig{
-		Guid:       desiredLRP.ProcessGuid,
-		SourceName: "VRT",
-	}
-	desiredLRP.Actions = interactivelyBuildActions(desiredLRP.ProcessGuid)
-
-	return desiredLRP
-}
-
-func interactivelyBuildActions(processGuid string) []models.ExecutorAction {
-	actions := []models.ExecutorAction{}
-	for {
-		choice := say.Pick("Add an action", []string{
-			"Done",
-			"DownloadAction",
-			"Health-Monitored RunAction",
-		})
-
-		switch choice {
-		case "Done":
-			return actions
-		case "DownloadAction":
-			actions = append(actions, interactivelyBuildDownloadAction())
-		case "Health-Monitored RunAction":
-			staticRoute, _ := SchemaRouter.NewFileServerRoutes().RouteForHandler(SchemaRouter.FS_STATIC)
-			circusURL := urljoiner.Join("http://file_server.service.dc1.consul:8080", staticRoute.Path, "linux-circus/linux-circus.tgz")
-			actions = append(actions, models.ExecutorAction{
-				models.DownloadAction{
-					From: circusURL,
-					To:   "/tmp/circus",
-				},
-			})
-			actions = append(actions, interactivelyBuildHealthMonitoredRunAction(processGuid))
+	ports := say.AskWithDefault("Ports to open (comma separated)", "8080")
+	desiredLRP.Ports = []models.PortMapping{}
+	for _, portString := range strings.Split(ports, ",") {
+		port, err := strconv.Atoi(portString)
+		if err != nil {
+			say.Println(0, say.Red("Ignoring invalid port %s", portString))
+			continue
 		}
+		desiredLRP.Ports = append(desiredLRP.Ports, models.PortMapping{
+			ContainerPort: uint32(port),
+		})
 	}
-}
+	desiredLRP.LogGuid = desiredLRP.ProcessGuid
+	desiredLRP.LogSource = "VRT"
 
-func interactivelyBuildDownloadAction() models.ExecutorAction {
-	return models.ExecutorAction{
-		models.DownloadAction{
-			From: say.Ask("Download URL"),
-			To:   say.AskWithDefault("Container Destination", "."),
-		},
-	}
-}
-
-func interactivelyBuildHealthMonitoredRunAction(processGuid string) models.ExecutorAction {
-	repRequests := rata.NewRequestGenerator(
-		"http://127.0.0.1:20515",
-		RepRoutes.Routes,
-	)
-
-	healthyHook, _ := repRequests.CreateRequest(
-		RepRoutes.LRPRunning,
-		rata.Params{
-			"process_guid":  processGuid,
-			"index":         "PLACEHOLDER_INSTANCE_INDEX",
-			"instance_guid": "PLACEHOLDER_INSTANCE_GUID",
-		},
-		nil,
-	)
-
-	return models.Parallel(
-		models.ExecutorAction{
-			models.RunAction{
-				Path: say.AskWithValidation("Command to run", func(response string) error {
-					if strings.Contains(response, " ") {
-						return fmt.Errorf("You cannot specify arguments to the command, that'll come next...")
-					}
-					return nil
-				}),
-				Args: strings.Split(say.Ask("Args (split by ';')"), ";"),
-				Env:  interactivelyGetEnvs("Envs (FOO=BAR;BAZ=WIBBLE)"),
+	staticRoute, _ := SchemaRouter.NewFileServerRoutes().RouteForHandler(SchemaRouter.FS_STATIC)
+	circusURL := urljoiner.Join("http://file_server.service.dc1.consul:8080", staticRoute.Path, "linux-circus/linux-circus.tgz")
+	setup := common.BuildAction("Build Setup Action", []common.PreFabAction{
+		common.PreFabAction{
+			Name: "Download Spy",
+			ActionBuilder: func() models.ExecutorAction {
+				return models.ExecutorAction{
+					models.DownloadAction{
+						From: circusURL,
+						To:   "/tmp/circus",
+					},
+				}
 			},
 		},
-		models.ExecutorAction{
-			models.MonitorAction{
-				Action: models.ExecutorAction{
+	})
+
+	if setup.Action != nil {
+		desiredLRP.Setup = &setup
+	}
+
+	desiredLRP.Action = common.BuildAction("Build Action", nil)
+
+	monitor := common.BuildAction("Build Monitor Action", []common.PreFabAction{
+		common.PreFabAction{
+			Name: "Run Spy with Port Check on 8080",
+			ActionBuilder: func() models.ExecutorAction {
+				return models.ExecutorAction{
 					models.RunAction{
 						Path: "/tmp/circus/spy",
-						Args: []string{"-addr=:8080"},
+						Args: []string{"-addr=:" + say.AskWithDefault("Port", "8080")},
 					},
-				},
-				HealthyThreshold:   1,
-				UnhealthyThreshold: 1,
-				HealthyHook: models.HealthRequest{
-					Method: healthyHook.Method,
-					URL:    healthyHook.URL.String(),
-				},
+				}
 			},
 		},
-	)
-}
+	})
 
-func interactivelyGetEnvs(prompt string) []models.EnvironmentVariable {
-	envs := say.Ask(prompt)
-	splitEnvs := strings.Split(envs, ";")
-	out := []models.EnvironmentVariable{}
-	for _, env := range splitEnvs {
-		sub := strings.Split(env, "=")
-		if len(sub) == 2 {
-			out = append(out, models.EnvironmentVariable{
-				Name:  sub[0],
-				Value: sub[1],
-			})
-		}
+	if monitor.Action != nil {
+		desiredLRP.Monitor = &monitor
 	}
-	return out
+
+	return desiredLRP
 }

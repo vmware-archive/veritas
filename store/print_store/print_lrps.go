@@ -24,14 +24,14 @@ func printLRPS(verbose bool, lrps veritas_models.VeritasLRPS) {
 	}
 }
 
-func printFreshness(freshnesses []string) {
+func printFreshness(freshnesses []models.Freshness) {
 	say.PrintBanner(say.Green("Freshness"), "~")
 	if len(freshnesses) == 0 {
 		say.Println(1, say.Red("None"))
 		return
 	}
 	for _, freshness := range freshnesses {
-		say.Println(1, say.Green(freshness))
+		say.Println(1, say.Green("%s - %d", freshness.Domain, freshness.TTLInSeconds))
 	}
 }
 
@@ -68,7 +68,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 				"%s %s on %s [%s for %s]",
 				prefix,
 				actual.InstanceGuid,
-				actual.ExecutorID,
+				actual.CellID,
 				time.Since(time.Unix(0, actual.Since)),
 				actualState(actual),
 			)

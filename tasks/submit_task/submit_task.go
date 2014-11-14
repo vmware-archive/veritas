@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"strings"
 	"time"
 
 	"github.com/cloudfoundry-incubator/receptor"
-	"github.com/cloudfoundry-incubator/runtime-schema/models"
+	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
@@ -50,72 +49,11 @@ func interactivelyBuildDesiredTask() receptor.TaskCreateRequest {
 	desiredTask.MemoryMB = say.AskForIntegerWithDefault("MemoryMB", 256)
 	desiredTask.DiskMB = say.AskForIntegerWithDefault("DiskMB", 256)
 	desiredTask.CPUWeight = uint(say.AskForIntegerWithDefault("CPUWeight", 100))
-	desiredTask.Log = receptor.LogConfig{
-		Guid:       desiredTask.TaskGuid,
-		SourceName: "VRT",
-	}
+	desiredTask.EnvironmentVariables = common.ModelEnvsToReceptorEnvs(common.BuildEnvs())
+	desiredTask.LogGuid = desiredTask.TaskGuid
+	desiredTask.LogSource = "VRT"
 	desiredTask.Annotation = say.AskWithDefault("Annotation", "none")
-	desiredTask.Actions = interactivelyBuildActions()
+	desiredTask.Action = common.BuildAction("Build Action", nil)
 
 	return desiredTask
-}
-
-func interactivelyBuildActions() []models.ExecutorAction {
-	actions := []models.ExecutorAction{}
-	for {
-		choice := say.Pick("Add an action", []string{
-			"Done",
-			"DownloadAction",
-			"RunAction",
-		})
-
-		switch choice {
-		case "Done":
-			return actions
-		case "DownloadAction":
-			actions = append(actions, interactivelyBuildDownloadAction())
-		case "RunAction":
-			actions = append(actions, interactivelyBuildRunAction())
-		}
-	}
-}
-
-func interactivelyBuildDownloadAction() models.ExecutorAction {
-	return models.ExecutorAction{
-		models.DownloadAction{
-			From: say.Ask("Download URL"),
-			To:   say.AskWithDefault("Container Destination", "."),
-		},
-	}
-}
-
-func interactivelyBuildRunAction() models.ExecutorAction {
-	return models.ExecutorAction{
-		models.RunAction{
-			Path: say.AskWithValidation("Command to run", func(response string) error {
-				if strings.Contains(response, " ") {
-					return fmt.Errorf("You cannot specify arguments to the command, that'll come next...")
-				}
-				return nil
-			}),
-			Args: strings.Split(say.Ask("Args (split by ';')"), ";"),
-			Env:  interactivelyGetEnvs("Envs (FOO=BAR;BAZ=WIBBLE)"),
-		},
-	}
-}
-
-func interactivelyGetEnvs(prompt string) []models.EnvironmentVariable {
-	envs := say.Ask(prompt)
-	splitEnvs := strings.Split(envs, ";")
-	out := []models.EnvironmentVariable{}
-	for _, env := range splitEnvs {
-		sub := strings.Split(env, "=")
-		if len(sub) == 2 {
-			out = append(out, models.EnvironmentVariable{
-				Name:  sub[0],
-				Value: sub[1],
-			})
-		}
-	}
-	return out
 }

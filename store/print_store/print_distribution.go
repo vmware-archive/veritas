@@ -29,12 +29,12 @@ func PrintDistribution(tasks bool, lrps bool, clear bool, f io.Reader) error {
 }
 
 func printDistribution(dump veritas_models.StoreDump, includeTasks bool, includeLRPS bool, clear bool) {
-	executorIDs := []string{}
-	for _, executorPresence := range dump.Services.Executors {
-		executorIDs = append(executorIDs, executorPresence.ExecutorID)
+	cellIDs := []string{}
+	for _, cells := range dump.Services.Cells {
+		cellIDs = append(cellIDs, cells.CellID)
 	}
 
-	sort.Strings(executorIDs)
+	sort.Strings(cellIDs)
 
 	nTasks := map[string]int{}
 	nLRPsStarting := map[string]int{}
@@ -42,7 +42,7 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 
 	for _, tasks := range dump.Tasks {
 		for _, task := range tasks {
-			nTasks[task.ExecutorID]++
+			nTasks[task.CellID]++
 		}
 	}
 
@@ -50,9 +50,9 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		for _, actuals := range lrp.ActualLRPsByIndex {
 			for _, actual := range actuals {
 				if actual.State == models.ActualLRPStateStarting {
-					nLRPsStarting[actual.ExecutorID]++
+					nLRPsStarting[actual.CellID]++
 				} else {
-					nLRPsRunning[actual.ExecutorID]++
+					nLRPsRunning[actual.CellID]++
 				}
 			}
 		}
@@ -63,16 +63,16 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		say.Fclear(buffer)
 	}
 	say.Fprintln(buffer, 0, "Distribution")
-	for _, executorID := range executorIDs {
-		numTasks := nTasks[executorID]
-		numLRPs := nLRPsStarting[executorID] + nLRPsRunning[executorID]
+	for _, cellID := range cellIDs {
+		numTasks := nTasks[cellID]
+		numLRPs := nLRPsStarting[cellID] + nLRPsRunning[cellID]
 		var content string
 		if numTasks == 0 && numLRPs == 0 {
 			content = say.Red("Empty")
 		} else {
-			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[executorID])), say.Green(strings.Repeat("•", nLRPsRunning[executorID])), say.Gray(strings.Repeat("•", nLRPsStarting[executorID])))
+			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[cellID])), say.Green(strings.Repeat("•", nLRPsRunning[cellID])), say.Gray(strings.Repeat("•", nLRPsStarting[cellID])))
 		}
-		say.Fprintln(buffer, 0, "%12s: %s", executorID, content)
+		say.Fprintln(buffer, 0, "%12s: %s", cellID, content)
 	}
 
 	buffer.WriteTo(os.Stdout)

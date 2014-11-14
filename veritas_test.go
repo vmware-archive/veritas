@@ -30,8 +30,8 @@ var _ = Describe("Veritas", func() {
 			TaskGuid: "Task-Guid",
 			Stack:    "pancakes",
 			Domain:   "veritas",
-			Actions: []models.ExecutorAction{
-				{models.RunAction{Path: "foo"}},
+			Action: models.ExecutorAction{
+				models.RunAction{Path: "foo"},
 			},
 		})
 		Ω(err).ShouldNot(HaveOccurred())
@@ -40,8 +40,9 @@ var _ = Describe("Veritas", func() {
 			ProcessGuid: "Desired-Process-Guid",
 			Stack:       "pancakes",
 			Domain:      "veritas",
-			Actions: []models.ExecutorAction{
-				{models.RunAction{Path: "foo"}},
+			Instances:   3,
+			Action: models.ExecutorAction{
+				models.RunAction{Path: "foo"},
 			},
 		})
 		Ω(err).ShouldNot(HaveOccurred())
@@ -50,6 +51,7 @@ var _ = Describe("Veritas", func() {
 			ProcessGuid:  "Actual-Process-Guid",
 			InstanceGuid: "Instance-Guid",
 			Index:        0,
+			Domain:       "veritas",
 		}, "Executor-ID")
 		Ω(err).ShouldNot(HaveOccurred())
 
@@ -57,13 +59,20 @@ var _ = Describe("Veritas", func() {
 			ProcessGuid:  "Actual-Process-Guid",
 			InstanceGuid: "Instance-Guid-200",
 			Index:        200,
+			Domain:       "veritas",
 		}, "Executor-ID")
 		Ω(err).ShouldNot(HaveOccurred())
 
 		err = store.RequestLRPStartAuction(models.LRPStartAuction{
 			InstanceGuid: "InstanceGuid",
 			DesiredLRP: models.DesiredLRP{
+				Domain:      "domain",
 				ProcessGuid: "StartAuction-Process-Guid",
+				Stack:       "pancakes",
+				Action: models.ExecutorAction{
+					models.RunAction{Path: "foo"},
+				},
+				Instances: 3,
 			},
 			Index: 1,
 		})

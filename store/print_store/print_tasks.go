@@ -35,7 +35,7 @@ func printTask(task models.Task) {
 		"%s [%s on %s@%s] U:%s C:%s (%d MB, %d MB, %d CPU)",
 		taskState(task),
 		task.TaskGuid,
-		task.ExecutorID,
+		task.CellID,
 		task.Stack,
 		time.Since(time.Unix(0, task.UpdatedAt)).String(),
 		time.Since(time.Unix(0, task.CreatedAt)).String(),
