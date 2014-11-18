@@ -30,37 +30,37 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 
 	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), lager.NewLogger("veritas"))
 
-	desiredLRPs, err := store.GetAllDesiredLRPs()
+	desiredLRPs, err := store.DesiredLRPs()
 	if err != nil {
 		return err
 	}
 
-	actualLRPs, err := store.GetAllActualLRPs()
+	actualLRPs, err := store.ActualLRPs()
 	if err != nil {
 		return err
 	}
 
-	lrpStartAuctions, err := store.GetAllLRPStartAuctions()
+	lrpStartAuctions, err := store.LRPStartAuctions()
 	if err != nil {
 		return err
 	}
 
-	lrpStopAuctions, err := store.GetAllLRPStopAuctions()
+	lrpStopAuctions, err := store.LRPStopAuctions()
 	if err != nil {
 		return err
 	}
 
-	stopLRPInstance, err := store.GetAllStopLRPInstances()
+	stopLRPInstance, err := store.StopLRPInstances()
 	if err != nil {
 		return err
 	}
 
-	tasks, err := store.GetAllTasks()
+	tasks, err := store.Tasks()
 	if err != nil {
 		return err
 	}
 
-	cells, err := store.GetAllCells()
+	cells, err := store.Cells()
 	if err != nil {
 		return err
 	}
