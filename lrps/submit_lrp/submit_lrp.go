@@ -71,16 +71,14 @@ func interactivelyBuildDesiredLRP() models.DesiredLRP {
 	desiredLRP.EnvironmentVariables = common.BuildEnvs()
 	desiredLRP.Routes = []string{say.AskWithDefault("Route", desiredLRP.ProcessGuid+".10.244.0.34.xip.io")}
 	ports := say.AskWithDefault("Ports to open (comma separated)", "8080")
-	desiredLRP.Ports = []models.PortMapping{}
+	desiredLRP.Ports = []uint32{}
 	for _, portString := range strings.Split(ports, ",") {
 		port, err := strconv.Atoi(portString)
 		if err != nil {
 			say.Println(0, say.Red("Ignoring invalid port %s", portString))
 			continue
 		}
-		desiredLRP.Ports = append(desiredLRP.Ports, models.PortMapping{
-			ContainerPort: uint32(port),
-		})
+		desiredLRP.Ports = append(desiredLRP.Ports, uint32(port))
 	}
 	desiredLRP.LogGuid = desiredLRP.ProcessGuid
 	desiredLRP.LogSource = "VRT"
