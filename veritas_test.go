@@ -30,9 +30,7 @@ var _ = Describe("Veritas", func() {
 			TaskGuid: "Task-Guid",
 			Stack:    "pancakes",
 			Domain:   "veritas",
-			Action: models.ExecutorAction{
-				models.RunAction{Path: "foo"},
-			},
+			Action:   &models.RunAction{Path: "foo"},
 		})
 		Ω(err).ShouldNot(HaveOccurred())
 
@@ -41,9 +39,7 @@ var _ = Describe("Veritas", func() {
 			Stack:       "pancakes",
 			Domain:      "veritas",
 			Instances:   3,
-			Action: models.ExecutorAction{
-				models.RunAction{Path: "foo"},
-			},
+			Action:      &models.RunAction{Path: "foo"},
 		})
 		Ω(err).ShouldNot(HaveOccurred())
 
@@ -69,10 +65,8 @@ var _ = Describe("Veritas", func() {
 				Domain:      "domain",
 				ProcessGuid: "StartAuction-Process-Guid",
 				Stack:       "pancakes",
-				Action: models.ExecutorAction{
-					models.RunAction{Path: "foo"},
-				},
-				Instances: 3,
+				Action:      &models.RunAction{Path: "foo"},
+				Instances:   3,
 			},
 			Index: 1,
 		})
