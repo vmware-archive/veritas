@@ -88,19 +88,17 @@ func interactivelyBuildDesiredLRP() models.DesiredLRP {
 	setup := common.BuildAction("Build Setup Action", []common.PreFabAction{
 		common.PreFabAction{
 			Name: "Download Spy",
-			ActionBuilder: func() models.ExecutorAction {
-				return models.ExecutorAction{
-					models.DownloadAction{
-						From: circusURL,
-						To:   "/tmp/circus",
-					},
+			ActionBuilder: func() models.Action {
+				return &models.DownloadAction{
+					From: circusURL,
+					To:   "/tmp/circus",
 				}
 			},
 		},
 	})
 
-	if setup.Action != nil {
-		desiredLRP.Setup = &setup
+	if setup != nil {
+		desiredLRP.Setup = setup
 	}
 
 	desiredLRP.Action = common.BuildAction("Build Action", nil)
@@ -108,19 +106,17 @@ func interactivelyBuildDesiredLRP() models.DesiredLRP {
 	monitor := common.BuildAction("Build Monitor Action", []common.PreFabAction{
 		common.PreFabAction{
 			Name: "Run Spy with Port Check on 8080",
-			ActionBuilder: func() models.ExecutorAction {
-				return models.ExecutorAction{
-					models.RunAction{
-						Path: "/tmp/circus/spy",
-						Args: []string{"-addr=:" + say.AskWithDefault("Port", "8080")},
-					},
+			ActionBuilder: func() models.Action {
+				return &models.RunAction{
+					Path: "/tmp/circus/spy",
+					Args: []string{"-addr=:" + say.AskWithDefault("Port", "8080")},
 				}
 			},
 		},
 	})
 
-	if monitor.Action != nil {
-		desiredLRP.Monitor = &monitor
+	if monitor != nil {
+		desiredLRP.Monitor = monitor
 	}
 
 	return desiredLRP

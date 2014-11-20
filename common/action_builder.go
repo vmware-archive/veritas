@@ -11,7 +11,7 @@ import (
 
 type PreFabAction struct {
 	Name          string
-	ActionBuilder func() models.ExecutorAction
+	ActionBuilder func() models.Action
 }
 
 func ModelEnvsToReceptorEnvs(in []models.EnvironmentVariable) []receptor.EnvironmentVariable {
@@ -43,12 +43,12 @@ func BuildEnvs() []models.EnvironmentVariable {
 	return out
 }
 
-func BuildAction(description string, preFabActions []PreFabAction) models.ExecutorAction {
+func BuildAction(description string, preFabActions []PreFabAction) models.Action {
 	action, _ := buildActionWithDelete(description, preFabActions, false)
 	return action
 }
 
-func buildActionWithDelete(description string, preFabActions []PreFabAction, allowDelete bool) (models.ExecutorAction, bool) {
+func buildActionWithDelete(description string, preFabActions []PreFabAction, allowDelete bool) (models.Action, bool) {
 	choices := []string{
 		"Done",
 		"SerialAction",
@@ -70,7 +70,7 @@ func buildActionWithDelete(description string, preFabActions []PreFabAction, all
 
 	switch choice {
 	case "Done":
-		return models.ExecutorAction{}, false
+		return nil, false
 	case "SerialAction":
 		return buildSerialAction(preFabActions), false
 	case "ParallelAction":
@@ -82,7 +82,7 @@ func buildActionWithDelete(description string, preFabActions []PreFabAction, all
 	case "UploadAction":
 		return buildUploadAction(), false
 	case "Delete Previous":
-		return models.ExecutorAction{}, true
+		return nil, true
 	default:
 		for _, preFabAction := range preFabActions {
 			if preFabAction.Name == choice {
@@ -91,78 +91,68 @@ func buildActionWithDelete(description string, preFabActions []PreFabAction, all
 		}
 	}
 
-	return models.ExecutorAction{}, false
+	return nil, false
 }
 
-func buildActionCollection(description string, preFabActions []PreFabAction) []models.ExecutorAction {
-	actions := []models.ExecutorAction{}
+func buildActionCollection(description string, preFabActions []PreFabAction) []models.Action {
+	actions := []models.Action{}
 	for {
 		action, deletePrev := buildActionWithDelete(description, preFabActions, len(actions) > 0)
 		if deletePrev {
 			actions = actions[0 : len(actions)-1]
 			continue
 		}
-		if action.Action == nil {
+		if action == nil {
 			break
 		}
 		actions = append(actions, action)
 	}
 	return actions
 }
-func buildSerialAction(preFabActions []PreFabAction) models.ExecutorAction {
+func buildSerialAction(preFabActions []PreFabAction) models.Action {
 	actions := buildActionCollection("Build Series Action", preFabActions)
 	if len(actions) == 0 {
-		return models.ExecutorAction{}
+		return nil
 	}
-	return models.ExecutorAction{
-		models.SerialAction{
-			Actions: actions,
-		},
+	return &models.SerialAction{
+		Actions: actions,
 	}
 }
 
-func buildParallelAction(preFabActions []PreFabAction) models.ExecutorAction {
+func buildParallelAction(preFabActions []PreFabAction) models.Action {
 	actions := buildActionCollection("Build Parallel Action", preFabActions)
 	if len(actions) == 0 {
-		return models.ExecutorAction{}
+		return nil
 	}
-	return models.ExecutorAction{
-		models.ParallelAction{
-			Actions: actions,
-		},
+	return &models.ParallelAction{
+		Actions: actions,
 	}
 }
 
-func buildDownloadAction() models.ExecutorAction {
-	return models.ExecutorAction{
-		models.DownloadAction{
-			From:     say.Ask("Download URL"),
-			To:       say.AskWithDefault("Container Destination", "."),
-			CacheKey: say.Ask("CacheKey"),
-		},
+func buildDownloadAction() models.Action {
+	return &models.DownloadAction{
+		From:     say.Ask("Download URL"),
+		To:       say.AskWithDefault("Container Destination", "."),
+		CacheKey: say.Ask("CacheKey"),
 	}
 }
 
-func buildUploadAction() models.ExecutorAction {
-	return models.ExecutorAction{
-		models.UploadAction{
-			From: say.Ask("Container Source"),
-			To:   say.Ask("Upload URL"),
-		},
+func buildUploadAction() models.Action {
+	return &models.UploadAction{
+		From: say.Ask("Container Source"),
+		To:   say.Ask("Upload URL"),
 	}
 }
 
-func buildRunAction() models.ExecutorAction {
-	return models.ExecutorAction{
-		models.RunAction{
-			Path: say.AskWithValidation("Command to run", func(response string) error {
-				if strings.Contains(response, " ") {
-					return fmt.Errorf("You cannot specify arguments to the command, that'll come next...")
-				}
-				return nil
-			}),
-			Args: strings.Split(say.Ask("Args (split by ';')"), ";"),
-			Env:  BuildEnvs(),
-		},
+func buildRunAction() models.Action {
+	return &models.RunAction{
+		Path: say.AskWithValidation("Command to run", func(response string) error {
+			if strings.Contains(response, " ") {
+				return fmt.Errorf("You cannot specify arguments to the command, that'll come next...")
+			}
+			return nil
+		}),
+		Args: strings.Split(say.Ask("Args (split by ';')"), ";"),
+		Env:  BuildEnvs(),
 	}
 }
