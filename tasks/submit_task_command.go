@@ -12,21 +12,17 @@ import (
 func SubmitTaskCommand() common.Command {
 	var (
 		receptorEndpointFlag string
-		receptorUsernameFlag string
-		receptorPasswordFlag string
 	)
 
 	flagSet := flag.NewFlagSet("submit-task", flag.ExitOnError)
-	flagSet.StringVar(&receptorEndpointFlag, "receptorEndpoint", "", "receptor url (e.g. 127.0.0.1:8888)")
-	flagSet.StringVar(&receptorUsernameFlag, "receptorUsername", "", "receptor username")
-	flagSet.StringVar(&receptorPasswordFlag, "receptorPassword", "", "receptor password")
+	flagSet.StringVar(&receptorEndpointFlag, "receptorEndpoint", "", "receptor url (e.g. http://127.0.0.1:8888)")
 
 	return common.Command{
 		Name:        "submit-task",
 		Description: "[file] - submits a task to the Diego API",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			receptorClient, err := config_finder.FindReceptor(receptorEndpointFlag, receptorUsernameFlag, receptorPasswordFlag)
+			receptorClient, err := config_finder.FindReceptor(receptorEndpointFlag)
 			common.ExitIfError("Could not find API", err)
 
 			if len(args) == 0 {

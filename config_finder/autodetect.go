@@ -88,6 +88,12 @@ func Autodetect(out io.Writer) error {
 					if receptorPasswordRe.Match(data) {
 						receptorPassword = string(receptorPasswordRe.FindSubmatch(data)[1])
 					}
+
+					if receptorUsername != "" {
+						receptorEndpoint = fmt.Sprintf("http://%s:%s@%s", receptorUsername, receptorPassword, receptorEndpoint)
+					} else {
+						receptorEndpoint = fmt.Sprintf("http://%s", receptorEndpoint)
+					}
 				}
 			}
 		}
@@ -108,12 +114,6 @@ func Autodetect(out io.Writer) error {
 	}
 	if receptorEndpoint != "" {
 		say.Fprintln(out, 0, "export RECEPTOR_ENDPOINT=%s", receptorEndpoint)
-	}
-	if receptorUsername != "" {
-		say.Fprintln(out, 0, "export RECEPTOR_USERNAME=%s", receptorUsername)
-	}
-	if receptorPassword != "" {
-		say.Fprintln(out, 0, "export RECEPTOR_PASSWORD=%s", receptorPassword)
 	}
 
 	return nil

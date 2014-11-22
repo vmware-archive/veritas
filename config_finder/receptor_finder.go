@@ -7,8 +7,8 @@ import (
 	"github.com/cloudfoundry-incubator/receptor"
 )
 
-func FindReceptor(receptorEndpoint, receptorUsername, receptorPassword string) (receptor.Client, error) {
-	var endpoint, username, password string
+func FindReceptor(receptorEndpoint string) (receptor.Client, error) {
+	var endpoint string
 
 	if receptorEndpoint != "" {
 		endpoint = receptorEndpoint
