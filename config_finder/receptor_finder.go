@@ -18,18 +18,6 @@ func FindReceptor(receptorEndpoint, receptorUsername, receptorPassword string) (
 		return nil, fmt.Errorf("for now, you must either specify --receptorEndpoint or set RECEPTOR_ENDPOINT")
 	}
 
-	if receptorUsername != "" {
-		username = receptorUsername
-	} else if os.Getenv("RECEPTOR_USERNAME") != "" {
-		username = os.Getenv("RECEPTOR_USERNAME")
-	}
-
-	if receptorPassword != "" {
-		password = receptorPassword
-	} else if os.Getenv("RECEPTOR_PASSWORD") != "" {
-		password = os.Getenv("RECEPTOR_PASSWORD")
-	}
-
-	return receptor.NewClient(endpoint, username, password), nil
+	return receptor.NewClient(endpoint), nil
 
 }
