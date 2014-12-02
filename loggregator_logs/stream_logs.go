@@ -6,9 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"code.google.com/p/goprotobuf/proto"
-
 	"github.com/cloudfoundry/loggregatorlib/logmessage"
+	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	"github.com/pivotal-cf-experimental/veritas/say"
 )
