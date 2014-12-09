@@ -10,45 +10,12 @@ import (
 type VeritasLRP struct {
 	ProcessGuid       string
 	DesiredLRP        models.DesiredLRP
-	ActualLRPsByIndex map[string][]models.ActualLRP
-	StartAuctions     map[string]models.LRPStartAuction
-	StopAuctions      map[string]models.LRPStopAuction
-	StopInstances     map[string][]models.StopLRPInstance
+	ActualLRPsByIndex map[string]models.ActualLRP
 }
 
 func (l *VeritasLRP) OrderedActualLRPIndices() []string {
 	indicesAsStrings := []string{}
 	for index := range l.ActualLRPsByIndex {
-		indicesAsStrings = append(indicesAsStrings, index)
-	}
-
-	sort.Sort(ByNumericalValue(indicesAsStrings))
-	return indicesAsStrings
-}
-
-func (l *VeritasLRP) OrderedStartAuctionIndices() []string {
-	indicesAsStrings := []string{}
-	for index := range l.StartAuctions {
-		indicesAsStrings = append(indicesAsStrings, index)
-	}
-
-	sort.Sort(ByNumericalValue(indicesAsStrings))
-	return indicesAsStrings
-}
-
-func (l *VeritasLRP) OrderedStopAuctionIndices() []string {
-	indicesAsStrings := []string{}
-	for index := range l.StopAuctions {
-		indicesAsStrings = append(indicesAsStrings, index)
-	}
-
-	sort.Sort(ByNumericalValue(indicesAsStrings))
-	return indicesAsStrings
-}
-
-func (l *VeritasLRP) OrderedStopIndices() []string {
-	indicesAsStrings := []string{}
-	for index := range l.StopInstances {
 		indicesAsStrings = append(indicesAsStrings, index)
 	}
 

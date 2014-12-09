@@ -9,17 +9,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tedsuo/rata"
+
+	"github.com/cloudfoundry-incubator/runtime-schema/routes"
+
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 	"github.com/cloudfoundry/gunk/timeprovider"
-	"github.com/cloudfoundry/gunk/urljoiner"
 	"github.com/cloudfoundry/gunk/workpool"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-golang/lager"
-
-	SchemaRouter "github.com/cloudfoundry-incubator/runtime-schema/router"
 )
 
 func SubmitLRP(cluster []string, f io.Reader) error {
@@ -83,14 +84,15 @@ func interactivelyBuildDesiredLRP() models.DesiredLRP {
 	desiredLRP.LogGuid = desiredLRP.ProcessGuid
 	desiredLRP.LogSource = "VRT"
 
-	staticRoute, _ := SchemaRouter.NewFileServerRoutes().RouteForHandler(SchemaRouter.FS_STATIC)
-	circusURL := urljoiner.Join("http://file_server.service.dc1.consul:8080", staticRoute.Path, "linux-circus/linux-circus.tgz")
+	requestGenerator := rata.NewRequestGenerator("http://file_server.service.dc1.consul:8080", routes.FileServerRoutes)
+	circusDownloadRequest, _ := requestGenerator.CreateRequest(routes.FS_STATIC, nil, nil)
+
 	setup := common.BuildAction("Build Setup Action", []common.PreFabAction{
 		common.PreFabAction{
 			Name: "Download Spy",
 			ActionBuilder: func() models.Action {
 				return &models.DownloadAction{
-					From: circusURL,
+					From: circusDownloadRequest.URL.String(),
 					To:   "/tmp/circus",
 				}
 			},

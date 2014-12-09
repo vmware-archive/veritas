@@ -40,21 +40,6 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return err
 	}
 
-	lrpStartAuctions, err := store.LRPStartAuctions()
-	if err != nil {
-		return err
-	}
-
-	lrpStopAuctions, err := store.LRPStopAuctions()
-	if err != nil {
-		return err
-	}
-
-	stopLRPInstance, err := store.StopLRPInstances()
-	if err != nil {
-		return err
-	}
-
 	tasks, err := store.Tasks()
 	if err != nil {
 		return err
@@ -84,23 +69,7 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 	for _, actual := range actualLRPs {
 		lrp := dump.LRPS.Get(actual.ProcessGuid)
 		index := strconv.Itoa(actual.Index)
-		lrp.ActualLRPsByIndex[index] = append(lrp.ActualLRPsByIndex[index], actual)
-	}
-
-	for _, startAuction := range lrpStartAuctions {
-		index := strconv.Itoa(startAuction.Index)
-		dump.LRPS.Get(startAuction.DesiredLRP.ProcessGuid).StartAuctions[index] = startAuction
-	}
-
-	for _, stopAuction := range lrpStopAuctions {
-		index := strconv.Itoa(stopAuction.Index)
-		dump.LRPS.Get(stopAuction.ProcessGuid).StopAuctions[index] = stopAuction
-	}
-
-	for _, stopInstance := range stopLRPInstance {
-		lrp := dump.LRPS.Get(stopInstance.ProcessGuid)
-		index := strconv.Itoa(stopInstance.Index)
-		lrp.StopInstances[index] = append(lrp.StopInstances[index], stopInstance)
+		lrp.ActualLRPsByIndex[index] = actual
 	}
 
 	for _, task := range tasks {

@@ -49,10 +49,8 @@ func taskState(task models.Task) string {
 	switch task.State {
 	case models.TaskStatePending:
 		return say.LightGray("PENDING  ")
-	case models.TaskStateClaimed:
-		return say.Yellow("CLAIMED  ")
 	case models.TaskStateRunning:
-		return say.Cyan("RUNNING  ")
+		return say.Yellow("RUNNING  ")
 	case models.TaskStateCompleted:
 		return colorByTaskSuccess(task, "COMPLETED")
 	case models.TaskStateResolving:

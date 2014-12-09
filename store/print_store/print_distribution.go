@@ -37,7 +37,7 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	sort.Strings(cellIDs)
 
 	nTasks := map[string]int{}
-	nLRPsStarting := map[string]int{}
+	nLRPsClaimed := map[string]int{}
 	nLRPsRunning := map[string]int{}
 
 	for _, tasks := range dump.Tasks {
@@ -47,13 +47,11 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	}
 
 	for _, lrp := range dump.LRPS {
-		for _, actuals := range lrp.ActualLRPsByIndex {
-			for _, actual := range actuals {
-				if actual.State == models.ActualLRPStateStarting {
-					nLRPsStarting[actual.CellID]++
-				} else {
-					nLRPsRunning[actual.CellID]++
-				}
+		for _, actual := range lrp.ActualLRPsByIndex {
+			if actual.State == models.ActualLRPStateClaimed {
+				nLRPsClaimed[actual.CellID]++
+			} else {
+				nLRPsRunning[actual.CellID]++
 			}
 		}
 	}
@@ -65,12 +63,12 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	say.Fprintln(buffer, 0, "Distribution")
 	for _, cellID := range cellIDs {
 		numTasks := nTasks[cellID]
-		numLRPs := nLRPsStarting[cellID] + nLRPsRunning[cellID]
+		numLRPs := nLRPsClaimed[cellID] + nLRPsRunning[cellID]
 		var content string
 		if numTasks == 0 && numLRPs == 0 {
 			content = say.Red("Empty")
 		} else {
-			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[cellID])), say.Green(strings.Repeat("•", nLRPsRunning[cellID])), say.Gray(strings.Repeat("•", nLRPsStarting[cellID])))
+			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[cellID])), say.Green(strings.Repeat("•", nLRPsRunning[cellID])), say.Gray(strings.Repeat("•", nLRPsClaimed[cellID])))
 		}
 		say.Fprintln(buffer, 0, "%12s: %s", cellID, content)
 	}

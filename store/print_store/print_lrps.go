@@ -1,7 +1,6 @@
 package print_store
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -58,102 +57,27 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 
 	orderedActualIndices := lrp.OrderedActualLRPIndices()
 	for _, index := range orderedActualIndices {
-		for i, actual := range lrp.ActualLRPsByIndex[index] {
-			prefix := "        "
-			if i == 0 {
-				prefix = fmt.Sprintf("%7s:", index)
-			}
-			say.Println(
-				2,
-				"%s %s on %s [%s for %s]",
-				prefix,
-				actual.InstanceGuid,
-				actual.CellID,
-				time.Since(time.Unix(0, actual.Since)),
-				actualState(actual),
-			)
-		}
-	}
-
-	orderedStartAuctionIndices := lrp.OrderedStartAuctionIndices()
-	if len(orderedStartAuctionIndices) > 0 {
-		say.Println(2, "Start Auctions:")
-		for _, index := range orderedStartAuctionIndices {
-			auction := lrp.StartAuctions[index]
-			say.Println(
-				3,
-				"%3s: %s [%s for %s]",
-				index,
-				auction.InstanceGuid,
-				startAuctionState(auction),
-				time.Since(time.Unix(0, auction.UpdatedAt)),
-			)
-		}
-	}
-
-	orderedStopAuctionIndices := lrp.OrderedStopAuctionIndices()
-	if len(orderedStopAuctionIndices) > 0 {
-		say.Println(2, "Stop Auctions:")
-		for _, index := range orderedStopAuctionIndices {
-			auction := lrp.StopAuctions[index]
-			say.Println(
-				3,
-				"%3s: [%s for %s]",
-				index,
-				stopAuctionState(auction),
-				time.Since(time.Unix(0, auction.UpdatedAt)),
-			)
-		}
-	}
-
-	orderedStopIndices := lrp.OrderedStopIndices()
-	if len(orderedStopIndices) > 0 {
-		say.Println(2, "Stop Instances:")
-		for _, index := range orderedStopIndices {
-			for i, stop := range lrp.StopInstances[index] {
-				prefix := "    "
-				if i == 0 {
-					prefix = fmt.Sprintf("%3s:", index)
-				}
-				say.Println(
-					3,
-					"%s %s",
-					prefix,
-					stop.InstanceGuid,
-				)
-			}
-		}
+		actual := lrp.ActualLRPsByIndex[index]
+		say.Println(
+			2,
+			"%7s: %s on %s [%s for %s]",
+			index,
+			actual.InstanceGuid,
+			actual.CellID,
+			time.Since(time.Unix(0, actual.Since)),
+			actualState(actual),
+		)
 	}
 }
 
 func actualState(actual models.ActualLRP) string {
 	switch actual.State {
-	case models.ActualLRPStateStarting:
-		return say.LightGray("STARTING")
+	case models.ActualLRPStateUnclaimed:
+		return say.LightGray("UNCLAIMED")
+	case models.ActualLRPStateClaimed:
+		return say.Yellow("CLAIMED")
 	case models.ActualLRPStateRunning:
 		return say.Green("RUNNING")
-	default:
-		return say.Red("INVALID")
-	}
-}
-
-func startAuctionState(startAuction models.LRPStartAuction) string {
-	switch startAuction.State {
-	case models.LRPStartAuctionStatePending:
-		return say.LightGray("PENDING")
-	case models.LRPStartAuctionStateClaimed:
-		return say.Green("CLAIMED")
-	default:
-		return say.Red("INVALID")
-	}
-}
-
-func stopAuctionState(stopAuction models.LRPStopAuction) string {
-	switch stopAuction.State {
-	case models.LRPStopAuctionStatePending:
-		return say.LightGray("PENDING")
-	case models.LRPStopAuctionStateClaimed:
-		return say.Green("CLAIMED")
 	default:
 		return say.Red("INVALID")
 	}
