@@ -11,7 +11,7 @@ import (
 )
 
 func printLRPS(verbose bool, lrps veritas_models.VeritasLRPS) {
-	say.PrintBanner(say.Green("LRPs"), "~")
+	say.Println(0, say.Green("LRPs"))
 
 	sortedLRPS := lrps.SortedByProcessGuid()
 	for _, lrp := range sortedLRPS {
@@ -24,7 +24,7 @@ func printLRPS(verbose bool, lrps veritas_models.VeritasLRPS) {
 }
 
 func printFreshness(freshnesses []models.Freshness) {
-	say.PrintBanner(say.Green("Freshness"), "~")
+	say.Println(0, say.Green("Freshness"))
 	if len(freshnesses) == 0 {
 		say.Println(1, say.Red("None"))
 		return
@@ -58,15 +58,25 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 	orderedActualIndices := lrp.OrderedActualLRPIndices()
 	for _, index := range orderedActualIndices {
 		actual := lrp.ActualLRPsByIndex[index]
-		say.Println(
-			2,
-			"%7s: %s on %s [%s for %s]",
-			index,
-			actual.InstanceGuid,
-			actual.CellID,
-			time.Since(time.Unix(0, actual.Since)),
-			actualState(actual),
-		)
+		if actual.State == models.ActualLRPStateUnclaimed {
+			say.Println(
+				2,
+				"%7s: [%s for %s]",
+				index,
+				actualState(actual),
+				time.Since(time.Unix(0, actual.Since)),
+			)
+		} else {
+			say.Println(
+				2,
+				"%7s: %s on %s [%s for %s]",
+				index,
+				actual.InstanceGuid,
+				actual.CellID,
+				actualState(actual),
+				time.Since(time.Unix(0, actual.Since)),
+			)
+		}
 	}
 }
 

@@ -25,8 +25,8 @@ func PrintStore(verbose bool, tasks bool, lrps bool, services bool, clear bool, 
 	}
 
 	if lrps {
-		printFreshness(dump.Freshness)
 		printLRPS(verbose, dump.LRPS)
+		printFreshness(dump.Freshness)
 	}
 
 	if services {

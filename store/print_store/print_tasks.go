@@ -12,7 +12,7 @@ import (
 func printTasks(verbose bool, tasks veritas_models.VeritasTasks) {
 	taskTypes := tasks.OrderedTaskTypes()
 
-	say.PrintBanner(say.Green("Tasks"), "~")
+	say.Println(0, say.Green("Tasks"))
 
 	for _, taskType := range taskTypes {
 		say.Println(0, say.Green(taskType))

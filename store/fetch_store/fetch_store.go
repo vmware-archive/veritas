@@ -50,6 +50,11 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return err
 	}
 
+	auctioneerAddress, err := store.AuctioneerAddress()
+	if err != nil {
+		return err
+	}
+
 	freshness, err := store.Freshnesses()
 	if err != nil {
 		return err
@@ -77,6 +82,7 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 	}
 
 	dump.Services.Cells = cells
+	dump.Services.AuctioneerAddress = auctioneerAddress
 
 	encoder := json.NewEncoder(w)
 	return encoder.Encode(dump)
