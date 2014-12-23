@@ -55,16 +55,16 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return err
 	}
 
-	freshness, err := store.Freshnesses()
+	domains, err := store.Domains()
 	if err != nil {
 		return err
 	}
 
 	dump := veritas_models.StoreDump{
-		Freshness: freshness,
-		LRPS:      veritas_models.VeritasLRPS{},
-		Tasks:     veritas_models.VeritasTasks{},
-		Services:  veritas_models.VeritasServices{},
+		Domains:  domains,
+		LRPS:     veritas_models.VeritasLRPS{},
+		Tasks:    veritas_models.VeritasTasks{},
+		Services: veritas_models.VeritasServices{},
 	}
 
 	for _, desired := range desiredLRPs {

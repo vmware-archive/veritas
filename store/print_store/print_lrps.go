@@ -23,14 +23,14 @@ func printLRPS(verbose bool, lrps veritas_models.VeritasLRPS) {
 	}
 }
 
-func printFreshness(freshnesses []models.Freshness) {
-	say.Println(0, say.Green("Freshness"))
-	if len(freshnesses) == 0 {
+func printDomains(domains []string) {
+	say.Println(0, say.Green("Domains"))
+	if len(domains) == 0 {
 		say.Println(1, say.Red("None"))
 		return
 	}
-	for _, freshness := range freshnesses {
-		say.Println(1, say.Green("%s - %d", freshness.Domain, freshness.TTLInSeconds))
+	for _, domain := range domains {
+		say.Println(1, say.Green("%s", domain))
 	}
 }
 
