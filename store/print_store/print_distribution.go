@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sort"
 	"strings"
 
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
@@ -29,13 +28,6 @@ func PrintDistribution(tasks bool, lrps bool, clear bool, f io.Reader) error {
 }
 
 func printDistribution(dump veritas_models.StoreDump, includeTasks bool, includeLRPS bool, clear bool) {
-	cellIDs := []string{}
-	for _, cells := range dump.Services.Cells {
-		cellIDs = append(cellIDs, cells.CellID)
-	}
-
-	sort.Strings(cellIDs)
-
 	nTasks := map[string]int{}
 	nLRPsClaimed := map[string]int{}
 	nLRPsRunning := map[string]int{}
@@ -61,16 +53,16 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		say.Fclear(buffer)
 	}
 	say.Fprintln(buffer, 0, "Distribution")
-	for _, cellID := range cellIDs {
-		numTasks := nTasks[cellID]
-		numLRPs := nLRPsClaimed[cellID] + nLRPsRunning[cellID]
+	for _, cell := range dump.Services.Cells {
+		numTasks := nTasks[cell.CellID]
+		numLRPs := nLRPsClaimed[cell.CellID] + nLRPsRunning[cell.CellID]
 		var content string
 		if numTasks == 0 && numLRPs == 0 {
 			content = say.Red("Empty")
 		} else {
-			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[cellID])), say.Green(strings.Repeat("•", nLRPsRunning[cellID])), say.Gray(strings.Repeat("•", nLRPsClaimed[cellID])))
+			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[cell.CellID])), say.Green(strings.Repeat("•", nLRPsRunning[cell.CellID])), say.Gray(strings.Repeat("•", nLRPsClaimed[cell.CellID])))
 		}
-		say.Fprintln(buffer, 0, "%12s: %s", cellID, content)
+		say.Fprintln(buffer, 0, "%s %s: %s", say.Yellow(cell.Zone), say.Green("%12s", cell.CellID), content)
 	}
 
 	buffer.WriteTo(os.Stdout)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -80,6 +81,8 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 	for _, task := range tasks {
 		dump.Tasks[task.Domain] = append(dump.Tasks[task.Domain], task)
 	}
+
+	sort.Sort(veritas_models.CellsByZoneAndID(cells))
 
 	dump.Services.Cells = cells
 	dump.Services.AuctioneerAddress = auctioneerAddress
