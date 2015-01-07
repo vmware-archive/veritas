@@ -16,7 +16,8 @@ func RemoveLRP(cluster []string, guid string) error {
 		return err
 	}
 
-	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), lager.NewLogger("veritas"))
+	logger := lager.NewLogger("veritas")
+	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), logger)
 
-	return store.RemoveDesiredLRPByProcessGuid(guid)
+	return store.RemoveDesiredLRPByProcessGuid(logger, guid)
 }

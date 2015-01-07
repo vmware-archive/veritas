@@ -30,7 +30,8 @@ func SubmitLRP(cluster []string, f io.Reader) error {
 		return err
 	}
 
-	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), lager.NewLogger("veritas"))
+	logger := lager.NewLogger("veritas")
+	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), logger)
 
 	var desiredLRP models.DesiredLRP
 
@@ -57,7 +58,7 @@ func SubmitLRP(cluster []string, f io.Reader) error {
 	}
 
 	say.Println(0, say.Green("Desiring %s", desiredLRP.ProcessGuid))
-	return store.DesireLRP(desiredLRP)
+	return store.DesireLRP(logger, desiredLRP)
 }
 
 func interactivelyBuildDesiredLRP() models.DesiredLRP {

@@ -29,7 +29,8 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return nil
 	}
 
-	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), lager.NewLogger("veritas"))
+	logger := lager.NewLogger("veritas")
+	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), logger)
 
 	desiredLRPs, err := store.DesiredLRPs()
 	if err != nil {
@@ -41,7 +42,7 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return err
 	}
 
-	tasks, err := store.Tasks()
+	tasks, err := store.Tasks(logger)
 	if err != nil {
 		return err
 	}
