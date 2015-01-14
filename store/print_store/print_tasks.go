@@ -31,12 +31,17 @@ func printVerboseTask(task models.Task) {
 }
 
 func printTask(task models.Task) {
+	privileged := ""
+	if task.Privileged {
+		privileged = say.Red(" PRIVILEGED")
+	}
 	say.Println(1,
-		"%s [%s on %s@%s] U:%s C:%s (%d MB, %d MB, %d CPU)",
+		"%s [%s on %s@%s%s] U:%s C:%s (%d MB, %d MB, %d CPU)",
 		taskState(task),
 		task.TaskGuid,
 		task.CellID,
 		task.Stack,
+		privileged,
 		time.Since(time.Unix(0, task.UpdatedAt)).String(),
 		time.Since(time.Unix(0, task.CreatedAt)).String(),
 		task.MemoryMB,

@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/cloudfoundry-incubator/garden/api"
+	"github.com/cloudfoundry-incubator/garden"
 	"github.com/cloudfoundry-incubator/garden/client"
 	"github.com/cloudfoundry-incubator/garden/client/connection"
 
@@ -15,7 +15,7 @@ import (
 
 type ContainerInfo struct {
 	Handle string
-	Info   api.ContainerInfo
+	Info   garden.ContainerInfo
 }
 
 func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.Writer) error {

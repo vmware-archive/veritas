@@ -41,11 +41,16 @@ func printVerboseLRP(lrp *veritas_models.VeritasLRP) {
 func printLRP(lrp *veritas_models.VeritasLRP) {
 	say.Println(1, say.Green(lrp.ProcessGuid))
 	if lrp.DesiredLRP.ProcessGuid != "" {
+		privileged := ""
+		if lrp.DesiredLRP.Privileged {
+			privileged = say.Red(" PRIVILEGED")
+		}
 		say.Println(
 			2,
-			"Desired: %s on %s (%d MB, %d MB, %d CPU) %s",
+			"Desired: %s on %s%s (%d MB, %d MB, %d CPU) %s",
 			say.Green("%d", lrp.DesiredLRP.Instances),
 			say.Green(lrp.DesiredLRP.Stack),
+			privileged,
 			lrp.DesiredLRP.MemoryMB,
 			lrp.DesiredLRP.DiskMB,
 			lrp.DesiredLRP.CPUWeight,
