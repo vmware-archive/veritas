@@ -72,8 +72,8 @@ func PushDockerAppCommand() common.Command {
 			common.ExitIfError("Failed to build App JSON", err)
 
 			CF("curl", "/v2/apps", "-X", "POST", "-d", string(encodedApp))
-			CF("set-env", appName, "CF_DIEGO_BETA", "true")
-			CF("set-env", appName, "CF_DIEGO_RUN_BETA", "true")
+			CF("set-env", appName, "DIEGO_STAGE_BETA", "true")
+			CF("set-env", appName, "DIEGO_RUN_BETA", "true")
 			CF("create-route", space, domain, "-n", appName)
 			CF("map-route", appName, domain, "-n", appName)
 			say.Println(0, "Your docker app is ready -- just:\n %s", say.Green("cf start %s", appName))
