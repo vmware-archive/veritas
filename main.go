@@ -81,6 +81,7 @@ func main() {
 				tasks.SubmitTaskCommand(),
 				lrps.SubmitLRPCommand(),
 				lrps.RemoveLRPCommand(),
+				lrps.SetDomainCommand(),
 			},
 		},
 	}
