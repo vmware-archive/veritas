@@ -47,7 +47,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 		}
 		say.Println(
 			2,
-			"Desired: %s on %s%s (%d MB, %d MB, %d CPU) %s",
+			"%s on %s%s (%d MB, %d MB, %d CPU) %s",
 			say.Green("%d", lrp.DesiredLRP.Instances),
 			say.Green(lrp.DesiredLRP.Stack),
 			privileged,
@@ -65,19 +65,19 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 		actual := lrp.ActualLRPsByIndex[index]
 		if actual.State == models.ActualLRPStateUnclaimed {
 			say.Println(
-				2,
-				"%7s: [%s for %s]",
+				3,
+				"%2s: [%s for %s]",
 				index,
 				actualState(actual),
 				time.Since(time.Unix(0, actual.Since)),
 			)
 		} else {
 			say.Println(
-				2,
-				"%7s: %s on %s [%s for %s]",
+				3,
+				"%2s: %s %s [%s for %s]",
 				index,
 				actual.InstanceGuid,
-				actual.CellID,
+				say.Yellow(actual.CellID),
 				actualState(actual),
 				time.Since(time.Unix(0, actual.Since)),
 			)
