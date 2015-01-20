@@ -54,7 +54,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 			lrp.DesiredLRP.MemoryMB,
 			lrp.DesiredLRP.DiskMB,
 			lrp.DesiredLRP.CPUWeight,
-			say.Yellow(strings.Join(lrp.DesiredLRP.Routes, ",")),
+			say.Yellow(strings.Join(lrp.DesiredLRP.Routes, ", ")),
 		)
 	} else {
 		say.Println(2, say.Red("UNDESIRED"))
