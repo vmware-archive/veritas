@@ -12,7 +12,7 @@ import (
 )
 
 func ExecutorResources(executorAddr string, raw bool, out io.Writer) error {
-	client := client.New(http.DefaultClient, executorAddr)
+	client := client.New(http.DefaultClient, http.DefaultClient, executorAddr)
 	remaining, err := client.RemainingResources()
 	if err != nil {
 		return err

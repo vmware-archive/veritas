@@ -63,7 +63,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 	orderedActualIndices := lrp.OrderedActualLRPIndices()
 	for _, index := range orderedActualIndices {
 		actual := lrp.ActualLRPsByIndex[index]
-		if actual.State == models.ActualLRPStateUnclaimed {
+		if actual.State == models.ActualLRPStateUnclaimed || actual.State == models.ActualLRPStateCrashed {
 			say.Println(
 				3,
 				"%2s: [%s for %s]",
@@ -93,6 +93,8 @@ func actualState(actual models.ActualLRP) string {
 		return say.Yellow("CLAIMED")
 	case models.ActualLRPStateRunning:
 		return say.Green("RUNNING")
+	case models.ActualLRPStateCrashed:
+		return say.Red("CRASHED (%d)", actual.CrashCount)
 	default:
 		return say.Red("INVALID")
 	}
