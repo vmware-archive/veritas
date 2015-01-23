@@ -88,7 +88,11 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 func actualState(actual models.ActualLRP) string {
 	switch actual.State {
 	case models.ActualLRPStateUnclaimed:
-		return say.LightGray("UNCLAIMED")
+		if actual.PlacementError == "" {
+			return say.LightGray("UNCLAIMED")
+		} else {
+			return say.Red("UNCLAIMED (%s)", actual.PlacementError)
+		}
 	case models.ActualLRPStateClaimed:
 		return say.Yellow("CLAIMED")
 	case models.ActualLRPStateRunning:
