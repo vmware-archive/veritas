@@ -9,10 +9,10 @@ import (
 
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
-	"github.com/cloudfoundry/gunk/timeprovider"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
+	"github.com/pivotal-golang/clock"
 	"github.com/pivotal-golang/lager/lagertest"
 )
 
@@ -24,7 +24,7 @@ var _ = Describe("Veritas", func() {
 	)
 
 	BeforeEach(func() {
-		store = bbs.NewBBS(etcdRunner.Adapter(), timeprovider.NewTimeProvider(), lagertest.NewTestLogger("veritas"))
+		store = bbs.NewBBS(etcdRunner.Adapter(), clock.NewClock(), lagertest.NewTestLogger("veritas"))
 
 		err = store.DesireTask(models.Task{
 			TaskGuid: "Task-Guid",

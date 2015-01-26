@@ -10,12 +10,12 @@ import (
 
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs/shared"
-	"github.com/cloudfoundry/gunk/timeprovider"
 	"github.com/cloudfoundry/storeadapter"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/onsi/gomega/format"
 	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
+	"github.com/pivotal-golang/clock"
 	"github.com/pivotal-golang/lager"
 )
 
@@ -30,7 +30,7 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 	}
 
 	logger := lager.NewLogger("veritas")
-	store := bbs.NewVeritasBBS(adapter, timeprovider.NewTimeProvider(), logger)
+	store := bbs.NewVeritasBBS(adapter, clock.NewClock(), logger)
 
 	desiredLRPs, err := store.DesiredLRPs()
 	if err != nil {
