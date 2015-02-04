@@ -16,7 +16,6 @@ import (
 	"github.com/pivotal-cf-experimental/veritas/lrps"
 	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-cf-experimental/veritas/store"
-	"github.com/pivotal-cf-experimental/veritas/tasks"
 )
 
 func main() {
@@ -75,11 +74,9 @@ func main() {
 			},
 		},
 		common.CommandGroup{
-			Name:        "LRPS and Tasks " + say.Red("[DANGER]"),
-			Description: "Commands to add and remove DesiredLRPs and Tasks",
+			Name:        "LRPS " + say.Red("[DANGER]"),
+			Description: "Commands to remove DesiredLRPs and modify Domains",
 			Commands: []common.Command{
-				tasks.SubmitTaskCommand(),
-				lrps.SubmitLRPCommand(),
 				lrps.RemoveLRPCommand(),
 				lrps.SetDomainCommand(),
 			},

@@ -1,9 +1,12 @@
 package print_store
 
 import (
+	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/cloudfoundry-incubator/receptor"
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 	"github.com/onsi/gomega/format"
 	"github.com/pivotal-cf-experimental/veritas/say"
@@ -47,14 +50,14 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 		}
 		say.Println(
 			2,
-			"%s on %s%s (%d MB, %d MB, %d CPU) %s",
+			"%s on %s%s (%d MB, %d MB, %d CPU)\n%s",
 			say.Green("%d", lrp.DesiredLRP.Instances),
 			say.Green(lrp.DesiredLRP.Stack),
 			privileged,
 			lrp.DesiredLRP.MemoryMB,
 			lrp.DesiredLRP.DiskMB,
 			lrp.DesiredLRP.CPUWeight,
-			say.Yellow(strings.Join(lrp.DesiredLRP.Routes, ", ")),
+			say.Indent(1, routes(lrp.DesiredLRP.Routes)),
 		)
 	} else {
 		say.Println(2, say.Red("UNDESIRED"))
@@ -102,4 +105,25 @@ func actualState(actual models.ActualLRP) string {
 	default:
 		return say.Red("INVALID")
 	}
+}
+
+func routes(info map[string]*json.RawMessage) string {
+	if info == nil {
+		return ""
+	}
+
+	if info[receptor.CFRouter] == nil {
+		return ""
+	}
+
+	var routerRoutes receptor.CFRoutes
+	json.Unmarshal(*info[receptor.CFRouter], &routerRoutes)
+
+	out := ""
+
+	for _, cfRoute := range routerRoutes {
+		out += fmt.Sprintf("%s => %s ", say.Yellow("%d", cfRoute.Port), say.Green(strings.Join(cfRoute.Hostnames, " ")))
+	}
+
+	return out
 }
