@@ -1,12 +1,12 @@
 package print_store
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/cloudfoundry-incubator/receptor"
+	"github.com/cloudfoundry-incubator/route-emitter/cfroutes"
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 	"github.com/onsi/gomega/format"
 	"github.com/pivotal-cf-experimental/veritas/say"
@@ -107,22 +107,21 @@ func actualState(actual models.ActualLRP) string {
 	}
 }
 
-func routes(info map[string]*json.RawMessage) string {
+func routes(info receptor.RoutingInfo) string {
 	if info == nil {
 		return ""
 	}
 
-	if info[receptor.CFRouter] == nil {
+	routes, _ := cfroutes.CFRoutesFromRoutingInfo(info)
+
+	if routes == nil {
 		return ""
 	}
 
-	var routerRoutes receptor.CFRoutes
-	json.Unmarshal(*info[receptor.CFRouter], &routerRoutes)
-
 	out := ""
 
-	for _, cfRoute := range routerRoutes {
-		out += fmt.Sprintf("%s => %s ", say.Yellow("%d", cfRoute.Port), say.Green(strings.Join(cfRoute.Hostnames, " ")))
+	for _, route := range routes {
+		out += fmt.Sprintf("%s => %s ", say.Yellow("%d", route.Port), say.Green(strings.Join(route.Hostnames, " ")))
 	}
 
 	return out
