@@ -5,7 +5,6 @@ import (
 	"flag"
 	"os"
 	"os/exec"
-	"regexp"
 	"strings"
 
 	"github.com/pivotal-cf-experimental/veritas/common"
@@ -98,10 +97,7 @@ func CF(args ...string) {
 }
 
 func getSpaceGuid(space string) string {
-	re := regexp.MustCompile(`"guid": "([a-f0-9-]+)",`)
-	cf := exec.Command("cf", "space", space)
-	cf.Env = append(os.Environ(), "CF_TRACE=true")
-	output, err := cf.CombinedOutput()
-	common.ExitIfError("Fetchign space guid failed", err)
-	return string(re.FindSubmatch(output)[1])
+	output, err := exec.Command("cf", "space", space, "--guid").Output()
+	common.ExitIfError("Fetching space guid failed", err)
+	return strings.TrimSpace(string(output))
 }
