@@ -8,14 +8,14 @@ import (
 )
 
 type VeritasLRP struct {
-	ProcessGuid       string
-	DesiredLRP        models.DesiredLRP
-	ActualLRPsByIndex map[string]models.ActualLRP
+	ProcessGuid            string
+	DesiredLRP             models.DesiredLRP
+	ActualLRPGroupsByIndex map[string]models.ActualLRPGroup
 }
 
 func (l *VeritasLRP) OrderedActualLRPIndices() []string {
 	indicesAsStrings := []string{}
-	for index := range l.ActualLRPsByIndex {
+	for index := range l.ActualLRPGroupsByIndex {
 		indicesAsStrings = append(indicesAsStrings, index)
 	}
 

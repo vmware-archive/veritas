@@ -12,8 +12,8 @@ func (l VeritasLRPS) Get(guid string) *VeritasLRP {
 	lrp, ok := l[guid]
 	if !ok {
 		lrp = &VeritasLRP{
-			ProcessGuid:       guid,
-			ActualLRPsByIndex: map[string]models.ActualLRP{},
+			ProcessGuid:            guid,
+			ActualLRPGroupsByIndex: map[string]models.ActualLRPGroup{},
 		}
 		l[guid] = lrp
 	}

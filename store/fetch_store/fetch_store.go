@@ -37,7 +37,7 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		return err
 	}
 
-	actualLRPs, err := store.ActualLRPs()
+	actualLRPGroups, err := store.ActualLRPGroups()
 	if err != nil {
 		return err
 	}
@@ -73,10 +73,14 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 		dump.LRPS.Get(desired.ProcessGuid).DesiredLRP = desired
 	}
 
-	for _, actual := range actualLRPs {
+	for _, actualLRPGroup := range actualLRPGroups {
+		actual, _, err := actualLRPGroup.Resolve()
+		if err != nil {
+			continue
+		}
 		lrp := dump.LRPS.Get(actual.ProcessGuid)
 		index := strconv.Itoa(actual.Index)
-		lrp.ActualLRPsByIndex[index] = actual
+		lrp.ActualLRPGroupsByIndex[index] = actualLRPGroup
 	}
 
 	for _, task := range tasks {

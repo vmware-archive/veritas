@@ -31,6 +31,7 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	nTasks := map[string]int{}
 	nLRPsClaimed := map[string]int{}
 	nLRPsRunning := map[string]int{}
+	nLRPsEvacuating := map[string]int{}
 
 	for _, tasks := range dump.Tasks {
 		for _, task := range tasks {
@@ -39,11 +40,16 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	}
 
 	for _, lrp := range dump.LRPS {
-		for _, actual := range lrp.ActualLRPsByIndex {
-			if actual.State == models.ActualLRPStateClaimed {
-				nLRPsClaimed[actual.CellID]++
-			} else {
-				nLRPsRunning[actual.CellID]++
+		for _, actualLRPGroup := range lrp.ActualLRPGroupsByIndex {
+			if actualLRPGroup.Instance != nil {
+				if actualLRPGroup.Instance.State == models.ActualLRPStateClaimed {
+					nLRPsClaimed[actualLRPGroup.Instance.CellID]++
+				} else {
+					nLRPsRunning[actualLRPGroup.Instance.CellID]++
+				}
+			}
+			if actualLRPGroup.Evacuating != nil {
+				nLRPsEvacuating[actualLRPGroup.Evacuating.CellID]++
 			}
 		}
 	}
@@ -55,12 +61,17 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	say.Fprintln(buffer, 0, "Distribution")
 	for _, cell := range dump.Services.Cells {
 		numTasks := nTasks[cell.CellID]
-		numLRPs := nLRPsClaimed[cell.CellID] + nLRPsRunning[cell.CellID]
+		numLRPs := nLRPsClaimed[cell.CellID] + nLRPsRunning[cell.CellID] + nLRPsEvacuating[cell.CellID]
 		var content string
 		if numTasks == 0 && numLRPs == 0 {
 			content = say.Red("Empty")
 		} else {
-			content = fmt.Sprintf("%s%s%s", say.Yellow(strings.Repeat("•", nTasks[cell.CellID])), say.Green(strings.Repeat("•", nLRPsRunning[cell.CellID])), say.Gray(strings.Repeat("•", nLRPsClaimed[cell.CellID])))
+			content = fmt.Sprintf("%s%s%s",
+				say.Yellow(strings.Repeat("•", nTasks[cell.CellID])),
+				say.Green(strings.Repeat("•", nLRPsRunning[cell.CellID])),
+				say.Gray(strings.Repeat("•", nLRPsClaimed[cell.CellID])),
+				say.Red(strings.Repeat("•", nLRPsEvacuating[cell.CellID])),
+			)
 		}
 		say.Fprintln(buffer, 0, "%s %s: %s", say.Yellow(cell.Zone), say.Green("%12s", cell.CellID), content)
 	}

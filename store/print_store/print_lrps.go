@@ -48,16 +48,22 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 		if lrp.DesiredLRP.Privileged {
 			privileged = say.Red(" PRIVILEGED")
 		}
+
+		routesString := routes(lrp.DesiredLRP.Routes)
+		if routesString != "" {
+			routesString = "\n" + say.Indent(1, routesString)
+		}
+
 		say.Println(
 			2,
-			"%s on %s%s (%d MB, %d MB, %d CPU)\n%s",
+			"%s on %s%s (%d MB, %d MB, %d CPU)%s",
 			say.Green("%d", lrp.DesiredLRP.Instances),
 			say.Green(lrp.DesiredLRP.Stack),
 			privileged,
 			lrp.DesiredLRP.MemoryMB,
 			lrp.DesiredLRP.DiskMB,
 			lrp.DesiredLRP.CPUWeight,
-			say.Indent(1, routes(lrp.DesiredLRP.Routes)),
+			routesString,
 		)
 	} else {
 		say.Println(2, say.Red("UNDESIRED"))
@@ -65,30 +71,44 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 
 	orderedActualIndices := lrp.OrderedActualLRPIndices()
 	for _, index := range orderedActualIndices {
-		actual := lrp.ActualLRPsByIndex[index]
-		if actual.State == models.ActualLRPStateUnclaimed || actual.State == models.ActualLRPStateCrashed {
+		actualLRPGroup := lrp.ActualLRPGroupsByIndex[index]
+		if instance := actualLRPGroup.Instance; instance != nil {
+			if instance.State == models.ActualLRPStateUnclaimed || instance.State == models.ActualLRPStateCrashed {
+				say.Println(
+					3,
+					"%2s: [%s for %s]",
+					index,
+					actualState(instance),
+					time.Since(time.Unix(0, instance.Since)),
+				)
+			} else {
+				say.Println(
+					3,
+					"%2s: %s %s [%s for %s]",
+					index,
+					instance.InstanceGuid,
+					say.Yellow(instance.CellID),
+					actualState(instance),
+					time.Since(time.Unix(0, instance.Since)),
+				)
+			}
+		}
+		if evacuating := actualLRPGroup.Evacuating; evacuating != nil {
 			say.Println(
 				3,
-				"%2s: [%s for %s]",
-				index,
-				actualState(actual),
-				time.Since(time.Unix(0, actual.Since)),
-			)
-		} else {
-			say.Println(
-				3,
-				"%2s: %s %s [%s for %s]",
-				index,
-				actual.InstanceGuid,
-				say.Yellow(actual.CellID),
-				actualState(actual),
-				time.Since(time.Unix(0, actual.Since)),
+				"%s: %s %s [%s for %s] - %s",
+				say.Red("%2s", index),
+				say.Red(evacuating.InstanceGuid),
+				say.Yellow(evacuating.CellID),
+				actualState(evacuating),
+				time.Since(time.Unix(0, evacuating.Since)),
+				say.Red("EVACUATING"),
 			)
 		}
 	}
 }
 
-func actualState(actual models.ActualLRP) string {
+func actualState(actual *models.ActualLRP) string {
 	switch actual.State {
 	case models.ActualLRPStateUnclaimed:
 		if actual.PlacementError == "" {
