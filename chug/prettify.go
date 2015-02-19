@@ -25,7 +25,7 @@ var colorLookup = map[string]string{
 	"file-server":    "\x1b[34m",
 	"router":         "\x1b[32m",
 	"loggregator":    "\x1b[33m",
-	"stager":         "\x1b[36m",
+	"receptor":       "\x1b[36m",
 	"garden-linux":   "\x1b[35m",
 }
 
@@ -95,7 +95,7 @@ func (s *stenographer) PrettyPrintRaw(raw []byte) {
 func (s *stenographer) PrettyPrintLog(log chug.LogEntry) {
 	components := []string{}
 
-	color, ok := colorLookup[log.Source]
+	color, ok := colorLookup[strings.Split(log.Source, ":")[0]]
 	if !ok {
 		color = say.DefaultStyle
 	}
