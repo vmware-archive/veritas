@@ -10,7 +10,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/runtime-schema/models"
 
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
 

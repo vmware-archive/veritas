@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
-	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func baseFlagSet(command string, minTimeFlag, maxTimeFlag, matchFlag, excludeFlag *string) *flag.FlagSet {

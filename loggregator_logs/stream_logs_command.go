@@ -4,9 +4,9 @@ import (
 	"flag"
 	"os"
 
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
-	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func StreamLogsCommand() common.Command {

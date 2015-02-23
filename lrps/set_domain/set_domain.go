@@ -6,7 +6,7 @@ import (
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry/gunk/workpool"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 	"github.com/pivotal-golang/clock"
 	"github.com/pivotal-golang/lager"
 )

@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
-	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 type AppRequest struct {

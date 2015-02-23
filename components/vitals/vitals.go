@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 )
 
 func Vitals(vitalsAddrs map[string]string, out io.Writer) error {

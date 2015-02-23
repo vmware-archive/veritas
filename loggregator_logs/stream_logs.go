@@ -9,7 +9,7 @@ import (
 	"github.com/cloudfoundry/loggregatorlib/logmessage"
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 )
 
 func StreamLogs(loggregatorAddr string, appGuid string, out io.Writer) error {

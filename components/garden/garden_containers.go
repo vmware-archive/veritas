@@ -10,7 +10,7 @@ import (
 	"github.com/cloudfoundry-incubator/garden/client"
 	"github.com/cloudfoundry-incubator/garden/client/connection"
 
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 )
 
 type ContainerInfo struct {

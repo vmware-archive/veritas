@@ -7,9 +7,9 @@ import (
 
 	"github.com/cloudfoundry/gunk/workpool"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
-	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-cf-experimental/veritas/store/fetch_store"
 	"github.com/pivotal-cf-experimental/veritas/store/print_store"
 )

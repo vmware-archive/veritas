@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/cf"
 	"github.com/pivotal-cf-experimental/veritas/chug"
 	"github.com/pivotal-cf-experimental/veritas/common"
@@ -14,7 +15,6 @@ import (
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/loggregator_logs"
 	"github.com/pivotal-cf-experimental/veritas/lrps"
-	"github.com/pivotal-cf-experimental/veritas/say"
 	"github.com/pivotal-cf-experimental/veritas/store"
 )
 

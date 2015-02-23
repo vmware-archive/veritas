@@ -3,7 +3,7 @@ package common
 import (
 	"os"
 
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 )
 
 func ExitIfError(context string, err error) {

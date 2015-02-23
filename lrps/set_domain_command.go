@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/lrps/set_domain"
-	"github.com/pivotal-cf-experimental/veritas/say"
 )
 
 func SetDomainCommand() common.Command {

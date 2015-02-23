@@ -8,7 +8,7 @@ import (
 
 	"github.com/cloudfoundry-incubator/executor"
 	"github.com/cloudfoundry-incubator/executor/http/client"
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 )
 
 func ExecutorResources(executorAddr string, raw bool, out io.Writer) error {

@@ -13,7 +13,7 @@ import (
 	"github.com/cloudfoundry/storeadapter"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/onsi/gomega/format"
-	"github.com/pivotal-cf-experimental/veritas/say"
+	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 	"github.com/pivotal-golang/clock"
 	"github.com/pivotal-golang/lager"
