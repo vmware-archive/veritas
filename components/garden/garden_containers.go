@@ -30,7 +30,7 @@ func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.
 		info, err := container.Info()
 		if err != nil {
 			say.Println(1, say.Red("Failed to fetch container: %s\n", container.Handle()))
-			return err
+			continue
 		}
 		containerInfos = append(containerInfos, ContainerInfo{
 			container.Handle(),
