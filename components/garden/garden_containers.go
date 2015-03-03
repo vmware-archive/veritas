@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
+
+	"github.com/cloudfoundry/gunk/workpool"
 
 	"github.com/cloudfoundry-incubator/garden"
 	"github.com/cloudfoundry-incubator/garden/client"
@@ -25,18 +28,31 @@ func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.
 		return err
 	}
 
+	workPool := workpool.NewWorkPool(32)
+
+	lock := &sync.Mutex{}
+	wg := &sync.WaitGroup{}
+	wg.Add(len(containers))
+
 	containerInfos := []ContainerInfo{}
 	for _, container := range containers {
-		info, err := container.Info()
-		if err != nil {
-			say.Println(1, say.Red("Failed to fetch container: %s\n", container.Handle()))
-			continue
-		}
-		containerInfos = append(containerInfos, ContainerInfo{
-			container.Handle(),
-			info,
+		container := container
+		workPool.Submit(func() {
+			defer wg.Done()
+			info, err := container.Info()
+			if err != nil {
+				say.Println(1, say.Red("Failed to fetch container: %s\n", container.Handle()))
+				return
+			}
+			lock.Lock()
+			defer lock.Unlock()
+			containerInfos = append(containerInfos, ContainerInfo{
+				container.Handle(),
+				info,
+			})
 		})
 	}
+	wg.Wait()
 
 	if raw {
 		encoded, err := json.MarshalIndent(containerInfos, "", "  ")
