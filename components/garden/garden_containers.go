@@ -17,8 +17,9 @@ import (
 )
 
 type ContainerInfo struct {
-	Handle string
-	Info   garden.ContainerInfo
+	Handle  string
+	Info    garden.ContainerInfo
+	Metrics garden.Metrics
 }
 
 func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.Writer) error {
@@ -41,14 +42,21 @@ func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.
 			defer wg.Done()
 			info, err := container.Info()
 			if err != nil {
-				say.Println(1, say.Red("Failed to fetch container: %s\n", container.Handle()))
+				say.Println(1, say.Red("Failed to fetch container info: %s\n", container.Handle()))
 				return
 			}
+			metrics, err := container.Metrics()
+			if err != nil {
+				say.Println(1, say.Red("Failed to fetch container metrics: %s\n", container.Handle()))
+				return
+			}
+
 			lock.Lock()
 			defer lock.Unlock()
 			containerInfos = append(containerInfos, ContainerInfo{
 				container.Handle(),
 				info,
+				metrics,
 			})
 		})
 	}
@@ -76,6 +84,7 @@ func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.
 
 func printContainer(out io.Writer, containerInfo ContainerInfo) {
 	info := containerInfo.Info
+	metrics := containerInfo.Metrics
 	say.Fprintln(out, 0,
 		"%s - %s @ %s",
 		say.Green(containerInfo.Handle),
@@ -85,13 +94,13 @@ func printContainer(out io.Writer, containerInfo ContainerInfo) {
 
 	say.Fprintln(out, 1,
 		"Memory: %.3f MB",
-		float64(info.MemoryStat.TotalRss+info.MemoryStat.TotalCache-info.MemoryStat.TotalInactiveFile)/1024.0/1024.0,
+		float64(metrics.MemoryStat.TotalRss+metrics.MemoryStat.TotalCache-metrics.MemoryStat.TotalInactiveFile)/1024.0/1024.0,
 	)
 
 	say.Fprintln(out, 1,
 		"Disk: %.3f MB %d Inodes",
-		float64(info.DiskStat.BytesUsed)/1024.0/1024.0,
-		info.DiskStat.InodesUsed,
+		float64(metrics.DiskStat.BytesUsed)/1024.0/1024.0,
+		metrics.DiskStat.InodesUsed,
 	)
 
 	ports := []string{}

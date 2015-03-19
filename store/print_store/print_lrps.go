@@ -121,7 +121,7 @@ func actualState(actual *models.ActualLRP) string {
 	case models.ActualLRPStateRunning:
 		return say.Green("RUNNING")
 	case models.ActualLRPStateCrashed:
-		return say.Red("CRASHED (%d)", actual.CrashCount)
+		return say.Red("CRASHED (%d - %s)", actual.CrashCount, actual.CrashReason)
 	default:
 		return say.Red("INVALID")
 	}
