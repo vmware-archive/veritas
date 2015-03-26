@@ -40,7 +40,7 @@ func printTask(task models.Task) {
 		taskState(task),
 		task.TaskGuid,
 		task.CellID,
-		task.RootFS,
+		say.Cyan(task.RootFS),
 		privileged,
 		time.Since(time.Unix(0, task.UpdatedAt)).String(),
 		time.Since(time.Unix(0, task.CreatedAt)).String(),
