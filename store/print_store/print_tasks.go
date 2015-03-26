@@ -36,11 +36,11 @@ func printTask(task models.Task) {
 		privileged = say.Red(" PRIVILEGED")
 	}
 	say.Println(1,
-		"%s [%s on %s@%s%s] U:%s C:%s (%d MB, %d MB, %d CPU)",
+		"%s [%s on %s %s%s] U:%s C:%s (%d MB, %d MB, %d CPU)",
 		taskState(task),
 		task.TaskGuid,
 		task.CellID,
-		task.Stack,
+		task.RootFS,
 		privileged,
 		time.Since(time.Unix(0, task.UpdatedAt)).String(),
 		time.Since(time.Unix(0, task.CreatedAt)).String(),

@@ -56,9 +56,9 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 
 		say.Println(
 			2,
-			"%s on %s%s (%d MB, %d MB, %d CPU)%s",
+			"%s %s%s (%d MB, %d MB, %d CPU)%s",
 			say.Green("%d", lrp.DesiredLRP.Instances),
-			say.Green(lrp.DesiredLRP.Stack),
+			say.Green(lrp.DesiredLRP.RootFS),
 			privileged,
 			lrp.DesiredLRP.MemoryMB,
 			lrp.DesiredLRP.DiskMB,
