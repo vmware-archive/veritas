@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/cloudfoundry/gunk/workpool"
+	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
@@ -16,14 +16,16 @@ import (
 
 func DistributionCommand() common.Command {
 	var (
-		etcdClusterFlag string
-		tasks           bool
-		lrps            bool
-		rate            time.Duration
+		etcdClusterFlag   string
+		consulClusterFlag string
+		tasks             bool
+		lrps              bool
+		rate              time.Duration
 	)
 
 	flagSet := flag.NewFlagSet("distribution", flag.ExitOnError)
 	flagSet.StringVar(&etcdClusterFlag, "etcdCluster", "", "comma-separated etcd cluster urls")
+	flagSet.StringVar(&consulClusterFlag, "consulCluster", "", "comma-separated consul cluster urls")
 	flagSet.BoolVar(&tasks, "tasks", true, "print tasks")
 	flagSet.BoolVar(&lrps, "lrps", true, "print lrps")
 	flagSet.DurationVar(&rate, "rate", time.Duration(0), "rate at which to poll the store")
@@ -33,15 +35,11 @@ func DistributionCommand() common.Command {
 		Description: "- Fetch and print distribution of Tasks and LRPs",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
-			common.ExitIfError("Could not find etcd cluster", err)
-
-			adapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workpool.NewWorkPool(10))
-			err = adapter.Connect()
-			common.ExitIfError("Could not connect to etcd cluster", err)
+			veritasBBS, etcdStore, err := config_finder.ConstructBBS(etcdClusterFlag, consulClusterFlag)
+			common.ExitIfError("Could not construct BBS", err)
 
 			if rate == 0 {
-				err = distribution(adapter, tasks, lrps, false)
+				err = distribution(veritasBBS, etcdStore, tasks, lrps, false)
 				common.ExitIfError("Failed to print distribution", err)
 				return
 			}
@@ -49,7 +47,7 @@ func DistributionCommand() common.Command {
 			ticker := time.NewTicker(rate)
 			for {
 				<-ticker.C
-				err = distribution(adapter, tasks, lrps, true)
+				err = distribution(veritasBBS, etcdStore, tasks, lrps, true)
 				if err != nil {
 					say.Println(0, say.Red("Failed to print distribution: %s", err.Error()))
 				}
@@ -58,12 +56,12 @@ func DistributionCommand() common.Command {
 	}
 }
 
-func distribution(adapter *etcdstoreadapter.ETCDStoreAdapter, tasks bool, lrps bool, clear bool) error {
+func distribution(veritasBBS bbs.VeritasBBS, etcdStore *etcdstoreadapter.ETCDStoreAdapter, tasks bool, lrps bool, clear bool) error {
 	reader, writer := io.Pipe()
 
 	errs := make(chan error)
 	go func() {
-		err := fetch_store.Fetch(adapter, false, writer)
+		err := fetch_store.Fetch(veritasBBS, etcdStore, false, writer)
 		errs <- err
 	}()
 	go func() {

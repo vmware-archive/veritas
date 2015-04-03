@@ -8,10 +8,7 @@ For a linux build on a bosh vm:
 
 ```bash
  pushd $HOME
- rm veritas
- rm veritas.bash
-
- wget http://onsi-public.s3.amazonaws.com/veritas
+ wget http://onsi-public.s3.amazonaws.com/veritas -O ./veritas
  chmod +x ./veritas
 
  echo "export PATH=$PATH:$PWD" > veritas.bash

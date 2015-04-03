@@ -15,13 +15,12 @@ import (
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
-	"github.com/pivotal-golang/clock"
 	"github.com/pivotal-golang/lager"
 )
 
-func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) error {
+func Fetch(store bbs.VeritasBBS, adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) error {
 	if raw {
-		node, err := adapter.ListRecursively(shared.SchemaRoot)
+		node, err := adapter.ListRecursively(shared.DataSchemaRoot)
 		if err != nil {
 			return err
 		}
@@ -30,7 +29,6 @@ func Fetch(adapter *etcdstoreadapter.ETCDStoreAdapter, raw bool, w io.Writer) er
 	}
 
 	logger := lager.NewLogger("veritas")
-	store := bbs.NewVeritasBBS(adapter, clock.NewClock(), logger)
 
 	desiredLRPs, err := store.DesiredLRPs()
 	if err != nil {

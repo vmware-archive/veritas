@@ -12,25 +12,27 @@ import (
 
 func RemoveLRPCommand() common.Command {
 	var (
-		etcdClusterFlag string
+		etcdClusterFlag   string
+		consulClusterFlag string
 	)
 
 	flagSet := flag.NewFlagSet("remove-lrp", flag.ExitOnError)
 	flagSet.StringVar(&etcdClusterFlag, "etcdCluster", "", "comma-separated etcd cluster urls")
+	flagSet.StringVar(&consulClusterFlag, "consulCluster", "", "comma-separated consul cluster urls")
 
 	return common.Command{
 		Name:        "remove-lrp",
 		Description: "process-guid - undesired an lrp",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
-			common.ExitIfError("Could not find etcd cluster", err)
+			veritasBBS, _, err := config_finder.ConstructBBS(etcdClusterFlag, consulClusterFlag)
+			common.ExitIfError("Could not construct BBS", err)
 
 			if len(args) == 0 {
 				say.Fprintln(os.Stderr, 0, say.Red("You must specify a process-guid"))
 				os.Exit(1)
 			} else {
-				err = remove_lrp.RemoveLRP(etcdCluster, args[0])
+				err = remove_lrp.RemoveLRP(veritasBBS, args[0])
 				common.ExitIfError("Failed to remove lrp", err)
 			}
 		},

@@ -22,12 +22,14 @@ func Autodetect(out io.Writer) error {
 	gardenAddr := ""
 	gardenNetwork := ""
 	etcdCluster := ""
+	consulCluster := ""
 	receptorEndpoint := ""
 	receptorUsername := ""
 	receptorPassword := ""
 
 	debugRe := regexp.MustCompile(`debugAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	etcdRe := regexp.MustCompile(`etcdCluster=\"(.+)\"`)
+	consulRe := regexp.MustCompile(`consulCluster=([A-Za-z0-9:,/.]+)`)
 	executorRe := regexp.MustCompile(`listenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenTCPAddrRe := regexp.MustCompile(`gardenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenUnixAddrRe := regexp.MustCompile(`gardenAddr=([/\-\w+\.\d]+)`)
@@ -62,6 +64,11 @@ func Autodetect(out io.Writer) error {
 				if etcdRe.Match(data) {
 					etcdCluster = string(etcdRe.FindSubmatch(data)[1])
 					etcdCluster = strings.Replace(etcdCluster, `"`, ``, -1)
+				}
+
+				if consulRe.Match(data) {
+					consulCluster = string(consulRe.FindSubmatch(data)[1])
+					consulCluster = strings.Replace(consulCluster, `"`, ``, -1)
 				}
 
 				if name == "executor" && executorRe.Match(data) {
@@ -111,6 +118,9 @@ func Autodetect(out io.Writer) error {
 	}
 	if etcdCluster != "" {
 		say.Fprintln(out, 0, "export ETCD_CLUSTER=%s", etcdCluster)
+	}
+	if consulCluster != "" {
+		say.Fprintln(out, 0, "export CONSUL_CLUSTER=%s", consulCluster)
 	}
 	if receptorEndpoint != "" {
 		say.Fprintln(out, 0, "export RECEPTOR_ENDPOINT=%s", receptorEndpoint)

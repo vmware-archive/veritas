@@ -4,8 +4,6 @@ import (
 	"flag"
 	"os"
 
-	"github.com/cloudfoundry/gunk/workpool"
-	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/store/fetch_store"
@@ -13,34 +11,32 @@ import (
 
 func FetchStoreCommand() common.Command {
 	var (
-		raw             bool
-		etcdClusterFlag string
+		verbose           bool
+		etcdClusterFlag   string
+		consulClusterFlag string
 	)
 
 	flagSet := flag.NewFlagSet("fetch-store", flag.ExitOnError)
-	flagSet.BoolVar(&raw, "raw", false, "fetch raw store dump")
+	flagSet.BoolVar(&verbose, "v", false, "fetch raw store dump")
 	flagSet.StringVar(&etcdClusterFlag, "etcdCluster", "", "comma-separated etcd cluster urls")
+	flagSet.StringVar(&consulClusterFlag, "consulCluster", "", "comma-separated consul cluster urls")
 
 	return common.Command{
 		Name:        "fetch-store",
 		Description: "[file] - Fetch contents of the BBS",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			etcdCluster, err := config_finder.FindETCDCluster(etcdClusterFlag)
-			common.ExitIfError("Could not find etcd cluster", err)
-
-			adapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workpool.NewWorkPool(10))
-			err = adapter.Connect()
-			common.ExitIfError("Could not connect to etcd cluster", err)
+			veritasBBS, etcdStore, err := config_finder.ConstructBBS(etcdClusterFlag, consulClusterFlag)
+			common.ExitIfError("Could not construct BBS", err)
 
 			if len(args) == 0 {
-				err := fetch_store.Fetch(adapter, raw, os.Stdout)
+				err := fetch_store.Fetch(veritasBBS, etcdStore, verbose, os.Stdout)
 				common.ExitIfError("Failed to fetch store", err)
 			} else {
 				f, err := os.Create(args[0])
 				common.ExitIfError("Could not create file", err)
 
-				err = fetch_store.Fetch(adapter, raw, f)
+				err = fetch_store.Fetch(veritasBBS, etcdStore, verbose, f)
 				common.ExitIfError("Failed to fetch store", err)
 
 				f.Close()
