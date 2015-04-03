@@ -45,26 +45,15 @@ func Fetch(store bbs.VeritasBBS, adapter *etcdstoreadapter.ETCDStoreAdapter, raw
 		return err
 	}
 
-	cells, err := store.Cells()
-	if err != nil {
-		return err
-	}
-
-	auctioneerAddress, err := store.AuctioneerAddress()
-	if err != nil {
-		return err
-	}
-
 	domains, err := store.Domains()
 	if err != nil {
 		return err
 	}
 
 	dump := veritas_models.StoreDump{
-		Domains:  domains,
-		LRPS:     veritas_models.VeritasLRPS{},
-		Tasks:    veritas_models.VeritasTasks{},
-		Services: veritas_models.VeritasServices{},
+		Domains: domains,
+		LRPS:    veritas_models.VeritasLRPS{},
+		Tasks:   veritas_models.VeritasTasks{},
 	}
 
 	for _, desired := range desiredLRPs {
@@ -85,13 +74,35 @@ func Fetch(store bbs.VeritasBBS, adapter *etcdstoreadapter.ETCDStoreAdapter, raw
 		dump.Tasks[task.Domain] = append(dump.Tasks[task.Domain], task)
 	}
 
-	sort.Sort(veritas_models.CellsByZoneAndID(cells))
-
-	dump.Services.Cells = cells
-	dump.Services.AuctioneerAddress = auctioneerAddress
+	dump.Services, err = tryToFetchServices(store)
+	if err != nil {
+		return err
+	}
 
 	encoder := json.NewEncoder(w)
 	return encoder.Encode(dump)
+}
+
+func tryToFetchServices(store bbs.VeritasBBS) (services veritas_models.VeritasServices, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+	}()
+
+	services.Cells, err = store.Cells()
+	if err != nil {
+		return services, err
+	}
+
+	sort.Sort(veritas_models.CellsByZoneAndID(services.Cells))
+
+	services.AuctioneerAddress, err = store.AuctioneerAddress()
+	if err != nil {
+		return services, err
+	}
+
+	return services, nil
 }
 
 func printNode(indentation int, node storeadapter.StoreNode, w io.Writer) {

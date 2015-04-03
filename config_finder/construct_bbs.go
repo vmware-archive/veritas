@@ -15,23 +15,13 @@ func ConstructBBS(etcdClusterFlag string, consulClusterFlag string) (bbs.Veritas
 		return nil, nil, err
 	}
 
-	consulCluster, err := FindConsulCluster(consulClusterFlag)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	etcdAdapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, workpool.NewWorkPool(10))
 	err = etcdAdapter.Connect()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	consulScheme, consulAddresses, err := consuladapter.Parse(consulCluster)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	consulAdapter, err := consuladapter.NewAdapter(consulAddresses, consulScheme)
+	consulAdapter, err := constructConsulAdapter(consulClusterFlag)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -39,4 +29,23 @@ func ConstructBBS(etcdClusterFlag string, consulClusterFlag string) (bbs.Veritas
 	logger := lager.NewLogger("veritas")
 	store := bbs.NewVeritasBBS(etcdAdapter, consulAdapter, clock.NewClock(), logger)
 	return store, etcdAdapter, nil
+}
+
+func constructConsulAdapter(consulClusterFlag string) (*consuladapter.Adapter, error) {
+	consulCluster, err := FindConsulCluster(consulClusterFlag)
+	if err != nil {
+		return nil, nil
+	}
+
+	consulScheme, consulAddresses, err := consuladapter.Parse(consulCluster)
+	if err != nil {
+		return nil, err
+	}
+
+	consulAdapter, err := consuladapter.NewAdapter(consulAddresses, consulScheme)
+	if err != nil {
+		return nil, err
+	}
+
+	return consulAdapter, nil
 }
