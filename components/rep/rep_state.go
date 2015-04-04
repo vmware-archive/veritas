@@ -59,18 +59,6 @@ func RepState(bbs bbs.VeritasBBS, out io.Writer) (err error) {
 			name = say.Red("%s - EVAC -", state.ID)
 		}
 
-		say.Println(0, "%s [%s] - Zone:%s C:%d/%d M:%d/%d D:%d/%d",
-			name,
-			state.Duration,
-			say.Cyan(state.State.Zone),
-			state.State.AvailableResources.Containers,
-			state.State.TotalResources.Containers,
-			state.State.AvailableResources.MemoryMB,
-			state.State.TotalResources.MemoryMB,
-			state.State.AvailableResources.DiskMB,
-			state.State.TotalResources.DiskMB,
-		)
-
 		rootFSes := []string{}
 		for key := range state.State.RootFSProviders {
 			if key != "preloaded" {
@@ -82,10 +70,19 @@ func RepState(bbs bbs.VeritasBBS, out io.Writer) (err error) {
 			rootFSes = append(rootFSes, say.Green("preloaded:%s", key))
 		}
 
-		say.Println(1, "%s Tasks, %s LRPs, %s",
+		say.Println(0, "%s [%s] - Zone:%s | %s Tasks, %s LRPs | C:%d/%d M:%d/%d D:%d/%d | %s",
+			name,
+			state.Duration,
+			say.Cyan(state.State.Zone),
 			say.Cyan("%d", len(state.State.Tasks)),
 			say.Cyan("%d", len(state.State.LRPs)),
-			strings.Join(rootFSes, ","),
+			state.State.AvailableResources.Containers,
+			state.State.TotalResources.Containers,
+			state.State.AvailableResources.MemoryMB,
+			state.State.TotalResources.MemoryMB,
+			state.State.AvailableResources.DiskMB,
+			state.State.TotalResources.DiskMB,
+			strings.Join(rootFSes, ", "),
 		)
 	}
 
