@@ -8,12 +8,10 @@ import (
 	"strings"
 
 	"github.com/onsi/say"
-	"github.com/pivotal-cf-experimental/veritas/cf"
 	"github.com/pivotal-cf-experimental/veritas/chug"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/components"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
-	"github.com/pivotal-cf-experimental/veritas/loggregator_logs"
 	"github.com/pivotal-cf-experimental/veritas/lrps"
 	"github.com/pivotal-cf-experimental/veritas/store"
 )
@@ -53,24 +51,11 @@ func main() {
 			Name:        "Components",
 			Description: "Commands to fetch information from various components",
 			Commands: []common.Command{
+				components.RepStateCommand(),
 				components.ExecutorResourcesCommand(),
 				components.ExecutorContainersCommand(),
 				components.GardenContainersCommand(),
 				components.VitalsCommand(),
-			},
-		},
-		common.CommandGroup{
-			Name:        "Loggregator",
-			Description: "Commands to stream loggregator logs",
-			Commands: []common.Command{
-				loggregator_logs.StreamLogsCommand(),
-			},
-		},
-		common.CommandGroup{
-			Name:        "CF",
-			Description: "Commands that augment cf",
-			Commands: []common.Command{
-				cf.PushDockerAppCommand(),
 			},
 		},
 		common.CommandGroup{
