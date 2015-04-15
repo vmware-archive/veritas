@@ -133,10 +133,10 @@ var _ = Describe("Unify", func() {
 		})
 	})
 
-	Context("with a time limits and filters", func() {
+	Context("with time limits and filters", func() {
 		It("should apply the time limits and the filters", func(done Done) {
 			out := gbytes.NewBuffer()
-			err := Unify([]io.Reader{bufferA, bufferB}, out, t0, t1, regexp.MustCompile("B"), regexp.MustCompile("3"))
+			err := Unify([]io.Reader{bufferA, bufferB}, out, t0, t1, regexp.MustCompile("B"), regexp.MustCompile("-3"))
 			Ω(err).ShouldNot(HaveOccurred())
 
 			Ω(out).ShouldNot(gbytes.Say("non-lager-A"))
