@@ -1,6 +1,8 @@
 package config_finder
 
 import (
+	"time"
+
 	"github.com/cloudfoundry-incubator/consuladapter"
 	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
 	"github.com/cloudfoundry/gunk/workpool"
@@ -31,21 +33,17 @@ func ConstructBBS(etcdClusterFlag string, consulClusterFlag string) (bbs.Veritas
 	return store, etcdAdapter, nil
 }
 
-func constructConsulAdapter(consulClusterFlag string) (*consuladapter.Adapter, error) {
+func constructConsulAdapter(consulClusterFlag string) (*consuladapter.Session, error) {
 	consulCluster, err := FindConsulCluster(consulClusterFlag)
 	if err != nil {
 		return nil, nil
 	}
 
-	consulScheme, consulAddresses, err := consuladapter.Parse(consulCluster)
+	consulClient, err := consuladapter.NewClient(consulCluster)
 	if err != nil {
 		return nil, err
 	}
 
-	consulAdapter, err := consuladapter.NewAdapter(consulAddresses, consulScheme)
-	if err != nil {
-		return nil, err
-	}
-
-	return consulAdapter, nil
+	sessionManager := consuladapter.NewSessionManager(consulClient)
+	return consuladapter.NewSession("veritas", 10*time.Second, consulClient, sessionManager)
 }
