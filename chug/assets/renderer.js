@@ -24,7 +24,7 @@ LogRenderer.prototype = {
       } else {
         dom += this.renderLager(log)
       }
-      log.searchText = this.lagerSearchText(log)        
+      log.searchText = this.lagerSearchText(log)
     } else {
       dom += this.renderRaw(log)
       log.searchText = this.rawSearchText(log)
@@ -93,7 +93,7 @@ LogRenderer.prototype = {
       errorDom = '<div class="error"><pre class="ginkgo-error">' + log.log.error + '</pre></div>'
     }
 
-    dataDom = '<div class="data">' 
+    dataDom = '<div class="data">'
     dataDom += '<div>'+log.log.data.summary.location+'</div>'
     if (log.log.data.summary.run_time) {
       dataDom += '<div>'+formatRelativeTimestamp(log.log.data.summary.run_time)+'</div>'
@@ -112,7 +112,7 @@ LogRenderer.prototype = {
       var dataDom = '<dl class="big-data">'
       _.each(keys, function(key) {
         dataDom += "<dt>"+key+":</dt>"
-        var prettyJSON = JSON.stringify(data[key], null, "  ").slice(1,-1).replace(/"/g, '')
+        var prettyJSON = JSON.stringify(data[key], null, "  ").replace(/"/g, '')
         dataDom += "<dd><pre>"+prettyJSON+"</pre></dd>"
       })
       dataDom += "</dl>"
