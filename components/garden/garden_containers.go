@@ -29,7 +29,10 @@ func GardenContainers(gardenAddr string, gardenNetwork string, raw bool, out io.
 		return err
 	}
 
-	workPool := workpool.NewWorkPool(32)
+	workPool, err := workpool.NewWorkPool(32)
+	if err != nil {
+		return err
+	}
 
 	lock := &sync.Mutex{}
 	wg := &sync.WaitGroup{}

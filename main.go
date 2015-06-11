@@ -52,8 +52,6 @@ func main() {
 			Description: "Commands to fetch information from various components",
 			Commands: []common.Command{
 				components.RepStateCommand(),
-				components.ExecutorResourcesCommand(),
-				components.ExecutorContainersCommand(),
 				components.GardenContainersCommand(),
 				components.VitalsCommand(),
 			},

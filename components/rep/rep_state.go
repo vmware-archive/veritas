@@ -45,7 +45,10 @@ func RepState(bbs bbs.VeritasBBS, out io.Writer) (err error) {
 		return err
 	}
 
-	states := fetchCellStates(cells)
+	states, err := fetchCellStates(cells)
+	if err != nil {
+		return err
+	}
 	sort.Sort(states)
 
 	for _, state := range states {
@@ -89,11 +92,15 @@ func RepState(bbs bbs.VeritasBBS, out io.Writer) (err error) {
 	return nil
 }
 
-func fetchCellStates(cells []models.CellPresence) stateResponses {
+func fetchCellStates(cells []models.CellPresence) (stateResponses, error) {
 	lock := &sync.Mutex{}
 	responses := []stateResponse{}
 
-	wp := workpool.NewWorkPool(20)
+	wp, err := workpool.NewWorkPool(20)
+	if err != nil {
+		return responses, err
+	}
+
 	wg := &sync.WaitGroup{}
 	wg.Add(len(cells))
 	for _, cell := range cells {
@@ -119,5 +126,5 @@ func fetchCellStates(cells []models.CellPresence) stateResponses {
 	}
 	wg.Wait()
 
-	return responses
+	return responses, nil
 }

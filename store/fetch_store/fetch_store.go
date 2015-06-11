@@ -30,12 +30,12 @@ func Fetch(store bbs.VeritasBBS, adapter *etcdstoreadapter.ETCDStoreAdapter, raw
 
 	logger := lager.NewLogger("veritas")
 
-	desiredLRPs, err := store.DesiredLRPs()
+	desiredLRPs, err := store.DesiredLRPs(logger)
 	if err != nil {
 		return err
 	}
 
-	actualLRPGroups, err := store.ActualLRPGroups()
+	actualLRPGroups, err := store.ActualLRPGroups(logger)
 	if err != nil {
 		return err
 	}
