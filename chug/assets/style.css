@@ -1,7 +1,7 @@
 body {
     margin:0;
     font-size: 14px;
-    font-family: "helveticaneue-light";
+    font-family: "helveticaneue-light", sans-serif;
     background-color: #f9f9f9;
     color:#333;
 }
@@ -143,7 +143,7 @@ body {
     -webkit-box-sizing: border-box;
 
     background-color: #222;
-    font-family: menlo;
+    font-family: menlo, monospace;
     color:#eee;
 }
 
