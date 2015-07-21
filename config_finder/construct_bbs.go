@@ -21,7 +21,11 @@ func ConstructBBS(etcdClusterFlag string, consulClusterFlag string) (bbs.Veritas
 	if err != nil {
 		return nil, nil, err
 	}
-	etcdAdapter := etcdstoreadapter.NewETCDStoreAdapter(etcdCluster, wp)
+	etcdAdapter, err := etcdstoreadapter.New(&etcdstoreadapter.ETCDOptions{ClusterUrls: etcdCluster}, wp)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	err = etcdAdapter.Connect()
 	if err != nil {
 		return nil, nil, err
