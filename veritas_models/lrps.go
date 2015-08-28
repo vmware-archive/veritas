@@ -3,7 +3,7 @@ package veritas_models
 import (
 	"sort"
 
-	"github.com/cloudfoundry-incubator/runtime-schema/models"
+	"github.com/cloudfoundry-incubator/bbs/models"
 )
 
 type VeritasLRPS map[string]*VeritasLRP
@@ -13,7 +13,7 @@ func (l VeritasLRPS) Get(guid string) *VeritasLRP {
 	if !ok {
 		lrp = &VeritasLRP{
 			ProcessGuid:            guid,
-			ActualLRPGroupsByIndex: map[string]models.ActualLRPGroup{},
+			ActualLRPGroupsByIndex: map[string]*models.ActualLRPGroup{},
 		}
 		l[guid] = lrp
 	}

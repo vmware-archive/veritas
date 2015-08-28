@@ -101,9 +101,11 @@ func printContainer(out io.Writer, containerInfo ContainerInfo) {
 	)
 
 	say.Fprintln(out, 1,
-		"Disk: %.3f MB %d Inodes",
-		float64(metrics.DiskStat.BytesUsed)/1024.0/1024.0,
-		metrics.DiskStat.InodesUsed,
+		"Disk: Total:%.3f MB %d Inodes, Exclusive:%.3f MB %d Inodes",
+		float64(metrics.DiskStat.TotalBytesUsed)/1024.0/1024.0,
+		metrics.DiskStat.TotalInodesUsed,
+		float64(metrics.DiskStat.ExclusiveBytesUsed)/1024.0/1024.0,
+		metrics.DiskStat.ExclusiveInodesUsed,
 	)
 
 	ports := []string{}

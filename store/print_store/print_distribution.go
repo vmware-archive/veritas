@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strings"
 
-	"github.com/cloudfoundry-incubator/runtime-schema/models"
-
+	"github.com/cloudfoundry-incubator/bbs/models"
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
@@ -32,10 +32,16 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	nLRPsClaimed := map[string]int{}
 	nLRPsRunning := map[string]int{}
 	nLRPsEvacuating := map[string]int{}
+	cells := []string{}
+	knownCells := map[string]bool{}
 
 	for _, tasks := range dump.Tasks {
 		for _, task := range tasks {
-			nTasks[task.CellID]++
+			nTasks[task.GetCellId()]++
+			if !knownCells[task.GetCellId()] {
+				knownCells[task.GetCellId()] = true
+				cells = append(cells, task.GetCellId())
+			}
 		}
 	}
 
@@ -43,37 +49,49 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 		for _, actualLRPGroup := range lrp.ActualLRPGroupsByIndex {
 			if actualLRPGroup.Instance != nil {
 				if actualLRPGroup.Instance.State == models.ActualLRPStateClaimed {
-					nLRPsClaimed[actualLRPGroup.Instance.CellID]++
+					nLRPsClaimed[actualLRPGroup.Instance.GetCellId()]++
 				} else {
-					nLRPsRunning[actualLRPGroup.Instance.CellID]++
+					nLRPsRunning[actualLRPGroup.Instance.GetCellId()]++
+				}
+
+				if !knownCells[actualLRPGroup.Instance.GetCellId()] {
+					knownCells[actualLRPGroup.Instance.GetCellId()] = true
+					cells = append(cells, actualLRPGroup.Instance.GetCellId())
 				}
 			}
 			if actualLRPGroup.Evacuating != nil {
-				nLRPsEvacuating[actualLRPGroup.Evacuating.CellID]++
+				nLRPsEvacuating[actualLRPGroup.Evacuating.GetCellId()]++
+
+				if !knownCells[actualLRPGroup.Evacuating.GetCellId()] {
+					knownCells[actualLRPGroup.Evacuating.GetCellId()] = true
+					cells = append(cells, actualLRPGroup.Evacuating.GetCellId())
+				}
 			}
 		}
 	}
+
+	sort.Strings(cells)
 
 	buffer := &bytes.Buffer{}
 	if clear {
 		say.Fclear(buffer)
 	}
 	say.Fprintln(buffer, 0, "Distribution")
-	for _, cell := range dump.Services.Cells {
-		numTasks := nTasks[cell.CellID]
-		numLRPs := nLRPsClaimed[cell.CellID] + nLRPsRunning[cell.CellID] + nLRPsEvacuating[cell.CellID]
+	for _, cell := range cells {
+		numTasks := nTasks[cell]
+		numLRPs := nLRPsClaimed[cell] + nLRPsRunning[cell] + nLRPsEvacuating[cell]
 		var content string
 		if numTasks == 0 && numLRPs == 0 {
 			content = say.Red("Empty")
 		} else {
 			content = fmt.Sprintf("%s%s%s%s",
-				say.Yellow(strings.Repeat("•", nTasks[cell.CellID])),
-				say.Green(strings.Repeat("•", nLRPsRunning[cell.CellID])),
-				say.Gray(strings.Repeat("•", nLRPsClaimed[cell.CellID])),
-				say.Red(strings.Repeat("•", nLRPsEvacuating[cell.CellID])),
+				say.Yellow(strings.Repeat("•", nTasks[cell])),
+				say.Green(strings.Repeat("•", nLRPsRunning[cell])),
+				say.Gray(strings.Repeat("•", nLRPsClaimed[cell])),
+				say.Red(strings.Repeat("•", nLRPsEvacuating[cell])),
 			)
 		}
-		say.Fprintln(buffer, 0, "%s %s: %s", say.Yellow(cell.Zone), say.Green("%12s", cell.CellID), content)
+		say.Fprintln(buffer, 0, "%s: %s", say.Green("%12s", cell), content)
 	}
 
 	buffer.WriteTo(os.Stdout)

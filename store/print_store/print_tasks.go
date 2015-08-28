@@ -3,7 +3,8 @@ package print_store
 import (
 	"time"
 
-	"github.com/cloudfoundry-incubator/runtime-schema/models"
+	"github.com/cloudfoundry-incubator/bbs/models"
+
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
@@ -26,11 +27,11 @@ func printTasks(verbose bool, tasks veritas_models.VeritasTasks) {
 	}
 }
 
-func printVerboseTask(task models.Task) {
+func printVerboseTask(task *models.Task) {
 	say.Println(0, format.Object(task, 1))
 }
 
-func printTask(task models.Task) {
+func printTask(task *models.Task) {
 	privileged := ""
 	if task.Privileged {
 		privileged = say.Red(" PRIVILEGED")
@@ -39,33 +40,33 @@ func printTask(task models.Task) {
 		"%s [%s on %s %s%s] U:%s C:%s (%d MB, %d MB, %d CPU)",
 		taskState(task),
 		task.TaskGuid,
-		task.CellID,
-		say.Cyan(task.RootFS),
+		task.CellId,
+		say.Cyan(task.RootFs),
 		privileged,
 		time.Since(time.Unix(0, task.UpdatedAt)).String(),
 		time.Since(time.Unix(0, task.CreatedAt)).String(),
-		task.MemoryMB,
-		task.DiskMB,
-		task.CPUWeight,
+		task.MemoryMb,
+		task.DiskMb,
+		task.CpuWeight,
 	)
 }
 
-func taskState(task models.Task) string {
+func taskState(task *models.Task) string {
 	switch task.State {
-	case models.TaskStatePending:
+	case models.Task_Pending:
 		return say.LightGray("PENDING  ")
-	case models.TaskStateRunning:
+	case models.Task_Running:
 		return say.Yellow("RUNNING  ")
-	case models.TaskStateCompleted:
+	case models.Task_Completed:
 		return colorByTaskSuccess(task, "COMPLETED")
-	case models.TaskStateResolving:
+	case models.Task_Resolving:
 		return colorByTaskSuccess(task, "RESOLVING")
 	default:
 		return say.Red("INVALID")
 	}
 }
 
-func colorByTaskSuccess(task models.Task, format string, args ...interface{}) string {
+func colorByTaskSuccess(task *models.Task, format string, args ...interface{}) string {
 	if task.Failed {
 		return say.Red(format, args...)
 	} else {

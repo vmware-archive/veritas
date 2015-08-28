@@ -18,24 +18,14 @@ func Autodetect(out io.Writer) error {
 	}
 
 	vitalsAddrs := []string{}
-	executorAddr := ""
 	gardenAddr := ""
 	gardenNetwork := ""
-	etcdCluster := ""
-	consulCluster := ""
-	receptorEndpoint := ""
-	receptorUsername := ""
-	receptorPassword := ""
+	bbsEndpoint := ""
 
 	debugRe := regexp.MustCompile(`debugAddr=(\d+.\d+.\d+.\d+:\d+)`)
-	etcdRe := regexp.MustCompile(`etcdCluster=\"(.+)\"`)
-	consulRe := regexp.MustCompile(`consulCluster=([A-Za-z0-9:,/.]+)`)
-	executorRe := regexp.MustCompile(`listenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenTCPAddrRe := regexp.MustCompile(`gardenAddr=(\d+.\d+.\d+.\d+:\d+)`)
 	gardenUnixAddrRe := regexp.MustCompile(`gardenAddr=([/\-\w+\.\d]+)`)
-	receptorEndpointRe := regexp.MustCompile(`address=(\d+.\d+.\d+.\d+:\d+)`)
-	receptorUsernameRe := regexp.MustCompile(`username=(\S*)\s*\\`)
-	receptorPasswordRe := regexp.MustCompile(`password=(\S*)\s*\\`)
+	bbsEndpointRe := regexp.MustCompile(`bbsAddress=([:/\-\w+\.\d]+)`)
 
 	for _, job := range jobs {
 		jobDir := filepath.Join("/var/vcap/jobs", job.Name(), "bin")
@@ -61,21 +51,7 @@ func Autodetect(out io.Writer) error {
 					vitalsAddrs = append(vitalsAddrs, fmt.Sprintf("%s:%s", name, addr))
 				}
 
-				if etcdRe.Match(data) {
-					etcdCluster = string(etcdRe.FindSubmatch(data)[1])
-					etcdCluster = strings.Replace(etcdCluster, `"`, ``, -1)
-				}
-
-				if consulRe.Match(data) {
-					consulCluster = string(consulRe.FindSubmatch(data)[1])
-					consulCluster = strings.Replace(consulCluster, `"`, ``, -1)
-				}
-
-				if name == "executor" && executorRe.Match(data) {
-					executorAddr = "http://" + string(executorRe.FindSubmatch(data)[1])
-				}
-
-				if name == "executor" {
+				if name == "rep" {
 					if gardenTCPAddrRe.Match(data) {
 						gardenAddr = string(gardenTCPAddrRe.FindSubmatch(data)[1])
 						gardenNetwork = "tcp"
@@ -83,23 +59,9 @@ func Autodetect(out io.Writer) error {
 						gardenAddr = string(gardenUnixAddrRe.FindSubmatch(data)[1])
 						gardenNetwork = "unix"
 					}
-				}
 
-				if name == "receptor" {
-					if receptorEndpointRe.Match(data) {
-						receptorEndpoint = string(receptorEndpointRe.FindSubmatch(data)[1])
-					}
-					if receptorUsernameRe.Match(data) {
-						receptorUsername = string(receptorUsernameRe.FindSubmatch(data)[1])
-					}
-					if receptorPasswordRe.Match(data) {
-						receptorPassword = string(receptorPasswordRe.FindSubmatch(data)[1])
-					}
-
-					if receptorUsername != "" {
-						receptorEndpoint = fmt.Sprintf("http://%s:%s@%s", receptorUsername, receptorPassword, receptorEndpoint)
-					} else {
-						receptorEndpoint = fmt.Sprintf("http://%s", receptorEndpoint)
+					if bbsEndpointRe.Match(data) {
+						bbsEndpoint = string(bbsEndpointRe.FindSubmatch(data)[1])
 					}
 				}
 			}
@@ -109,21 +71,12 @@ func Autodetect(out io.Writer) error {
 	if len(vitalsAddrs) > 0 {
 		say.Fprintln(out, 0, "export VITALS_ADDRS=%s", strings.Join(vitalsAddrs, ","))
 	}
-	if executorAddr != "" {
-		say.Fprintln(out, 0, "export EXECUTOR_ADDR=%s", executorAddr)
-	}
 	if gardenAddr != "" {
 		say.Fprintln(out, 0, "export GARDEN_ADDR=%s", gardenAddr)
 		say.Fprintln(out, 0, "export GARDEN_NETWORK=%s", gardenNetwork)
 	}
-	if etcdCluster != "" {
-		say.Fprintln(out, 0, "export ETCD_CLUSTER=%s", etcdCluster)
-	}
-	if consulCluster != "" {
-		say.Fprintln(out, 0, "export CONSUL_CLUSTER=%s", consulCluster)
-	}
-	if receptorEndpoint != "" {
-		say.Fprintln(out, 0, "export RECEPTOR_ENDPOINT=%s", receptorEndpoint)
+	if bbsEndpoint != "" {
+		say.Fprintln(out, 0, "export BBS_ENDPOINT=%s", bbsEndpoint)
 	}
 
 	return nil

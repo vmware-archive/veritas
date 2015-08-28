@@ -1,13 +1,12 @@
 package print_store
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/cloudfoundry-incubator/receptor"
-	"github.com/cloudfoundry-incubator/route-emitter/cfroutes"
-	"github.com/cloudfoundry-incubator/runtime-schema/models"
+	"github.com/cloudfoundry-incubator/bbs/models"
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
@@ -58,11 +57,11 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 			2,
 			"%s %s%s (%d MB, %d MB, %d CPU)%s",
 			say.Green("%d", lrp.DesiredLRP.Instances),
-			say.Cyan(lrp.DesiredLRP.RootFS),
+			say.Cyan(lrp.DesiredLRP.RootFs),
 			privileged,
-			lrp.DesiredLRP.MemoryMB,
-			lrp.DesiredLRP.DiskMB,
-			lrp.DesiredLRP.CPUWeight,
+			lrp.DesiredLRP.MemoryMb,
+			lrp.DesiredLRP.DiskMb,
+			lrp.DesiredLRP.CpuWeight,
 			routesString,
 		)
 	} else {
@@ -87,7 +86,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 					"%2s: %s %s [%s for %s]",
 					index,
 					instance.InstanceGuid,
-					say.Yellow(instance.CellID),
+					say.Yellow(instance.CellId),
 					actualState(instance),
 					time.Since(time.Unix(0, instance.Since)),
 				)
@@ -99,7 +98,7 @@ func printLRP(lrp *veritas_models.VeritasLRP) {
 				"%s: %s %s [%s for %s] - %s",
 				say.Red("%2s", index),
 				say.Red(evacuating.InstanceGuid),
-				say.Yellow(evacuating.CellID),
+				say.Yellow(evacuating.CellId),
 				actualState(evacuating),
 				time.Since(time.Unix(0, evacuating.Since)),
 				say.Red("EVACUATING"),
@@ -127,14 +126,29 @@ func actualState(actual *models.ActualLRP) string {
 	}
 }
 
-func routes(info receptor.RoutingInfo) string {
+const CF_ROUTER = "cf-router"
+
+type CFRoutes []CFRoute
+
+type CFRoute struct {
+	Hostnames []string `json:"hostnames"`
+	Port      uint16   `json:"port"`
+}
+
+func routes(info *models.Routes) string {
 	if info == nil {
 		return ""
 	}
 
-	routes, _ := cfroutes.CFRoutesFromRoutingInfo(info)
+	data, found := (*info)[CF_ROUTER]
+	if !found || data == nil {
+		return ""
+	}
 
-	if routes == nil {
+	routes := CFRoutes{}
+	err := json.Unmarshal(*data, &routes)
+
+	if err != nil {
 		return ""
 	}
 

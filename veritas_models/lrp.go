@@ -4,13 +4,13 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/cloudfoundry-incubator/runtime-schema/models"
+	"github.com/cloudfoundry-incubator/bbs/models"
 )
 
 type VeritasLRP struct {
 	ProcessGuid            string
-	DesiredLRP             models.DesiredLRP
-	ActualLRPGroupsByIndex map[string]models.ActualLRPGroup
+	DesiredLRP             *models.DesiredLRP
+	ActualLRPGroupsByIndex map[string]*models.ActualLRPGroup
 }
 
 func (l *VeritasLRP) OrderedActualLRPIndices() []string {

@@ -25,7 +25,7 @@ var colorLookup = map[string]string{
 	"file-server":    "\x1b[34m",
 	"router":         "\x1b[32m",
 	"loggregator":    "\x1b[33m",
-	"receptor":       "\x1b[36m",
+	"bbs":            "\x1b[36m",
 	"garden-linux":   "\x1b[35m",
 }
 

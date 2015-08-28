@@ -3,10 +3,10 @@ package veritas_models
 import (
 	"sort"
 
-	"github.com/cloudfoundry-incubator/runtime-schema/models"
+	"github.com/cloudfoundry-incubator/bbs/models"
 )
 
-type VeritasTasks map[string][]models.Task
+type VeritasTasks map[string][]*models.Task
 
 func (t VeritasTasks) OrderedTaskTypes() []string {
 	taskTypes := []string{}
@@ -17,13 +17,13 @@ func (t VeritasTasks) OrderedTaskTypes() []string {
 	return taskTypes
 }
 
-func (t VeritasTasks) SortedTasksForType(taskType string) []models.Task {
+func (t VeritasTasks) SortedTasksForType(taskType string) []*models.Task {
 	tasks := t[taskType]
 	sort.Sort(TasksByUpdatedAt(tasks))
 	return tasks
 }
 
-type TasksByUpdatedAt []models.Task
+type TasksByUpdatedAt []*models.Task
 
 func (a TasksByUpdatedAt) Len() int           { return len(a) }
 func (a TasksByUpdatedAt) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }

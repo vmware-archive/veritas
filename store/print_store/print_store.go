@@ -8,7 +8,7 @@ import (
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
 )
 
-func PrintStore(verbose bool, tasks bool, lrps bool, services bool, clear bool, f io.Reader) error {
+func PrintStore(verbose bool, tasks bool, lrps bool, clear bool, f io.Reader) error {
 	decoder := json.NewDecoder(f)
 	var dump veritas_models.StoreDump
 	err := decoder.Decode(&dump)
@@ -27,10 +27,6 @@ func PrintStore(verbose bool, tasks bool, lrps bool, services bool, clear bool, 
 	if lrps {
 		printLRPS(verbose, dump.LRPS)
 		printDomains(dump.Domains)
-	}
-
-	if services {
-		printServices(verbose, dump.Services)
 	}
 
 	return nil

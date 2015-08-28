@@ -5,8 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/cloudfoundry-incubator/runtime-schema/bbs"
-	"github.com/cloudfoundry/storeadapter/etcdstoreadapter"
+	"github.com/cloudfoundry-incubator/bbs"
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
@@ -16,22 +15,18 @@ import (
 
 func DumpStoreCommand() common.Command {
 	var (
-		etcdClusterFlag   string
-		consulClusterFlag string
-		tasks             bool
-		lrps              bool
-		services          bool
-		verbose           bool
-		rate              time.Duration
+		bbsEndpointFlag string
+		tasks           bool
+		lrps            bool
+		rate            time.Duration
+		verbose         bool
 	)
 
 	flagSet := flag.NewFlagSet("dump-store", flag.ExitOnError)
-	flagSet.StringVar(&etcdClusterFlag, "etcdCluster", "", "comma-separated etcd cluster urls")
-	flagSet.StringVar(&consulClusterFlag, "consulCluster", "", "comma-separated consul cluster urls")
-	flagSet.BoolVar(&verbose, "v", false, "be verbose")
+	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
 	flagSet.BoolVar(&tasks, "tasks", true, "print tasks")
 	flagSet.BoolVar(&lrps, "lrps", true, "print lrps")
-	flagSet.BoolVar(&services, "services", true, "print services")
+	flagSet.BoolVar(&verbose, "v", false, "be verbose")
 	flagSet.DurationVar(&rate, "rate", time.Duration(0), "rate at which to poll the store")
 
 	return common.Command{
@@ -39,11 +34,11 @@ func DumpStoreCommand() common.Command {
 		Description: "- Fetch and print contents of the BBS",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			veritasBBS, etcdStore, err := config_finder.ConstructBBS(etcdClusterFlag, consulClusterFlag)
+			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
 			common.ExitIfError("Could not construct BBS", err)
 
 			if rate == 0 {
-				err = dump(veritasBBS, etcdStore, verbose, tasks, lrps, services, false)
+				err = dump(bbsClient, verbose, tasks, lrps, false)
 				common.ExitIfError("Failed to dump", err)
 				return
 			}
@@ -51,7 +46,7 @@ func DumpStoreCommand() common.Command {
 			ticker := time.NewTicker(rate)
 			for {
 				<-ticker.C
-				err = dump(veritasBBS, etcdStore, verbose, tasks, lrps, services, true)
+				err = dump(bbsClient, verbose, tasks, lrps, true)
 				if err != nil {
 					say.Println(0, say.Red("Failed to dump: %s", err.Error()))
 				}
@@ -60,16 +55,16 @@ func DumpStoreCommand() common.Command {
 	}
 }
 
-func dump(veritasBBS bbs.VeritasBBS, etcdStore *etcdstoreadapter.ETCDStoreAdapter, verbose bool, tasks bool, lrps bool, services bool, clear bool) error {
+func dump(bbsClient bbs.Client, verbose bool, tasks bool, lrps bool, clear bool) error {
 	reader, writer := io.Pipe()
 
 	errs := make(chan error)
 	go func() {
-		err := fetch_store.Fetch(veritasBBS, etcdStore, false, writer)
+		err := fetch_store.Fetch(bbsClient, writer)
 		errs <- err
 	}()
 	go func() {
-		err := print_store.PrintStore(verbose, tasks, lrps, services, clear, reader)
+		err := print_store.PrintStore(verbose, tasks, lrps, clear, reader)
 		errs <- err
 	}()
 
