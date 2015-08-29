@@ -42,7 +42,7 @@ func printVerboseLRP(lrp *veritas_models.VeritasLRP) {
 
 func printLRP(lrp *veritas_models.VeritasLRP) {
 	say.Println(1, say.Green(lrp.ProcessGuid))
-	if lrp.DesiredLRP.ProcessGuid != "" {
+	if lrp.DesiredLRP.GetProcessGuid() != "" {
 		privileged := ""
 		if lrp.DesiredLRP.Privileged {
 			privileged = say.Red(" PRIVILEGED")

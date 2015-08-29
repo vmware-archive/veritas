@@ -37,10 +37,14 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 
 	for _, tasks := range dump.Tasks {
 		for _, task := range tasks {
-			nTasks[task.GetCellId()]++
-			if !knownCells[task.GetCellId()] {
-				knownCells[task.GetCellId()] = true
-				cells = append(cells, task.GetCellId())
+			cellId := task.GetCellId()
+			if cellId == "" {
+				continue
+			}
+			nTasks[cellId]++
+			if !knownCells[cellId] {
+				knownCells[cellId] = true
+				cells = append(cells, cellId)
 			}
 		}
 	}
@@ -48,23 +52,31 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	for _, lrp := range dump.LRPS {
 		for _, actualLRPGroup := range lrp.ActualLRPGroupsByIndex {
 			if actualLRPGroup.Instance != nil {
+				cellId := actualLRPGroup.Instance.GetCellId()
+				if cellId == "" {
+					continue
+				}
 				if actualLRPGroup.Instance.State == models.ActualLRPStateClaimed {
-					nLRPsClaimed[actualLRPGroup.Instance.GetCellId()]++
+					nLRPsClaimed[cellId]++
 				} else {
-					nLRPsRunning[actualLRPGroup.Instance.GetCellId()]++
+					nLRPsRunning[cellId]++
 				}
 
-				if !knownCells[actualLRPGroup.Instance.GetCellId()] {
-					knownCells[actualLRPGroup.Instance.GetCellId()] = true
-					cells = append(cells, actualLRPGroup.Instance.GetCellId())
+				if !knownCells[cellId] {
+					knownCells[cellId] = true
+					cells = append(cells, cellId)
 				}
 			}
 			if actualLRPGroup.Evacuating != nil {
-				nLRPsEvacuating[actualLRPGroup.Evacuating.GetCellId()]++
+				cellId := actualLRPGroup.Evacuating.GetCellId()
+				if cellId == "" {
+					continue
+				}
+				nLRPsEvacuating[cellId]++
 
-				if !knownCells[actualLRPGroup.Evacuating.GetCellId()] {
-					knownCells[actualLRPGroup.Evacuating.GetCellId()] = true
-					cells = append(cells, actualLRPGroup.Evacuating.GetCellId())
+				if !knownCells[cellId] {
+					knownCells[cellId] = true
+					cells = append(cells, cellId)
 				}
 			}
 		}
