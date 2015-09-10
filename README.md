@@ -4,7 +4,7 @@ Veritas is a cli for getting at Diego's truth.
 
 ## Downloading on a BOSH VM
 
-For a linux build on a bosh vm:
+For a linux build on a bosh vm (the Cells are best):
 
 ```bash
  pushd $HOME
@@ -38,3 +38,70 @@ For an OS X build (mainly for chugging logs locally):
 
   popd
 ```
+
+## Launch and update an LRP
+
+Veritas can submit/remove DesiredLRPs and DesiredLRPUpdates with the `veritas desire-lrp`, `veritas update-lrp` and `veritas remove-lrp` subcommands.
+
+### Desiring an LRP
+
+`veritas desire-lrp <path to json file>` takes the path to a file.  This file should contain a JSON representation of the DesiredLRP.  For example:
+
+```
+{
+    "process_guid":"92bcf571-630f-4ad3-bfa6-146afd40bded",
+    "domain":"redis-example",
+    "root_fs":"docker:///redis",
+    "instances":1,
+    "ports":[
+        6379
+    ],
+    "action":{
+        "run_action":{
+            "path":"/entrypoint.sh",
+            "args":[
+                "redis-server"
+            ],
+            "dir":"/data",
+            "user":"root"
+        }
+    },
+    "routes":{
+        "tcp-router":[
+            {
+                "external_port":50000,
+                "container_port":6379
+            }
+        ]
+    }
+}
+```
+
+### Updating an LRP
+
+`veritas update-lrp <process-guid> <path to json file>` take a process guid and a path to a file.  This file should contain a JSON representation of a `DesiredLRPUpdate`.  For example:
+
+```
+{
+    "instances": 3,
+    "routes":{
+        "tcp-router":[
+            {
+                "external_port":50001,
+                "container_port":6379
+            }
+        ]
+    }
+}
+```
+
+### Removing an LRP
+
+`veritas remove-lrp <process-guid>` will remove the LRP with associated process guid.  This will shut down any associated containers.
+
+### Fetching data
+
+- `veritas get-desired-lrp <process-guid>` fetches and outputs the DesiredLRP with the associated process guid
+- `veritas get-actual-lrp <process-guid>` fetches all ActualLRPs associated with the process guid
+- `veritas get-actual-lrp <process-guid> <index>` fetches the ActualLRP with index `<index>` associated with the process guid
+- `veritas dump-store` emits a formatted representation of the contents of the cluster

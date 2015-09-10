@@ -60,7 +60,11 @@ func main() {
 			Name:        "LRPS " + say.Red("[DANGER]"),
 			Description: "Commands to remove DesiredLRPs and modify Domains",
 			Commands: []common.Command{
+				lrps.CreateDesiredLRPCommand(),
+				lrps.UpdateDesiredLRPCommand(),
 				lrps.RemoveLRPCommand(),
+				lrps.GetDesiredLRPCommand(),
+				lrps.GetActualLRPCommand(),
 				lrps.SetDomainCommand(),
 			},
 		},
