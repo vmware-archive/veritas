@@ -39,6 +39,15 @@ For an OS X build (mainly for chugging logs locally):
   popd
 ```
 
+## Connecting to the BBS
+
+- As Veritas does not yet support the mutual SSL certs required when `properties.bbs.require_ssl:true`, Veritas only works when Diego is deployed with this property configured to `false`.
+- As Vertias no longer detects the location of the Diego BBS, or has a default, you must tell it where the BBS server is with the environment variable `BBS_ENDPOINT` with each command. With SSL disabled, BBS can be reached at `http://bbs.service.cf.internal:8889`
+
+ Example:
+ 
+  `$ BBS_ENDPOINT=http://bbs.service.cf.internal:8889 veritas dump-store`
+
 ## Launch and update an LRP
 
 Veritas can submit/remove DesiredLRPs and DesiredLRPUpdates with the `veritas desire-lrp`, `veritas update-lrp` and `veritas remove-lrp` subcommands.
