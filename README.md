@@ -41,12 +41,22 @@ For an OS X build (mainly for chugging logs locally):
 
 ## Connecting to the BBS
 
-- As Veritas does not yet support the mutual SSL certs required when `properties.bbs.require_ssl:true`, Veritas only works when Diego is deployed with this property configured to `false`.
-- As Vertias no longer detects the location of the Diego BBS, or has a default, you must tell it where the BBS server is with the environment variable `BBS_ENDPOINT` with each command. With SSL disabled, BBS can be reached at `http://bbs.service.cf.internal:8889`
+- As Vertias no longer detects the location of the Diego BBS, or has a default, you must tell it where the BBS server is with the environment variable `BBS_ENDPOINT` with each command. With TLS disabled, BBS can be reached at `http://bbs.service.cf.internal:8889`
 
  Example:
- 
+
   `$ BBS_ENDPOINT=http://bbs.service.cf.internal:8889 veritas dump-store`
+
+- When TLS is enabled, the `BBS_CERT_FILE` and `BBS_KEY_FILE` environment variables must also be provided.
+
+ Example:
+
+```bash
+  BBS_ENDPOINT=http://bbs.service.cf.internal:8889 \
+  BBS_CERT_FILE=path/to/cert \
+  BBS_KEY_FILE=path/to/key \
+  veritas dump-store
+```
 
 ## Launch and update an LRP
 

@@ -12,18 +12,18 @@ import (
 
 func GetDesiredLRPCommand() common.Command {
 	var (
-		bbsEndpointFlag string
+		bbsConfig config_finder.BBSConfig
 	)
 
 	flagSet := flag.NewFlagSet("get-desired-lrp", flag.ExitOnError)
-	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
+	bbsConfig.PopulateFlags(flagSet)
 
 	return common.Command{
 		Name:        "get-desired-lrp",
 		Description: "<process-guid> - get a DesiredLRP",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
+			bbsClient, err := config_finder.NewBBS(bbsConfig)
 			common.ExitIfError("Could not construct BBS", err)
 
 			if len(args) == 0 {

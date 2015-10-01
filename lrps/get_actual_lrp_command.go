@@ -13,18 +13,18 @@ import (
 
 func GetActualLRPCommand() common.Command {
 	var (
-		bbsEndpointFlag string
+		bbsConfig config_finder.BBSConfig
 	)
 
 	flagSet := flag.NewFlagSet("get-actual-lrp", flag.ExitOnError)
-	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
+	bbsConfig.PopulateFlags(flagSet)
 
 	return common.Command{
 		Name:        "get-actual-lrp",
 		Description: "<process-guid> <optional: index> - get an ActualLRP",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
+			bbsClient, err := config_finder.NewBBS(bbsConfig)
 			common.ExitIfError("Could not construct BBS", err)
 
 			var index = -1

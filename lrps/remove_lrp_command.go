@@ -11,18 +11,18 @@ import (
 
 func RemoveLRPCommand() common.Command {
 	var (
-		bbsEndpointFlag string
+		bbsConfig config_finder.BBSConfig
 	)
 
 	flagSet := flag.NewFlagSet("remove-lrp", flag.ExitOnError)
-	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
+	bbsConfig.PopulateFlags(flagSet)
 
 	return common.Command{
 		Name:        "remove-lrp",
 		Description: "<process-guid> - remove an lrp",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
+			bbsClient, err := config_finder.NewBBS(bbsConfig)
 			common.ExitIfError("Could not construct BBS", err)
 
 			if len(args) == 0 {

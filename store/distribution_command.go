@@ -15,14 +15,14 @@ import (
 
 func DistributionCommand() common.Command {
 	var (
-		bbsEndpointFlag string
-		tasks           bool
-		lrps            bool
-		rate            time.Duration
+		bbsConfig config_finder.BBSConfig
+		tasks     bool
+		lrps      bool
+		rate      time.Duration
 	)
 
 	flagSet := flag.NewFlagSet("distribution", flag.ExitOnError)
-	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
+	bbsConfig.PopulateFlags(flagSet)
 	flagSet.BoolVar(&tasks, "tasks", true, "print tasks")
 	flagSet.BoolVar(&lrps, "lrps", true, "print lrps")
 	flagSet.DurationVar(&rate, "rate", time.Duration(0), "rate at which to poll the store")
@@ -32,7 +32,7 @@ func DistributionCommand() common.Command {
 		Description: "- Fetch and print distribution of Tasks and LRPs",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
+			bbsClient, err := config_finder.NewBBS(bbsConfig)
 			common.ExitIfError("Could not construct BBS", err)
 
 			if rate == 0 {

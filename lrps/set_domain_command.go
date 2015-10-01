@@ -13,18 +13,18 @@ import (
 
 func SetDomainCommand() common.Command {
 	var (
-		bbsEndpointFlag string
+		bbsConfig config_finder.BBSConfig
 	)
 
 	flagSet := flag.NewFlagSet("set-domain", flag.ExitOnError)
-	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
+	bbsConfig.PopulateFlags(flagSet)
 
 	return common.Command{
 		Name:        "set-domain",
 		Description: "domain ttl - updates the domain in the BBS (ttl is a duration)",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
+			bbsClient, err := config_finder.NewBBS(bbsConfig)
 			common.ExitIfError("Could not construct BBS", err)
 
 			if len(args) != 2 {

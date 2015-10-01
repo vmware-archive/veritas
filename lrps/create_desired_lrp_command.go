@@ -14,18 +14,18 @@ import (
 
 func CreateDesiredLRPCommand() common.Command {
 	var (
-		bbsEndpointFlag string
+		bbsConfig config_finder.BBSConfig
 	)
 
 	flagSet := flag.NewFlagSet("desire-lrp", flag.ExitOnError)
-	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
+	bbsConfig.PopulateFlags(flagSet)
 
 	return common.Command{
 		Name:        "desire-lrp",
 		Description: "<path to json file> - create a DesiredLRP",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
+			bbsClient, err := config_finder.NewBBS(bbsConfig)
 			common.ExitIfError("Could not construct BBS", err)
 
 			var raw = []byte{}

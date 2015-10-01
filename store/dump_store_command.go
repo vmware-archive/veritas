@@ -15,15 +15,15 @@ import (
 
 func DumpStoreCommand() common.Command {
 	var (
-		bbsEndpointFlag string
-		tasks           bool
-		lrps            bool
-		rate            time.Duration
-		verbose         bool
+		bbsConfig config_finder.BBSConfig
+		tasks     bool
+		lrps      bool
+		rate      time.Duration
+		verbose   bool
 	)
 
 	flagSet := flag.NewFlagSet("dump-store", flag.ExitOnError)
-	flagSet.StringVar(&bbsEndpointFlag, "bbsEndpoint", "", "bbs endpoint")
+	bbsConfig.PopulateFlags(flagSet)
 	flagSet.BoolVar(&tasks, "tasks", true, "print tasks")
 	flagSet.BoolVar(&lrps, "lrps", true, "print lrps")
 	flagSet.BoolVar(&verbose, "v", false, "be verbose")
@@ -34,7 +34,7 @@ func DumpStoreCommand() common.Command {
 		Description: "- Fetch and print contents of the BBS",
 		FlagSet:     flagSet,
 		Run: func(args []string) {
-			bbsClient, err := config_finder.ConstructBBS(bbsEndpointFlag)
+			bbsClient, err := config_finder.NewBBS(bbsConfig)
 			common.ExitIfError("Could not construct BBS", err)
 
 			if rate == 0 {
