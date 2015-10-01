@@ -6,17 +6,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudfoundry-incubator/rep"
 	"github.com/onsi/say"
-
-	"github.com/cloudfoundry-incubator/auction/auctiontypes"
-	"github.com/cloudfoundry-incubator/auction/communication/http/auction_http_client"
-	"github.com/pivotal-golang/lager"
 )
 
 func RepState(out io.Writer) (err error) {
-	client := auction_http_client.New(&http.Client{
+	client := rep.NewClient(&http.Client{
 		Timeout: 5 * time.Second,
-	}, "", "http://localhost:1800", lager.NewLogger("veritas"))
+	}, "http://localhost:1800")
 
 	t := time.Now()
 	state, err := client.State()
@@ -39,7 +36,7 @@ func RepState(out io.Writer) (err error) {
 		}
 	}
 
-	for key := range state.RootFSProviders["preloaded"].(auctiontypes.FixedSetRootFSProvider).FixedSet {
+	for key := range state.RootFSProviders["preloaded"].(rep.FixedSetRootFSProvider).FixedSet {
 		rootFSes = append(rootFSes, say.Green("preloaded:%s", key))
 	}
 

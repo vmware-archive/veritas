@@ -16,7 +16,7 @@ func NewBBS(c BBSConfig) (bbs.Client, error) {
 	}
 
 	if c.IsSecure() {
-		return bbs.NewSecureSkipVerifyClient(c.URL, c.CertFile, c.KeyFile, 0, 0), nil
+		return bbs.NewSecureSkipVerifyClient(c.URL, c.CertFile, c.KeyFile, 0, 0)
 	} else {
 		return bbs.NewClient(c.URL), nil
 	}
@@ -28,10 +28,10 @@ type BBSConfig struct {
 	KeyFile  string
 }
 
-func (c *BBSConfig) PopulateFlags(flagSet flag.FlagSet) {
-	flagSet.StringVar(&bbsConfig.URL, "bbsEndpoint", "", "BBS url")
-	flagSet.StringVar(&bbsConfig.CertFile, "bbsCertFile", "", "path to BBS TLS cert file")
-	flagSet.StringVar(&bbsConfig.KeyFile, "bbsKeyFile", "", "path to BBS TLS key file")
+func (c *BBSConfig) PopulateFlags(flagSet *flag.FlagSet) {
+	flagSet.StringVar(&c.URL, "bbsEndpoint", "", "BBS url")
+	flagSet.StringVar(&c.CertFile, "bbsCertFile", "", "path to BBS TLS cert file")
+	flagSet.StringVar(&c.KeyFile, "bbsKeyFile", "", "path to BBS TLS key file")
 }
 
 func (c *BBSConfig) IsSecure() bool {
@@ -50,7 +50,7 @@ func (c *BBSConfig) PopulateFromEnv() {
 	}
 }
 
-func Validate() error {
+func (c *BBSConfig) Validate() error {
 	if c.URL == "" {
 		return errors.New("You must either specify --bbsEndpoint or set BBS_ENDPOINT")
 	}
@@ -61,4 +61,5 @@ func Validate() error {
 		return errors.New("You must either specify --bbsKeyFile or set BBS_KEYFILE")
 	}
 
+	return nil
 }
