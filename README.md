@@ -96,7 +96,41 @@ Veritas can submit, update, and remove DesiredLRPs with the `veritas desire-lrp`
 
 ### Desiring an LRP
 
-`veritas desire-lrp <path-to-json-file>` takes the path to a file.  This file should contain a JSON representation of the DesiredLRP.  For example:
+`veritas desire-lrp <path-to-json-file>` takes the path to a file.  This file should contain a JSON representation of the DesiredLRP.  
+
+Two examples:
+
+```
+{
+    "process_guid":"grace-1",
+    "domain":"test",
+    "rootfs":"docker:///onsi/grace-busybox",
+    "instances":1,
+    "ports":[
+        8080
+    ],
+    "action":{
+        "run":{
+            "path":"/grace",
+            "args":[
+                "-chatty"
+            ],
+            "dir":"/tmp",
+            "user":"root"
+        }
+    },
+    "routes":{
+        "cf-router":[
+            {
+                "hostnames": [
+                  "grace.app-domain.com"
+                ],
+                "port": 8080
+            }
+        ]
+    }
+}
+```
 
 ```
 {
