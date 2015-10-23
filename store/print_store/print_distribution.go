@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/cloudfoundry-incubator/bbs/models"
@@ -83,6 +84,13 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 	}
 
 	sort.Strings(cells)
+	var maxCellNameLength = 0
+	for _, cell := range cells {
+		if len(cell) > maxCellNameLength {
+			maxCellNameLength = len(cell)
+		}
+	}
+	var maxCellNameLengthWithPadding = maxCellNameLength + 2
 
 	buffer := &bytes.Buffer{}
 	if clear {
@@ -103,7 +111,7 @@ func printDistribution(dump veritas_models.StoreDump, includeTasks bool, include
 				say.Red(strings.Repeat("•", nLRPsEvacuating[cell])),
 			)
 		}
-		say.Fprintln(buffer, 0, "%s: %s", say.Green("%12s", cell), content)
+		say.Fprintln(buffer, 0, "%s: %s", say.Green("%"+strconv.Itoa(maxCellNameLengthWithPadding)+"s", cell), content)
 	}
 
 	buffer.WriteTo(os.Stdout)
