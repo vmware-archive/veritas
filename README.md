@@ -7,8 +7,8 @@ Veritas is a CLI for getting at Diego's truth.
 For a Linux build on a BOSH VM (the Cells are best):
 
 ```bash
-pushd $HOME
-  wget http://onsi-public.s3.amazonaws.com/veritas -O ./veritas
+  pushd $HOME
+  wget https://github.com/pivotal-cf-experimental/veritas/releases/download/latest/veritas -O ./veritas
   chmod +x ./veritas
 
   echo "export PATH=$PATH:$PWD" > veritas.bash
@@ -18,7 +18,7 @@ pushd $HOME
   ./veritas completions >> veritas.bash
 
   source ./veritas.bash
-popd
+  popd
 ```
 
 Once this is done, you simply need to `source ~/veritas.bash` when you log in again.
@@ -31,7 +31,7 @@ For an OS X build (mainly useful for chugging logs locally, or connecting to the
 ```bash
 mkdir -p $HOME/bin
 pushd $HOME/bin
-  wget http://onsi-public.s3.amazonaws.com/veritas-osx
+  wget https://github.com/pivotal-cf-experimental/veritas/releases/download/latest/veritas-osx
   mv veritas-osx veritas
   chmod +x ./veritas
 popd
