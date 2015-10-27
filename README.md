@@ -136,13 +136,13 @@ Two examples:
 {
     "process_guid": "92bcf571-630f-4ad3-bfa6-146afd40bded",
     "domain": "redis-example",
-    "root_fs": "docker:///redis",
+    "rootfs": "docker:///redis",
     "instances": 1,
     "ports": [
         6379
     ],
     "action": {
-        "run_action": {
+        "run": {
             "path": "/entrypoint.sh",
             "args": [
                 "redis-server"
