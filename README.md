@@ -51,7 +51,7 @@ BBS support for SSL uses mutual authentication, meaning the client must also pro
 
 ```bash
 BBS_ENDPOINT=https://10.244.16.130:8889 \
-BBS_CERT_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.crt \ 
+BBS_CERT_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.crt \
 BBS_KEY_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.key \
 veritas dump-store
 ```
