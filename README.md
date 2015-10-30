@@ -47,7 +47,7 @@ The URL for BBS is specified with the environment variable `BBS_ENDPOINT`. When 
 BBS_ENDPOINT=http://bbs.service.cf.internal:8889 veritas dump-store
 ```
 
-BBS support for SSL uses mutual authentication, meaning the client must also provide a certificate. When SSL is enabled for the BBS, create files containing the client certificate and client private key and reference them using environment variables `BBS_CERT_FILE` and `BBS_KEY_FILE`. Also, use `https` in the scheme for `BBS_ENDPOINT`. For the purposes of testing with BOSH Lite, the client certificate and key can be found in `diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/.
+BBS support for SSL uses mutual authentication, meaning the client must also provide a certificate. When SSL is enabled for the BBS, create files containing the client certificate and client private key and reference them using environment variables `BBS_CERT_FILE` and `BBS_KEY_FILE`. Also, use `https` in the scheme for `BBS_ENDPOINT`. For the purposes of testing with BOSH Lite, the client certificate and key can be found in `diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/`.
 
 ```bash
 BBS_ENDPOINT=https://10.244.16.130:8889 \
