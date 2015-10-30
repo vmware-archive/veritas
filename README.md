@@ -50,7 +50,7 @@ BBS_ENDPOINT=http://bbs.service.cf.internal:8889 veritas dump-store
 BBS support for SSL uses mutual authentication, meaning the client must also provide a certificate. Create files containing the client certificate and client private key and reference them using environment variables `BBS_CERT_FILE` and `BBS_KEY_FILE`. Also, use `https` in the scheme for `BBS_ENDPOINT`. For the purposes of testing with BOSH Lite, the client certificate and key can be found in `diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/.
 
 ```bash
-BBS_ENDPOINT=https://bbs.service.cf.internal:8889 \
+BBS_ENDPOINT=https://10.244.16.130:8889 \
 BBS_CERT_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.crt \ 
 BBS_KEY_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.key \
 veritas dump-store
