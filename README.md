@@ -39,26 +39,24 @@ popd
 
 ## Connecting to the BBS
 
-As `veritas` no longer automatically detects the location of the Diego BBS, or has a default, commands that connect to the BBS must specify the BBS server URL with the environment variable `BBS_ENDPOINT`.
+`veritas` commands must include the location of the Diego BBS server. The BBS is not typically publically routable, so run `veritas` from a VM in the same subnet. On the private network the BBS can be found at `https://bbs.service.cf.internal:8889`. When testing locally against Bosh Lite, you can run `veritas` locally and use the IP address of the `database_z1` job, `https://10.244.16.130:8889`.
 
-When the BBS is run without requiring mutual SSL authentication, specify the URL scheme as `http`:
+The URL for BBS is specified with the environment variable `BBS_ENDPOINT`. When SSL is disabled on the BBS, specify the URL scheme as `http`:
 
 ```bash
 BBS_ENDPOINT=http://bbs.service.cf.internal:8889 veritas dump-store
 ```
 
-When SSL is enabled on the BBS, the `BBS_CERT_FILE` and `BBS_KEY_FILE` environment variables must also be provided:
-
- Example:
+BBS support for SSL uses mutual authentication, meaning the client must also provide a certificate. When SSL is enabled for the BBS, create files containing the client certificate and client private key and reference them using environment variables `BBS_CERT_FILE` and `BBS_KEY_FILE`. Also, use `https` in the scheme for `BBS_ENDPOINT`. For the purposes of testing with BOSH Lite, the client certificate and key can be found in `diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/`.
 
 ```bash
-BBS_ENDPOINT=https://bbs.service.cf.internal:8889 \
-BBS_CERT_FILE=path/to/client/cert \
-BBS_KEY_FILE=path/to/client/key \
+BBS_ENDPOINT=https://10.244.16.130:8889 \
+BBS_CERT_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.crt \
+BBS_KEY_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.key \
 veritas dump-store
 ```
 
-Alternately, these BBS configuration parameters may be supplied as the flags `--bbsEndpoint`, `--bbsCertFile`, and `--bbsKeyFile`. For commands with positional arguments, such as `desire-lrp` or `remove-lrp`, the flags must be given **after** the command but **before** the positional arguments. For example:
+Instead of environment variables, BBS configuration parameters may be supplied with the flags `--bbsEndpoint`, `--bbsCertFile`, and `--bbsKeyFile`. For commands with positional arguments, such as `desire-lrp` or `remove-lrp`, the flags must be given **after** the command but **before** the positional arguments. For example:
 
 ```bash
 veritas remove-lrp \
