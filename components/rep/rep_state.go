@@ -11,9 +11,10 @@ import (
 )
 
 func RepState(out io.Writer) (err error) {
-	client := rep.NewClient(&http.Client{
+	httpClient := &http.Client{
 		Timeout: 5 * time.Second,
-	}, "http://localhost:1800")
+	}
+	client := rep.NewClient(httpClient, httpClient, "http://localhost:1800")
 
 	t := time.Now()
 	state, err := client.State()
