@@ -197,6 +197,7 @@ Setting the duration to `0` will keep the domain fresh indefinitely. To delete a
 
 ### Fetching data
 
+- `veritas get-task <task-guid>` fetches and outputs the Task with the associated task guid.
 - `veritas get-desired-lrp <process-guid>` fetches and outputs the DesiredLRP with the associated process guid.
 - `veritas get-actual-lrp <process-guid>` fetches all ActualLRPs associated with the process guid.
 - `veritas get-actual-lrp <process-guid> <index>` fetches the ActualLRP with index `<index>` associated with the process guid.

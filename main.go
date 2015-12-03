@@ -14,6 +14,7 @@ import (
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/lrps"
 	"github.com/pivotal-cf-experimental/veritas/store"
+	"github.com/pivotal-cf-experimental/veritas/tasks"
 )
 
 func main() {
@@ -66,6 +67,13 @@ func main() {
 				lrps.GetDesiredLRPCommand(),
 				lrps.GetActualLRPCommand(),
 				lrps.SetDomainCommand(),
+			},
+		},
+		common.CommandGroup{
+			Name:        "Tasks " + say.Red("[DANGER]"),
+			Description: "Commands to manipulate Tasks",
+			Commands: []common.Command{
+				tasks.GetTaskCommand(),
 			},
 		},
 	}
