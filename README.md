@@ -41,7 +41,9 @@ popd
 
 `veritas` commands must include the location of the Diego BBS server. The BBS is not typically publically routable, so run `veritas` from a VM in the same subnet. On the private network the BBS can be found at `https://bbs.service.cf.internal:8889`. When testing locally against Bosh Lite, you can run `veritas` locally and use the IP address of the `database_z1` job, `https://10.244.16.130:8889`.
 
-The URL for BBS is specified with the environment variable `BBS_ENDPOINT`. When SSL is disabled on the BBS, specify the URL scheme as `http`:
+### Environment Variables
+
+The URL for the BBS server is specified with the `BBS_ENDPOINT` environment variable. When SSL is disabled on the BBS, specify the URL scheme as `http`:
 
 ```bash
 BBS_ENDPOINT=http://bbs.service.cf.internal:8889 veritas dump-store
@@ -55,6 +57,16 @@ BBS_CERT_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-
 BBS_KEY_FILE=~/workspace/diego-release/manifest-generation/bosh-lite-stubs/bbs-certs/client.key \
 veritas dump-store
 ```
+
+You can also export these environment variables to avoid having to specify them on every command invocation. For example, the following values configure these environment variables correctly on a BOSH-deployed Diego Cell VM:
+
+```bash
+export BBS_ENDPOINT=https://bbs.service.cf.internal:8889; \
+export BBS_CERT_FILE=/var/vcap/jobs/rep/config/certs/bbs/client.crt; \
+export BBS_KEY_FILE=/var/vcap/jobs/rep/config/certs/bbs/client.key
+```
+
+### Command-Line Arguments
 
 Instead of environment variables, BBS configuration parameters may be supplied with the flags `--bbsEndpoint`, `--bbsCertFile`, and `--bbsKeyFile`. For commands with positional arguments, such as `desire-lrp` or `remove-lrp`, the flags must be given **after** the command but **before** the positional arguments. For example:
 
