@@ -7,7 +7,7 @@ Veritas is a CLI for getting at Diego's truth.
 For a Linux build on a BOSH VM (the Cells are best):
 
 ```bash
-  pushd $HOME
+pushd $HOME
   wget https://github.com/pivotal-cf-experimental/veritas/releases/download/latest/veritas -O ./veritas
   chmod +x ./veritas
 
@@ -17,8 +17,8 @@ For a Linux build on a BOSH VM (the Cells are best):
   ./veritas autodetect >> veritas.bash
   ./veritas completions >> veritas.bash
 
-  source ./veritas.bash
-  popd
+  source veritas.bash
+popd
 ```
 
 Once this is done, you simply need to `source ~/veritas.bash` when you log in again.
