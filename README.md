@@ -165,7 +165,8 @@ Two examples:
         "tcp-router": [
             {
                 "external_port": 50000,
-                "container_port": 6379
+                "container_port": 6379,
+                "router_group_guid": "bad25cff-9332-48a6-8603-b619858e7992"
             }
         ]
     }
