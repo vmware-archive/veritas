@@ -144,7 +144,7 @@ Two examples:
 
 ```
 {
-    "process_guid": "92bcf571-630f-4ad3-bfa6-146afd40bded",
+    "process_guid": "redis-1",
     "domain": "redis-example",
     "rootfs": "docker:///redis",
     "instances": 1,
