@@ -9,6 +9,7 @@ import (
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
 	"github.com/pivotal-cf-experimental/veritas/lrps/set_domain"
+	"github.com/pivotal-golang/lager"
 )
 
 func SetDomainCommand() common.Command {
@@ -18,6 +19,7 @@ func SetDomainCommand() common.Command {
 
 	flagSet := flag.NewFlagSet("set-domain", flag.ExitOnError)
 	bbsConfig.PopulateFlags(flagSet)
+	logger := lager.NewLogger("veritas")
 
 	return common.Command{
 		Name:        "set-domain",
@@ -34,7 +36,7 @@ func SetDomainCommand() common.Command {
 			ttl, err := time.ParseDuration(args[1])
 			common.ExitIfError("Failed to parse TTL", err)
 
-			err = set_domain.SetDomain(bbsClient, args[0], ttl)
+			err = set_domain.SetDomain(logger, bbsClient, args[0], ttl)
 			common.ExitIfError("Failed to submit lrp", err)
 		},
 	}

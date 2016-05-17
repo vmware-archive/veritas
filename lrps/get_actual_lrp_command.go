@@ -9,6 +9,7 @@ import (
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-golang/lager"
 )
 
 func GetActualLRPCommand() common.Command {
@@ -18,6 +19,7 @@ func GetActualLRPCommand() common.Command {
 
 	flagSet := flag.NewFlagSet("get-actual-lrp", flag.ExitOnError)
 	bbsConfig.PopulateFlags(flagSet)
+	logger := lager.NewLogger("veritas")
 
 	return common.Command{
 		Name:        "get-actual-lrp",
@@ -42,7 +44,7 @@ func GetActualLRPCommand() common.Command {
 			}
 
 			if index == -1 {
-				actualLRPGroups, err := bbsClient.ActualLRPGroupsByProcessGuid(processGuid)
+				actualLRPGroups, err := bbsClient.ActualLRPGroupsByProcessGuid(logger, processGuid)
 				common.ExitIfError("Could not fetch ActualLRPs", err)
 
 				for _, actualLRPGroup := range actualLRPGroups {
@@ -51,7 +53,7 @@ func GetActualLRPCommand() common.Command {
 					say.Println(0, string(preview))
 				}
 			} else {
-				actualLRPGroup, err := bbsClient.ActualLRPGroupByProcessGuidAndIndex(processGuid, index)
+				actualLRPGroup, err := bbsClient.ActualLRPGroupByProcessGuidAndIndex(logger, processGuid, index)
 				common.ExitIfError("Could not fetch ActualLRP", err)
 
 				actualLRP, _ := actualLRPGroup.Resolve()

@@ -8,25 +8,28 @@ import (
 	"github.com/cloudfoundry-incubator/bbs"
 	"github.com/cloudfoundry-incubator/bbs/models"
 	"github.com/pivotal-cf-experimental/veritas/veritas_models"
+	"github.com/pivotal-golang/lager"
 )
 
 func Fetch(bbsClient bbs.Client, w io.Writer) error {
-	desiredLRPs, err := bbsClient.DesiredLRPs(models.DesiredLRPFilter{})
+	logger := lager.NewLogger("veritas")
+
+	desiredLRPs, err := bbsClient.DesiredLRPs(logger, models.DesiredLRPFilter{})
 	if err != nil {
 		return err
 	}
 
-	actualLRPGroups, err := bbsClient.ActualLRPGroups(models.ActualLRPFilter{})
+	actualLRPGroups, err := bbsClient.ActualLRPGroups(logger, models.ActualLRPFilter{})
 	if err != nil {
 		return err
 	}
 
-	tasks, err := bbsClient.Tasks()
+	tasks, err := bbsClient.Tasks(logger)
 	if err != nil {
 		return err
 	}
 
-	domains, err := bbsClient.Domains()
+	domains, err := bbsClient.Domains(logger)
 	if err != nil {
 		return err
 	}
