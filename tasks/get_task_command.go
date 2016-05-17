@@ -8,6 +8,7 @@ import (
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-golang/lager"
 )
 
 func GetTaskCommand() common.Command {
@@ -17,6 +18,7 @@ func GetTaskCommand() common.Command {
 
 	flagSet := flag.NewFlagSet("get-task", flag.ExitOnError)
 	bbsConfig.PopulateFlags(flagSet)
+	logger := lager.NewLogger("veritas")
 
 	return common.Command{
 		Name:        "get-task",
@@ -31,7 +33,7 @@ func GetTaskCommand() common.Command {
 				os.Exit(1)
 			}
 
-			task, err := bbsClient.TaskByGuid(args[0])
+			task, err := bbsClient.TaskByGuid(logger, args[0])
 			common.ExitIfError("Failed to fetch Task", err)
 
 			preview, _ := json.MarshalIndent(task, "", "  ")

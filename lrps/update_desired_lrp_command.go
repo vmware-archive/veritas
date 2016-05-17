@@ -10,6 +10,7 @@ import (
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-golang/lager"
 )
 
 func UpdateDesiredLRPCommand() common.Command {
@@ -19,6 +20,7 @@ func UpdateDesiredLRPCommand() common.Command {
 
 	flagSet := flag.NewFlagSet("update-lrp", flag.ExitOnError)
 	bbsConfig.PopulateFlags(flagSet)
+	logger := lager.NewLogger("veritas")
 
 	return common.Command{
 		Name:        "update-lrp",
@@ -51,7 +53,7 @@ func UpdateDesiredLRPCommand() common.Command {
 			preview, _ := json.MarshalIndent(desiredLRPUpdate, "", "  ")
 			say.Println(0, string(preview))
 
-			err = bbsClient.UpdateDesiredLRP(args[0], desiredLRPUpdate)
+			err = bbsClient.UpdateDesiredLRP(logger, args[0], desiredLRPUpdate)
 			common.ExitIfError("Failed to update DesiredLRP", err)
 		},
 	}

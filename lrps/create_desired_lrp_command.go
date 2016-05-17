@@ -10,6 +10,7 @@ import (
 	"github.com/onsi/say"
 	"github.com/pivotal-cf-experimental/veritas/common"
 	"github.com/pivotal-cf-experimental/veritas/config_finder"
+	"github.com/pivotal-golang/lager"
 )
 
 func CreateDesiredLRPCommand() common.Command {
@@ -17,6 +18,7 @@ func CreateDesiredLRPCommand() common.Command {
 		bbsConfig config_finder.BBSConfig
 	)
 
+	logger := lager.NewLogger("veritas")
 	flagSet := flag.NewFlagSet("desire-lrp", flag.ExitOnError)
 	bbsConfig.PopulateFlags(flagSet)
 
@@ -48,7 +50,7 @@ func CreateDesiredLRPCommand() common.Command {
 			preview, _ := json.MarshalIndent(desiredLRP, "", "  ")
 			say.Println(0, string(preview))
 
-			err = bbsClient.DesireLRP(desiredLRP)
+			err = bbsClient.DesireLRP(logger, desiredLRP)
 			common.ExitIfError("Failed to desire DesiredLRP", err)
 		},
 	}
